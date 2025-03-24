@@ -1,11 +1,12 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import Header from "./Header";
-import "./Dashboard.css";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import Header from './Header';
+import './Dashboard.css';
 
 function Dashboard() {
-  const navigate = useNavigate();
-  const username = "Mateus"; // Exemplo fixo; substitua por lógica de autenticação
+  const navigate = useNavigate(); // Hook para navegação
+
+  const username = 'Mateus'; // Exemplo fixo; substitua por lógica de autenticação
 
   return (
     <div>
@@ -16,21 +17,23 @@ function Dashboard() {
           <div className="card">
             <h2 className="card-title">Solicitar Manutenção</h2>
             <p className="card-description">Solicite uma nova manutenção para sua moto.</p>
-            <button className="card-button" onClick={() => navigate("/solicitar-manutencao")}>
+            <button className="card-button" onClick={() => navigate('/solicitar-manutencao')}>
               Acessar
             </button>
           </div>
           <div className="card">
             <h2 className="card-title">Visualizar Manutenções</h2>
             <p className="card-description">Veja o histórico de manutenções realizadas.</p>
-            <button className="card-button" onClick={() => navigate("/visualizar-manutencoes")}>
+            <button className="card-button" onClick={() => navigate('/visualizar-manutencoes')}>
               Acessar
             </button>
           </div>
           <div className="card">
             <h2 className="card-title">Gerenciar Manutenções</h2>
             <p className="card-description">Gerencie as manutenções em andamento.</p>
-            <button className="card-button">Acessar</button>
+            <button className="card-button" onClick={() => navigate('/gerenciar-manutencoes')}>
+              Acessar
+            </button>
           </div>
         </div>
       </div>

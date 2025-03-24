@@ -1,10 +1,11 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Login from "./Login";
-import CriarConta from "./CriarConta";
-import Dashboard from "./Dashboard";
-import SolicitarManutencao from "./SolicitarManutencao";
-import VisualizarManutencoes from "./VisualizarManutencoes";
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Login from './Login';
+import CriarConta from './CriarConta';
+import Dashboard from './Dashboard';
+import SolicitarManutencao from './SolicitarManutencao';
+import VisualizarManutencoes from './VisualizarManutencoes';
+import GerenciarManutencoes from './GerenciarManutencoes';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/solicitar-manutencao" element={<SolicitarManutencao />} />
           <Route path="/visualizar-manutencoes" element={<VisualizarManutencoes />} />
+          <Route path="/gerenciar-manutencoes" element={<GerenciarManutencoes />} />
           <Route path="/" element={<Login />} />
         </Routes>
       </div>
