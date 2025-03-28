@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./VisualizarManutencoes.css";
 
 function VisualizarManutencoes() {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Dados fictícios (pode ser substituído por uma API futuramente)
   const manutencoes = [
@@ -14,8 +15,8 @@ function VisualizarManutencoes() {
       cor: "Preta",
       placa: "ABC-1234",
       descricao: "Troca de óleo e revisão geral.",
-      status: "Em andamento", // Status da manutenção
-      dataAtualizacao: "2025-03-20", // Data de atualização
+      status: "Em andamento",
+      dataAtualizacao: "2025-03-20",
     },
     {
       id: 2,
@@ -24,17 +25,34 @@ function VisualizarManutencoes() {
       cor: "Azul",
       placa: "XYZ-5678",
       descricao: "Correia danificada, necessita substituição.",
-      status: "Concluída", // Status da manutenção
-      dataAtualizacao: "2025-03-18", // Data de atualização
+      status: "Concluída",
+      dataAtualizacao: "2025-03-18",
     },
   ];
+
+  // Filtragem baseada na barra de pesquisa
+  const manutencoesFiltradas = manutencoes.filter((manutencao) =>
+    `${manutencao.modelo} ${manutencao.marca} ${manutencao.placa}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="container">
       <h2 className="title">Visualizar Manutenções</h2>
+
+      {/* Barra de Pesquisa */}
+      <input
+        type="text"
+        placeholder="Pesquisar por modelo, marca ou placa..."
+        className="search-bar"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+
       <div className="manutencao-list">
-        {manutencoes.length > 0 ? (
-          manutencoes.map((manutencao) => (
+        {manutencoesFiltradas.length > 0 ? (
+          manutencoesFiltradas.map((manutencao) => (
             <div key={manutencao.id} className="manutencao-card">
               <p><strong>Modelo:</strong> {manutencao.modelo}</p>
               <p><strong>Marca:</strong> {manutencao.marca}</p>
@@ -46,9 +64,10 @@ function VisualizarManutencoes() {
             </div>
           ))
         ) : (
-          <p>Nenhuma manutenção encontrada.</p>
+          <p className="no-results">Nenhuma manutenção encontrada.</p>
         )}
       </div>
+
       <button onClick={() => navigate("/dashboard")} className="button">
         Voltar
       </button>

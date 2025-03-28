@@ -11,6 +11,7 @@ const mockManutencoes = [
 function GerenciarManutencoes() {
   const [manutencoes] = useState(mockManutencoes);
   const [detalhesAtuais, setDetalhesAtuais] = useState(null);
+  const [filtro, setFiltro] = useState('');
   const navigate = useNavigate();
 
   const abrirDetalhes = (detalhes) => {
@@ -25,9 +26,26 @@ function GerenciarManutencoes() {
     navigate('/dashboard');
   };
 
+  const manutencoesFiltradas = manutencoes.filter(
+    (manutencao) =>
+      manutencao.nome.toLowerCase().includes(filtro.toLowerCase()) ||
+      manutencao.marca.toLowerCase().includes(filtro.toLowerCase()) ||
+      manutencao.modelo.toLowerCase().includes(filtro.toLowerCase())
+  );
+
   return (
     <div className="gerenciar-container">
       <h2>Gerenciar Manutenções</h2>
+      
+      {/* Barra de Pesquisa */}
+      <input
+        type="text"
+        placeholder="Buscar por nome, marca ou modelo..."
+        className="search-bar"
+        value={filtro}
+        onChange={(e) => setFiltro(e.target.value)}
+      />
+
       <table className="tabela-manutencoes">
         <thead>
           <tr>
@@ -38,16 +56,22 @@ function GerenciarManutencoes() {
           </tr>
         </thead>
         <tbody>
-          {manutencoes.map((manutencao) => (
-            <tr key={manutencao.id}>
-              <td>{manutencao.nome}</td>
-              <td>{manutencao.marca}</td>
-              <td>{manutencao.modelo}</td>
-              <td>
-                <button className="detalhes-button" onClick={() => abrirDetalhes(manutencao.detalhes)}>Ver Detalhes</button>
-              </td>
+          {manutencoesFiltradas.length > 0 ? (
+            manutencoesFiltradas.map((manutencao) => (
+              <tr key={manutencao.id}>
+                <td>{manutencao.nome}</td>
+                <td>{manutencao.marca}</td>
+                <td>{manutencao.modelo}</td>
+                <td>
+                  <button className="detalhes-button" onClick={() => abrirDetalhes(manutencao.detalhes)}>Ver Detalhes</button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4" className="no-results">Nenhuma manutenção encontrada.</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
 
