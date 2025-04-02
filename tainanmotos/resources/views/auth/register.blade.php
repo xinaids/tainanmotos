@@ -14,6 +14,10 @@
                 <input type="email" id="email" name="email" required>
             </div>
             <div class="input-group">
+                <label for="phone">Telefone:</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+            <div class="input-group">
                 <label for="password">Senha:</label>
                 <input type="password" id="password" name="password" required>
             </div>

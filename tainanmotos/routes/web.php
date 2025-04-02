@@ -1,6 +1,6 @@
 <?php
 
-
+use Illuminate\Support\Facades\Route;
 
 // Rota para o login
 Route::get('/login', function () {
@@ -17,11 +17,22 @@ Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
 })->name('password.request');
 
-
+// Rota para o Dashboard
 Route::get('/dashboard', function () {
-    return view('dashboard');  // Chama a view dashboard.blade.php
-});
+    return view('dashboard');
+})->name('dashboard');
 
+// Rota para Solicitar Manutenção
 Route::get('/solicitar-manutencao', function () {
     return view('solicitar_manutencao');
-});
+})->name('solicitar.manutencao');
+
+// Rota para Visualizar Manutenção
+Route::get('/visualizar-manutencao', function () {
+    return view('visualizar_manutencao');
+})->name('visualizar.manutencao');
+
+// Rota para Gerenciar Manutenção
+Route::get('/gerenciar-manutencao', function () {
+    return view('gerenciar_manutencao');
+})->name('gerenciar.manutencao');

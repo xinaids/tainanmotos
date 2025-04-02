@@ -19,7 +19,7 @@
                 <i class="fas fa-eye icon"></i>
                 <h3>Visualizar Manutenção</h3>
                 <p>Veja o status das manutenções realizadas.</p>
-                <a href="#" class="btn-card">Acessar</a>
+                <a href="{{ url('/visualizar-manutencao') }}" class="btn-card">Acessar</a>
             </div>
         </div>
 
@@ -29,7 +29,8 @@
                 <i class="fas fa-clipboard-list icon"></i>
                 <h3>Gerenciar Manutenção</h3>
                 <p>Gerencie suas manutenções em aberto.</p>
-                <a href="#" class="btn-card">Acessar</a>
+                <!-- Corrigido para a rota nomeada 'gerenciar.manutencao' -->
+                <a href="{{ route('gerenciar.manutencao') }}" class="btn-card">Acessar</a>
             </div>
         </div>
     </div>
