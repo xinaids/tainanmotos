@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+@include('partials.header')
 <div class="dashboard-container">
     <div class="card-container">
         <!-- Card de Solicitar Manutenção -->
