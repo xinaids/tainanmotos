@@ -3,22 +3,11 @@
         <h1>Tainan Motos</h1>
     </div>
     <div class="header-right">
-        @auth
-            <span class="user-name">{{ Auth::user()->name }}</span>
-            <a href="#" class="settings-icon"><i class="fas fa-cog"></i></a>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                @csrf
-            </form>
-            <button class="logout-btn" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                Sair
-            </button>
-        @else
-            <a href="{{ route('login') }}" class="btn-login">Entrar</a>
-        @endauth
+        <span class="user-name">Usuário</span>
+        <a href="#" class="settings-icon"><i class="fas fa-cog"></i></a>
+        <button class="logout-btn">Sair</button>
     </div>
 </header>
-
-
 
 <style>
 .header {
@@ -68,5 +57,4 @@
 .logout-btn:hover {
     background-color: #c82333;
 }
-
 </style>

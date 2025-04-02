@@ -30,6 +30,12 @@
             <input type="text" id="placa" name="placa" required>
         </div>
 
+        <!-- Quilometragem da moto -->
+        <div class="form-group">
+            <label for="quilometragem">Quilometragem</label>
+            <input type="number" id="quilometragem" name="quilometragem" required>
+        </div>
+
         <button type="submit" class="btn-submit">Solicitar Manutenção</button>
     </form>
 

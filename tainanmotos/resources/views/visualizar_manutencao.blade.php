@@ -5,6 +5,17 @@
     <h2>Visualizar Manutenção</h2>
     <p>Aqui você pode ver o status das suas manutenções registradas.</p>
 
+    <!-- Campo de pesquisa e combobox -->
+    <div class="form-group search-container">
+        <input type="text" id="search" name="search" placeholder="Pesquisar...">
+        <select id="search-type" name="search-type">
+            <option value="modelo">Modelo</option>
+            <option value="marca">Marca</option>
+            <option value="cor">Cor</option>
+            <option value="placa">Placa</option>
+        </select>
+    </div>
+
     <table class="manutencao-table">
         <thead>
             <tr>
@@ -173,5 +184,17 @@ h2 {
 .btn-voltar:hover {
     background-color: #0056b3;
     transform: scale(1.05);
+}
+
+/* Estilo do campo de pesquisa e combobox */
+.search-container {
+    margin-bottom: 20px;
+}
+
+.search-container input, .search-container select {
+    padding: 8px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
 }
 </style>
