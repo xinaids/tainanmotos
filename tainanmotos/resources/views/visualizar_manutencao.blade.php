@@ -5,96 +5,157 @@
     <h2>Visualizar Manutenção</h2>
     <p>Aqui você pode ver o status das suas manutenções registradas.</p>
 
-    <div class="manutencao-list">
-        <div class="manutencao-item">
-            <h3>Manutenção 1</h3>
-            <p><strong>Modelo:</strong> XTZ 250 Lander</p>
-            <p><strong>Marca:</strong> Yamaha</p>
-            <p><strong>Cor:</strong> Azul</p>
-            <p><strong>Placa:</strong> ABC-1234</p>
-            <p><strong>Status:</strong> Em andamento</p>
-            <a href="#" class="btn-detalhes">Detalhes</a>
-        </div>
-
-        <div class="manutencao-item">
-            <h3>Manutenção 2</h3>
-            <p><strong>Modelo:</strong> CB 500F</p>
-            <p><strong>Marca:</strong> Honda</p>
-            <p><strong>Cor:</strong> Vermelho</p>
-            <p><strong>Placa:</strong> XYZ-5678</p>
-            <p><strong>Status:</strong> Concluído</p>
-            <a href="#" class="btn-detalhes">Detalhes</a>
-        </div>
-    </div>
+    <table class="manutencao-table">
+        <thead>
+            <tr>
+                <th>Modelo</th>
+                <th>Marca</th>
+                <th>Cor</th>
+                <th>Placa</th>
+                <th>Dono</th>
+                <th>Status</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>XTZ 250 Lander</td>
+                <td>Yamaha</td>
+                <td>Azul</td>
+                <td>ABC-1234</td>
+                <td>João Silva</td>
+                <td>Em andamento</td>
+                <td><a href="#" class="btn-detalhes">Detalhes</a></td>
+            </tr>
+            <tr>
+                <td>CB 500F</td>
+                <td>Honda</td>
+                <td>Vermelho</td>
+                <td>XYZ-5678</td>
+                <td>Maria Oliveira</td>
+                <td>Concluído</td>
+                <td><a href="#" class="btn-detalhes">Detalhes</a></td>
+            </tr>
+            <tr>
+                <td>CG 160 Titan</td>
+                <td>Honda</td>
+                <td>Preto</td>
+                <td>DEF-9101</td>
+                <td>Pedro Santos</td>
+                <td>Pendente</td>
+                <td><a href="#" class="btn-detalhes">Detalhes</a></td>
+            </tr>
+            <tr>
+                <td>MT-03</td>
+                <td>Yamaha</td>
+                <td>Branco</td>
+                <td>GHI-1122</td>
+                <td>Ana Souza</td>
+                <td>Em andamento</td>
+                <td><a href="#" class="btn-detalhes">Detalhes</a></td>
+            </tr>
+            <tr>
+                <td>Ninja 400</td>
+                <td>Kawasaki</td>
+                <td>Verde</td>
+                <td>JKL-3344</td>
+                <td>Lucas Ferreira</td>
+                <td>Concluído</td>
+                <td><a href="#" class="btn-detalhes">Detalhes</a></td>
+            </tr>
+            <tr>
+                <td>Fazer 250</td>
+                <td>Yamaha</td>
+                <td>Vermelho</td>
+                <td>MNO-5566</td>
+                <td>Carla Mendes</td>
+                <td>Pendente</td>
+                <td><a href="#" class="btn-detalhes">Detalhes</a></td>
+            </tr>
+        </tbody>
+    </table>
 
     <a href="{{ url('/dashboard') }}" class="btn-voltar">Voltar</a>
 </div>
 @endsection
 
 <style>
-/* Estilos da tela de Visualizar Manutenção */
+/* Estilos gerais */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f1f1f1;
+    background-color: #f8f9fa;
     margin: 0;
     padding: 0;
 }
 
+/* Container principal */
 .visualizar-container {
-    width: 80%;
-    max-width: 800px;
+    width: 90%;
+    max-width: 1100px;
     margin: 50px auto;
     padding: 20px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
 h2 {
     color: #333;
+    margin-bottom: 10px;
 }
 
-.manutencao-list {
+/* Estilo da Tabela */
+.manutencao-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
     margin-top: 20px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.manutencao-item {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.manutencao-table th, .manutencao-table td {
+    padding: 12px;
     text-align: left;
-    position: relative;
 }
 
-.manutencao-item h3 {
-    margin: 0;
-    color: #007bff;
+.manutencao-table th {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
 }
 
-.manutencao-item p {
-    margin: 5px 0;
-    color: #555;
+.manutencao-table tbody tr {
+    background-color: #ffffff;
+    transition: background 0.3s;
 }
 
-/* Botão de detalhes */
+.manutencao-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.manutencao-table tbody tr:hover {
+    background-color: #e6f7ff;
+}
+
+/* Estilo para os botões */
 .btn-detalhes {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    padding: 8px 12px;
+    display: inline-block;
+    padding: 8px 15px;
     background-color: #28a745;
     color: #fff;
     text-decoration: none;
-    border-radius: 6px;
+    border-radius: 12px;
     font-size: 14px;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
+    text-align: center;
 }
 
 .btn-detalhes:hover {
     background-color: #218838;
+    transform: scale(1.05);
 }
 
 /* Botão de voltar */
@@ -105,6 +166,12 @@ h2 {
     background-color: #007bff;
     color: #fff;
     text-decoration: none;
-    border-radius: 8px;
-    transition:
+    border-radius: 12px;
+    transition: background-color 0.3s, transform 0.2s;
 }
+
+.btn-voltar:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+</style>

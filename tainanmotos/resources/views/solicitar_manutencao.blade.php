@@ -32,6 +32,9 @@
 
         <button type="submit" class="btn-submit">Solicitar Manutenção</button>
     </form>
+
+    <!-- Botão de Voltar -->
+    <a href="{{ route('dashboard') }}" class="btn-voltar">Voltar</a>
 </div>
 @endsection
 
@@ -39,7 +42,7 @@
 /* Estilização geral */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f1f1f1;
+    background-color: #f8f9fa;
     margin: 0;
     padding: 0;
 }
@@ -47,12 +50,18 @@ body {
 /* Container da página */
 .solicitar-container {
     width: 50%;
+    max-width: 500px;
     margin: 50px auto;
     background: white;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 20px;
 }
 
 /* Estilização do formulário */
@@ -69,24 +78,49 @@ label {
 
 input {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+input:focus {
+    border-color: #007bff;
 }
 
 /* Botão de envio */
 .btn-submit {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 12px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 .btn-submit:hover {
-    background-color: rgb(30, 50, 70);
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Botão de voltar */
+.btn-voltar {
+    display: block;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-voltar:hover {
+    background-color: #5a6268;
+    transform: scale(1.05);
 }
 </style>
