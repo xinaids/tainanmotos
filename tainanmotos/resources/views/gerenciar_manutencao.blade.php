@@ -5,12 +5,23 @@
     <h2>Gerenciar Manutenções</h2>
     <p>Aqui você pode gerenciar as manutenções em aberto.</p>
 
+    <div class="form-group search-container">
+        <input type="text" id="search" name="search" placeholder="Pesquisar...">
+        <select id="search-type" name="search-type">
+            <option value="modelo">Modelo</option>
+            <option value="marca">Marca</option>
+            <option value="cor">Cor</option>
+            <option value="placa">Placa</option>
+        </select>
+    </div>
+
     <table class="manutencao-table">
         <thead>
             <tr>
                 <th>Modelo</th>
                 <th>Marca</th>
                 <th>Nome do Cliente</th>
+                <th>Data de Abertura</th>
                 <th>Ação</th>
             </tr>
         </thead>
@@ -19,6 +30,7 @@
                 <td>XTZ 250 Lander</td>
                 <td>Yamaha</td>
                 <td>João Silva</td>
+                <td>15/05/2023</td>
                 <td class="btn-group">
                     <a href="#" class="btn-detalhes">Detalhes</a>
                     <a href="#" class="btn-concluir">Concluir</a>
@@ -28,6 +40,7 @@
                 <td>CB 500F</td>
                 <td>Honda</td>
                 <td>Maria Oliveira</td>
+                <td>18/05/2023</td>
                 <td class="btn-group">
                     <a href="#" class="btn-detalhes">Detalhes</a>
                     <a href="#" class="btn-concluir">Concluir</a>
@@ -37,6 +50,7 @@
                 <td>CG 160 Titan</td>
                 <td>Honda</td>
                 <td>Pedro Santos</td>
+                <td>20/05/2023</td>
                 <td class="btn-group">
                     <a href="#" class="btn-detalhes">Detalhes</a>
                     <a href="#" class="btn-concluir">Concluir</a>
@@ -46,6 +60,7 @@
                 <td>MT-03</td>
                 <td>Yamaha</td>
                 <td>Ana Souza</td>
+                <td>22/05/2023</td>
                 <td class="btn-group">
                     <a href="#" class="btn-detalhes">Detalhes</a>
                     <a href="#" class="btn-concluir">Concluir</a>
@@ -55,6 +70,7 @@
                 <td>Ninja 400</td>
                 <td>Kawasaki</td>
                 <td>Lucas Ferreira</td>
+                <td>25/05/2023</td>
                 <td class="btn-group">
                     <a href="#" class="btn-detalhes">Detalhes</a>
                     <a href="#" class="btn-concluir">Concluir</a>
@@ -64,6 +80,7 @@
                 <td>Fazer 250</td>
                 <td>Yamaha</td>
                 <td>Carla Mendes</td>
+                <td>28/05/2023</td>
                 <td class="btn-group">
                     <a href="#" class="btn-detalhes">Detalhes</a>
                     <a href="#" class="btn-concluir">Concluir</a>
@@ -88,7 +105,7 @@ body {
 /* Container principal */
 .gerenciar-container {
     width: 90%;
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 50px auto;
     padding: 20px;
     background: #ffffff;
@@ -188,5 +205,23 @@ h2 {
 .btn-voltar:hover {
     background-color: #0056b3;
     transform: scale(1.05);
+}
+
+/* Ajuste para a nova coluna */
+.manutencao-table th:nth-child(4),
+.manutencao-table td:nth-child(4) {
+    text-align: center;
+    width: 120px;
+}
+
+.search-container {
+    margin-bottom: 20px;
+}
+
+.search-container input, .search-container select {
+    padding: 8px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
 }
 </style>

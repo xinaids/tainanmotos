@@ -1,11 +1,6 @@
-@extends('layouts.app')
-
-@section('content')
 <div class="solicitar-container">
     <h2>Solicitar Manutenção</h2>
     <form action="#" method="POST">
-        @csrf
-
         <!-- Modelo da moto -->
         <div class="form-group">
             <label for="modelo">Modelo da Moto</label>
@@ -36,13 +31,18 @@
             <input type="number" id="quilometragem" name="quilometragem" required>
         </div>
 
+        <!-- Descrição -->
+        <div class="form-group">
+            <label for="descricao">Descrição</label>
+            <textarea id="descricao" name="descricao" rows="4" required></textarea>
+        </div>
+
         <button type="submit" class="btn-submit">Solicitar Manutenção</button>
     </form>
 
     <!-- Botão de Voltar -->
-    <a href="{{ route('dashboard') }}" class="btn-voltar">Voltar</a>
+    <a href="#" class="btn-voltar">Voltar</a>
 </div>
-@endsection
 
 <style>
 /* Estilização geral */
@@ -82,16 +82,24 @@ label {
     color: rgb(18, 31, 46);
 }
 
-input {
+input, textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 10px;
     outline: none;
     transition: border-color 0.3s;
+    box-sizing: border-box;
+    resize: none;
 }
 
-input:focus {
+textarea {
+    max-width: 100%;
+    min-height: 100px;
+    overflow-y: auto;
+}
+
+input:focus, textarea:focus {
     border-color: #007bff;
 }
 
