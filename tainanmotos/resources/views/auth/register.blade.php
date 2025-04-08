@@ -4,30 +4,30 @@
 <div class="register-container">
     <div class="register-box">
         <h2>Cadastro</h2>
-        <form action="#" method="POST">
+        <form id="register-form" action="#" method="POST">
             <div class="input-group">
-                <label for="name">Nome Completo:</label>
+                <label for="name">Nome Completo: <span class="required">*</span></label>
                 <input type="text" id="name" name="name" required>
             </div>
             <div class="input-group">
-                <label for="email">Email:</label>
+                <label for="email">Email: <span class="required">*</span></label>
                 <input type="email" id="email" name="email" required>
             </div>
             <div class="input-group">
                 <label for="phone">Telefone:</label>
-                <input type="tel" id="phone" name="phone" required maxlength="15">
+                <input type="tel" id="phone" name="phone" maxlength="15">
             </div>
             <div class="input-group">
-                <label for="cpf">CPF:</label>
+                <label for="cpf">CPF: <span class="required">*</span></label>
                 <input type="text" id="cpf" name="cpf" required maxlength="14">
             </div>
             <div class="input-group">
-                <label for="password">Senha:</label>
+                <label for="password">Senha: <span class="required">*</span></label>
                 <input type="password" id="password" name="password" required>
             </div>
             <div class="input-group">
                 <label for="password_confirmation">Confirmar Senha:</label>
-                <input type="password" id="password_confirmation" name="password_confirmation" required>
+                <input type="password" id="password_confirmation" name="password_confirmation">
             </div>
             <button type="submit" class="btn-register">Cadastrar</button>
         </form>
@@ -85,6 +85,11 @@ label {
     color: #333;
 }
 
+/* Asterisco vermelho */
+.required {
+    color: red;
+}
+
 /* Estilo do input */
 input {
     width: 100%;
@@ -129,35 +134,40 @@ input {
 }
 </style>
 
-
 <script>
-// Máscara para CPF
+// Máscara CPF e Telefone + validação obrigatória
 document.addEventListener("DOMContentLoaded", function () {
     const cpfInput = document.getElementById("cpf");
     const phoneInput = document.getElementById("phone");
 
     cpfInput.addEventListener("input", function () {
         let value = cpfInput.value.replace(/\D/g, "");
-
         if (value.length > 11) value = value.slice(0, 11);
-
         value = value.replace(/(\d{3})(\d)/, "$1.$2");
         value = value.replace(/(\d{3})(\d)/, "$1.$2");
         value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-
         cpfInput.value = value;
     });
 
-    // Máscara para telefone (xx) xxxxx-xxxx
     phoneInput.addEventListener("input", function () {
         let value = phoneInput.value.replace(/\D/g, "");
-
         if (value.length > 11) value = value.slice(0, 11);
-
         value = value.replace(/^(\d{2})(\d)/g, "($1) $2");
         value = value.replace(/(\d{5})(\d{1,4})$/, "$1-$2");
-
         phoneInput.value = value;
+    });
+
+    const form = document.getElementById("register-form");
+    form.addEventListener("submit", function (e) {
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const cpf = document.getElementById("cpf").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        if (!name || !email || !cpf || !password) {
+            e.preventDefault();
+            alert("Por favor, preencha todos os campos obrigatórios: Nome, Email, CPF e Senha.");
+        }
     });
 });
 </script>
