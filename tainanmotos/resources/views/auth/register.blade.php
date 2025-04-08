@@ -15,7 +15,11 @@
             </div>
             <div class="input-group">
                 <label for="phone">Telefone:</label>
-                <input type="tel" id="phone" name="phone" required>
+                <input type="tel" id="phone" name="phone" required maxlength="15">
+            </div>
+            <div class="input-group">
+                <label for="cpf">CPF:</label>
+                <input type="text" id="cpf" name="cpf" required maxlength="14">
             </div>
             <div class="input-group">
                 <label for="password">Senha:</label>
@@ -124,3 +128,36 @@ input {
     text-decoration: underline;
 }
 </style>
+
+
+<script>
+// Máscara para CPF
+document.addEventListener("DOMContentLoaded", function () {
+    const cpfInput = document.getElementById("cpf");
+    const phoneInput = document.getElementById("phone");
+
+    cpfInput.addEventListener("input", function () {
+        let value = cpfInput.value.replace(/\D/g, "");
+
+        if (value.length > 11) value = value.slice(0, 11);
+
+        value = value.replace(/(\d{3})(\d)/, "$1.$2");
+        value = value.replace(/(\d{3})(\d)/, "$1.$2");
+        value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
+        cpfInput.value = value;
+    });
+
+    // Máscara para telefone (xx) xxxxx-xxxx
+    phoneInput.addEventListener("input", function () {
+        let value = phoneInput.value.replace(/\D/g, "");
+
+        if (value.length > 11) value = value.slice(0, 11);
+
+        value = value.replace(/^(\d{2})(\d)/g, "($1) $2");
+        value = value.replace(/(\d{5})(\d{1,4})$/, "$1-$2");
+
+        phoneInput.value = value;
+    });
+});
+</script>
