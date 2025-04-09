@@ -1,6 +1,6 @@
 <header class="header">
     <div class="header-left">
-        <h1>Tainan Motos</h1>
+     <h1><a href="{{ route('dashboard') }}" class="logo-link">Tainan Motos</a></h1>
     </div>
 
     <div class="header-center">
@@ -150,6 +150,17 @@
 .dropdown-item:hover {
     background-color: #007bff;
 }
+
+.logo-link {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.logo-link:hover {
+    color: #007bff;
+}
+
 </style>
 
 <!-- Font Awesome (obrigatório no <head>) -->
