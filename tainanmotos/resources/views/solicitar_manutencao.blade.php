@@ -1,76 +1,88 @@
-<div class="solicitar-container">
+@extends('layouts.app')
+
+@section('content')
+@include('partials.header')
+
+<div class="solicitar-container fade-in">
     <h2>Solicitar Manutenção</h2>
     <form action="#" method="POST">
         <!-- Modelo da moto -->
         <div class="form-group">
-            <label for="modelo">Modelo da Moto</label>
+            <label for="modelo">Modelo da Moto <span class="required-asterisk">*</span></label>
             <input type="text" id="modelo" name="modelo" required>
         </div>
 
         <!-- Marca da moto -->
         <div class="form-group">
-            <label for="marca">Marca da Moto</label>
+            <label for="marca">Marca da Moto <span class="required-asterisk">*</span></label>
             <input type="text" id="marca" name="marca" required>
         </div>
 
         <!-- Cor da moto -->
         <div class="form-group">
-            <label for="cor">Cor da Moto</label>
+            <label for="cor">Cor da Moto <span class="required-asterisk">*</span></label>
             <input type="text" id="cor" name="cor" required>
         </div>
 
         <!-- Placa da moto -->
         <div class="form-group">
-            <label for="placa">Placa da Moto</label>
+            <label for="placa">Placa da Moto <span class="required-asterisk">*</span></label>
             <input type="text" id="placa" name="placa" required>
         </div>
 
         <!-- Quilometragem da moto -->
         <div class="form-group">
-            <label for="quilometragem">Quilometragem</label>
+            <label for="quilometragem">Quilometragem <span class="required-asterisk">*</span></label>
             <input type="number" id="quilometragem" name="quilometragem" required>
         </div>
 
         <!-- Descrição -->
         <div class="form-group">
-            <label for="descricao">Descrição</label>
+            <label for="descricao">Descrição <span class="required-asterisk">*</span></label>
             <textarea id="descricao" name="descricao" rows="4" required></textarea>
         </div>
 
-        <button type="submit" class="btn-submit">Solicitar Manutenção</button>
+        <button type="submit" class="btn-submit"><i class="fas fa-wrench"></i> Solicitar Manutenção</button>
     </form>
 
     <!-- Botão de Voltar -->
-    <a href="#" class="btn-voltar">Voltar</a>
+    <a href="{{ route('dashboard') }}" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar</a>
 </div>
+@endsection
 
 <style>
-/* Estilização geral */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f9;
     margin: 0;
     padding: 0;
 }
 
-/* Container da página */
 .solicitar-container {
-    width: 50%;
-    max-width: 500px;
-    margin: 50px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 25px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     text-align: center;
 }
 
 h2 {
     color: #333;
     margin-bottom: 20px;
+    font-size: 24px;
 }
 
-/* Estilização do formulário */
+.fade-in {
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .form-group {
     margin-bottom: 15px;
     text-align: left;
@@ -79,12 +91,18 @@ h2 {
 label {
     display: block;
     font-weight: bold;
-    color: rgb(18, 31, 46);
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.required-asterisk {
+    color: red;
 }
 
 input, textarea {
     width: 100%;
     padding: 10px;
+    font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 10px;
     outline: none;
@@ -94,47 +112,53 @@ input, textarea {
 }
 
 textarea {
-    max-width: 100%;
     min-height: 100px;
     overflow-y: auto;
 }
 
 input:focus, textarea:focus {
-    border-color: #007bff;
+    border-color: #1976d2;
+    box-shadow: 0 0 5px rgba(25, 118, 210, 0.3);
 }
 
-/* Botão de envio */
 .btn-submit {
     width: 100%;
     padding: 12px;
-    background-color: #007bff;
+    background-color: #1976d2;
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 16px;
+    font-weight: 600;
     transition: background-color 0.3s, transform 0.2s;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
 }
 
 .btn-submit:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
+    background-color: #115293;
+    transform: translateY(-2px);
 }
 
-/* Botão de voltar */
 .btn-voltar {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     margin-top: 15px;
-    padding: 10px;
+    padding: 10px 20px;
     background-color: #6c757d;
     color: white;
     text-decoration: none;
-    border-radius: 12px;
+    border-radius: 10px;
+    font-weight: 600;
     transition: background-color 0.3s, transform 0.2s;
 }
 
 .btn-voltar:hover {
     background-color: #5a6268;
-    transform: scale(1.05);
+    transform: translateY(-2px);
 }
 </style>

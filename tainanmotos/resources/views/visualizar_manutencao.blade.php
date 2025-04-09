@@ -1,200 +1,218 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="visualizar-container">
-    <h2>Visualizar Manutenção</h2>
-    <p>Aqui você pode ver o status das suas manutenções registradas.</p>
+@include('partials.header')
 
-    <!-- Campo de pesquisa e combobox -->
+<div class="gerenciar-container fade-in">
+    <h2>Visualizar Manutenções</h2>
+    <p>Consulte abaixo as manutenções registradas no sistema.</p>
+
     <div class="form-group search-container">
-        <input type="text" id="search" name="search" placeholder="Pesquisar...">
-        <select id="search-type" name="search-type">
-            <option value="modelo">Modelo</option>
-            <option value="marca">Marca</option>
-            <option value="cor">Cor</option>
-            <option value="placa">Placa</option>
-        </select>
-    </div>
+    <input type="text" id="search" name="search" placeholder="Buscar...">
+    <select id="search-type" name="search-type">
+        <option value="modelo">Modelo</option>
+        <option value="marca">Marca</option>
+        <option value="nome">Nome do Cliente</option>
+    </select>
+</div>
 
     <table class="manutencao-table">
         <thead>
             <tr>
                 <th>Modelo</th>
                 <th>Marca</th>
-                <th>Cor</th>
-                <th>Placa</th>
-                <th>Dono</th>
-                <th>Status</th>
-                <th>Ação</th>
+                <th>Nome do Cliente</th>
+                <th>Data de Abertura</th>
+                <th>Detalhes</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>XTZ 250 Lander</td>
                 <td>Yamaha</td>
-                <td>Azul</td>
-                <td>ABC-1234</td>
                 <td>João Silva</td>
-                <td>Em andamento</td>
-                <td><a href="#" class="btn-detalhes">Detalhes</a></td>
+                <td>15/05/2023</td>
+                <td>
+                    <a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a>
+                </td>
             </tr>
             <tr>
                 <td>CB 500F</td>
                 <td>Honda</td>
-                <td>Vermelho</td>
-                <td>XYZ-5678</td>
                 <td>Maria Oliveira</td>
-                <td>Concluído</td>
-                <td><a href="#" class="btn-detalhes">Detalhes</a></td>
+                <td>18/05/2023</td>
+                <td>
+                    <a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a>
+                </td>
             </tr>
             <tr>
                 <td>CG 160 Titan</td>
                 <td>Honda</td>
-                <td>Preto</td>
-                <td>DEF-9101</td>
                 <td>Pedro Santos</td>
-                <td>Pendente</td>
-                <td><a href="#" class="btn-detalhes">Detalhes</a></td>
+                <td>20/05/2023</td>
+                <td>
+                    <a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a>
+                </td>
             </tr>
             <tr>
                 <td>MT-03</td>
                 <td>Yamaha</td>
-                <td>Branco</td>
-                <td>GHI-1122</td>
                 <td>Ana Souza</td>
-                <td>Em andamento</td>
-                <td><a href="#" class="btn-detalhes">Detalhes</a></td>
+                <td>22/05/2023</td>
+                <td>
+                    <a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a>
+                </td>
             </tr>
             <tr>
                 <td>Ninja 400</td>
                 <td>Kawasaki</td>
-                <td>Verde</td>
-                <td>JKL-3344</td>
                 <td>Lucas Ferreira</td>
-                <td>Concluído</td>
-                <td><a href="#" class="btn-detalhes">Detalhes</a></td>
+                <td>25/05/2023</td>
+                <td>
+                    <a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a>
+                </td>
             </tr>
             <tr>
                 <td>Fazer 250</td>
                 <td>Yamaha</td>
-                <td>Vermelho</td>
-                <td>MNO-5566</td>
                 <td>Carla Mendes</td>
-                <td>Pendente</td>
-                <td><a href="#" class="btn-detalhes">Detalhes</a></td>
+                <td>28/05/2023</td>
+                <td>
+                    <a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a>
+                </td>
             </tr>
         </tbody>
     </table>
 
-    <a href="{{ url('/dashboard') }}" class="btn-voltar">Voltar</a>
+    <a href="{{ route('dashboard') }}" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar ao Painel</a>
 </div>
 @endsection
 
 <style>
-/* Estilos gerais */
+/* Mantém todo o estilo anterior, mas remove o botão de concluir */
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f9;
     margin: 0;
     padding: 0;
 }
 
-/* Container principal */
-.visualizar-container {
-    width: 90%;
-    max-width: 1100px;
-    margin: 50px auto;
+.gerenciar-container {
+    max-width: 1000px;
+    margin: 30px auto;
     padding: 20px;
-    background: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-h2 {
-    color: #333;
-    margin-bottom: 10px;
-}
-
-/* Estilo da Tabela */
-.manutencao-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin-top: 20px;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.manutencao-table th, .manutencao-table td {
-    padding: 12px;
-    text-align: left;
-}
-
-.manutencao-table th {
-    background-color: #007bff;
-    color: white;
-    font-weight: bold;
-}
-
-.manutencao-table tbody tr {
-    background-color: #ffffff;
-    transition: background 0.3s;
-}
-
-.manutencao-table tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
-.manutencao-table tbody tr:hover {
-    background-color: #e6f7ff;
-}
-
-/* Estilo para os botões */
-.btn-detalhes {
-    display: inline-block;
-    padding: 8px 15px;
-    background-color: #28a745;
-    color: #fff;
-    text-decoration: none;
+    background: #fff;
     border-radius: 12px;
-    font-size: 14px;
-    transition: background-color 0.3s, transform 0.2s;
-    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.btn-detalhes:hover {
-    background-color: #218838;
-    transform: scale(1.05);
+.gerenciar-container h2 {
+    font-size: 26px;
+    margin-bottom: 5px;
 }
 
-/* Botão de voltar */
-.btn-voltar {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 12px;
-    transition: background-color 0.3s, transform 0.2s;
+.gerenciar-container p {
+    font-size: 15px;
+    color: #555;
 }
 
-.btn-voltar:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
+.fade-in {
+    animation: fadeIn 0.6s ease-in-out;
 }
 
-/* Estilo do campo de pesquisa e combobox */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .search-container {
-    margin-bottom: 20px;
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
 }
 
 .search-container input, .search-container select {
-    padding: 8px;
-    margin-right: 10px;
-    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 6px;
     border: 1px solid #ccc;
+    transition: all 0.3s ease;
+}
+
+.search-container input:focus, .search-container select:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 5px rgba(25, 118, 210, 0.3);
+}
+
+.manutencao-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.manutencao-table th, .manutencao-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+    font-size: 14px;
+}
+
+.manutencao-table th {
+    background-color: #f0f2f5;
+    font-weight: bold;
+}
+
+.manutencao-table tr {
+    transition: background-color 0.3s ease;
+}
+
+.manutencao-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Botões */
+.btn-visualizar,
+.btn-voltar {
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-visualizar {
+    background-color: #ffe633;
+    color: #333;
+    border: none;
+}
+
+.btn-visualizar:hover {
+    background-color: #ffdd00;
+    transform: translateY(-2px);
+}
+
+.btn-voltar {
+    margin-top: 20px;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+}
+
+.btn-voltar:hover {
+    background-color: #1976d2;
+    transform: translateY(-2px);
+}
+
+.btn-visualizar i,
+.btn-voltar i {
+    margin-right: 5px;
 }
 </style>

@@ -1,17 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="gerenciar-container">
+@include('partials.header')
+
+<div class="gerenciar-container fade-in">
     <h2>Gerenciar Manutenções</h2>
-    <p>Aqui você pode gerenciar as manutenções em aberto.</p>
+    <p>Acompanhe e administre as manutenções em aberto no sistema.</p>
 
     <div class="form-group search-container">
-        <input type="text" id="search" name="search" placeholder="Pesquisar...">
+        <input type="text" id="search" name="search" placeholder="Buscar por modelo, marca ou nome do cliente...">
         <select id="search-type" name="search-type">
             <option value="modelo">Modelo</option>
             <option value="marca">Marca</option>
-            <option value="cor">Cor</option>
-            <option value="placa">Placa</option>
+            <option value="nome">Nome do Cliente</option>
         </select>
     </div>
 
@@ -22,6 +23,7 @@
                 <th>Marca</th>
                 <th>Nome do Cliente</th>
                 <th>Data de Abertura</th>
+                <th>Detalhes</th>
                 <th>Ação</th>
             </tr>
         </thead>
@@ -31,197 +33,191 @@
                 <td>Yamaha</td>
                 <td>João Silva</td>
                 <td>15/05/2023</td>
-                <td class="btn-group">
-                    <a href="#" class="btn-detalhes">Detalhes</a>
-                    <a href="#" class="btn-concluir">Concluir</a>
-                </td>
+                <td><a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a></td>
+                <td><a href="#" class="btn-concluir"><i class="fas fa-check"></i> Concluir</a></td>
             </tr>
             <tr>
                 <td>CB 500F</td>
                 <td>Honda</td>
                 <td>Maria Oliveira</td>
                 <td>18/05/2023</td>
-                <td class="btn-group">
-                    <a href="#" class="btn-detalhes">Detalhes</a>
-                    <a href="#" class="btn-concluir">Concluir</a>
-                </td>
+                <td><a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a></td>
+                <td><a href="#" class="btn-concluir"><i class="fas fa-check"></i> Concluir</a></td>
             </tr>
             <tr>
                 <td>CG 160 Titan</td>
                 <td>Honda</td>
                 <td>Pedro Santos</td>
                 <td>20/05/2023</td>
-                <td class="btn-group">
-                    <a href="#" class="btn-detalhes">Detalhes</a>
-                    <a href="#" class="btn-concluir">Concluir</a>
-                </td>
+                <td><a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a></td>
+                <td><a href="#" class="btn-concluir"><i class="fas fa-check"></i> Concluir</a></td>
             </tr>
             <tr>
                 <td>MT-03</td>
                 <td>Yamaha</td>
                 <td>Ana Souza</td>
                 <td>22/05/2023</td>
-                <td class="btn-group">
-                    <a href="#" class="btn-detalhes">Detalhes</a>
-                    <a href="#" class="btn-concluir">Concluir</a>
-                </td>
+                <td><a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a></td>
+                <td><a href="#" class="btn-concluir"><i class="fas fa-check"></i> Concluir</a></td>
             </tr>
             <tr>
                 <td>Ninja 400</td>
                 <td>Kawasaki</td>
                 <td>Lucas Ferreira</td>
                 <td>25/05/2023</td>
-                <td class="btn-group">
-                    <a href="#" class="btn-detalhes">Detalhes</a>
-                    <a href="#" class="btn-concluir">Concluir</a>
-                </td>
+                <td><a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a></td>
+                <td><a href="#" class="btn-concluir"><i class="fas fa-check"></i> Concluir</a></td>
             </tr>
             <tr>
                 <td>Fazer 250</td>
                 <td>Yamaha</td>
                 <td>Carla Mendes</td>
                 <td>28/05/2023</td>
-                <td class="btn-group">
-                    <a href="#" class="btn-detalhes">Detalhes</a>
-                    <a href="#" class="btn-concluir">Concluir</a>
-                </td>
+                <td><a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a></td>
+                <td><a href="#" class="btn-concluir"><i class="fas fa-check"></i> Concluir</a></td>
             </tr>
         </tbody>
     </table>
 
-    <a href="{{ route('dashboard') }}" class="btn-voltar">Voltar</a>
+    <a href="{{ route('dashboard') }}" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar ao Painel</a>
 </div>
 @endsection
 
 <style>
-/* Estilos gerais */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f9;
     margin: 0;
     padding: 0;
 }
 
-/* Container principal */
 .gerenciar-container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 50px auto;
+    max-width: 1000px;
+    margin: 30px auto;
     padding: 20px;
-    background: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-h2 {
-    color: #333;
-    margin-bottom: 10px;
-}
-
-/* Estilo da tabela */
-.manutencao-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin-top: 20px;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.manutencao-table th, .manutencao-table td {
-    padding: 12px;
-    text-align: left;
-}
-
-.manutencao-table th {
-    background-color: #007bff;
-    color: white;
-    font-weight: bold;
-}
-
-.manutencao-table tbody tr {
-    background-color: #ffffff;
-    transition: background 0.3s;
-}
-
-.manutencao-table tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
-.manutencao-table tbody tr:hover {
-    background-color: #e6f7ff;
-}
-
-/* Estilo dos botões */
-.btn-group {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.btn-detalhes, .btn-concluir {
-    display: inline-block;
-    padding: 8px 15px;
-    color: #fff;
-    text-decoration: none;
+    background: #fff;
     border-radius: 12px;
-    font-size: 14px;
-    transition: background-color 0.3s, transform 0.2s;
-    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.btn-detalhes {
-    background-color: #28a745;
+.gerenciar-container h2 {
+    font-size: 26px;
+    margin-bottom: 5px;
 }
 
-.btn-detalhes:hover {
-    background-color: #218838;
-    transform: scale(1.05);
+.gerenciar-container p {
+    font-size: 15px;
+    color: #555;
 }
 
-.btn-concluir {
-    background-color: #dc3545;
+.fade-in {
+    animation: fadeIn 0.6s ease-in-out;
 }
 
-.btn-concluir:hover {
-    background-color: #c82333;
-    transform: scale(1.05);
-}
-
-/* Botão de voltar */
-.btn-voltar {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 12px;
-    transition: background-color 0.3s, transform 0.2s;
-}
-
-.btn-voltar:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
-
-/* Ajuste para a nova coluna */
-.manutencao-table th:nth-child(4),
-.manutencao-table td:nth-child(4) {
-    text-align: center;
-    width: 120px;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .search-container {
-    margin-bottom: 20px;
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
 }
 
 .search-container input, .search-container select {
-    padding: 8px;
-    margin-right: 10px;
-    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 6px;
     border: 1px solid #ccc;
+    transition: all 0.3s ease;
+}
+
+.search-container input:focus, .search-container select:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 5px rgba(25, 118, 210, 0.3);
+}
+
+.manutencao-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.manutencao-table th, .manutencao-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+    font-size: 14px;
+}
+
+.manutencao-table th {
+    background-color: #f0f2f5;
+    font-weight: bold;
+}
+
+.manutencao-table tr {
+    transition: background-color 0.3s ease;
+}
+
+.manutencao-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+.btn-visualizar,
+.btn-voltar,
+.btn-concluir {
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-visualizar {
+    background-color: #ffe633;
+    color: #333;
+    border: none;
+}
+
+.btn-visualizar:hover {
+    background-color: #ffdd00;
+    transform: translateY(-2px);
+}
+
+.btn-concluir {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+}
+
+.btn-concluir:hover {
+    background-color: #43a047;
+    transform: translateY(-2px);
+}
+
+.btn-voltar {
+    margin-top: 20px;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+}
+
+.btn-voltar:hover {
+    background-color: #1976d2;
+    transform: translateY(-2px);
+}
+
+.btn-visualizar i,
+.btn-voltar i,
+.btn-concluir i {
+    margin-right: 5px;
 }
 </style>
