@@ -21,7 +21,11 @@
                     <i class="fas fa-plus"></i> Cadastrar
                 </div>
                 <div class="dropdown-menu">
-                    <a href="/cadastrar-pecas" class="dropdown-item">Peças</a>
+                <a href="/cadastrar-peca" class="dropdown-item">Peças</a>
+                <a href="/cadastrar-modelo" class="dropdown-item">Modelo</a>
+                <a href="/cadastrar-fabricante" class="dropdown-item">Fabricante</a>
+                <a href="/cadastrar-mao-de-obra" class="dropdown-item">Mão de Obra</a>
+
                 </div>
             </div>
         </nav>
@@ -29,10 +33,21 @@
 
     <div class="header-right">
         <span class="user-name">Usuário</span>
-        <a href="#" class="settings-icon"><i class="fas fa-cog"></i></a>
+            <a href="#" class="settings-icon" onclick="abrirModalConfiguracoes()">
+                <i class="fas fa-cog"></i>
+        </a>
         <button class="logout-btn">Sair</button>
     </div>
 </header>
+
+<div id="modal-config" class="modal-config">
+    <div class="modal-content">
+        <span class="close-btn" onclick="fecharModalConfiguracoes()">&times;</span>
+        <h2>Configurações</h2>
+        <p>Aqui você pode personalizar suas preferências, alterar senha, etc.</p>
+        <!-- Adicione aqui os itens reais da tela de configurações -->
+    </div>
+</div>
 
 <style>
 /* Header principal */
@@ -161,7 +176,57 @@
     color: #007bff;
 }
 
+.modal-config {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 30px;
+    border-radius: 10px;
+    width: 500px;
+    position: relative;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+.close-btn {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 24px;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
 </style>
+
+<script>
+function abrirModalConfiguracoes() {
+    document.getElementById("modal-config").style.display = "block";
+}
+
+function fecharModalConfiguracoes() {
+    document.getElementById("modal-config").style.display = "none";
+}
+</script>
+
 
 <!-- Font Awesome (obrigatório no <head>) -->
 <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> -->
