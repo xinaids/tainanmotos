@@ -21,7 +21,7 @@
                     <i class="fas fa-plus"></i> Cadastrar
                 </div>
                 <div class="dropdown-menu">
-                <a href="/cadastrar-peca" class="dropdown-item">Peças</a>
+                <a href="/cadastrar-peca" class="dropdown-item">Peça</a>
                 <a href="/cadastrar-modelo" class="dropdown-item">Modelo</a>
                 <a href="/cadastrar-fabricante" class="dropdown-item">Fabricante</a>
                 <a href="/cadastrar-mao-de-obra" class="dropdown-item">Mão de Obra</a>

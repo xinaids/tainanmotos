@@ -4,50 +4,21 @@
 @include('partials.header')
 
 <div class="solicitar-container fade-in">
-    <h2>Solicitar Manutenção</h2>
+    <h2>Cadastrar Mão de Obra</h2>
     <form action="#" method="POST">
-        <!-- Modelo da moto -->
+        <!-- Nome da mão de obra -->
         <div class="form-group">
-            <label for="modelo">Modelo da Moto <span class="required-asterisk">*</span></label>
-            <input type="text" id="modelo" name="modelo" required>
+            <label for="nome_mao_obra">Nome da Mão de Obra <span class="required-asterisk">*</span></label>
+            <input type="text" id="nome_mao_obra" name="nome_mao_obra" required>
         </div>
 
-        <!-- Marca da moto -->
+        <!-- Preço da mão de obra -->
         <div class="form-group">
-            <label for="marca">Marca da Moto <span class="required-asterisk">*</span></label>
-            <input type="text" id="marca" name="marca" required>
+            <label for="preco_mao_obra">Preço (R$) <span class="required-asterisk">*</span></label>
+            <input type="number" step="0.01" id="preco_mao_obra" name="preco_mao_obra" required>
         </div>
 
-        <!-- Cor da moto -->
-        <div class="form-group">
-            <label for="cor">Cor da Moto <span class="required-asterisk">*</span></label>
-            <input type="text" id="cor" name="cor" required>
-        </div>
-
-        <!-- Placa da moto -->
-        <div class="form-group">
-            <label for="placa">Placa da Moto <span class="required-asterisk">*</span></label>
-            <input type="text" id="placa" name="placa" required>
-        </div>
-
-        <!-- Quilometragem da moto -->
-        <div class="form-group">
-            <label for="quilometragem">Quilometragem <span class="required-asterisk">*</span></label>
-            <input type="number" id="quilometragem" name="quilometragem" required>
-        </div>
-
-        <div class="form-group">
-            <label for="quilometragem">Ano <span class="required-asterisk">*</span></label>
-            <input type="number" id="quilometragem" name="quilometragem" required>
-        </div>
-
-        <!-- Descrição -->
-        <div class="form-group">
-            <label for="descricao">Descrição <span class="required-asterisk">*</span></label>
-            <textarea id="descricao" name="descricao" rows="4" required></textarea>
-        </div>
-
-        <button type="submit" class="btn-submit"><i class="fas fa-wrench"></i> Solicitar Manutenção</button>
+        <button type="submit" class="btn-submit"><i class="fas fa-plus-circle"></i> Cadastrar Mão de Obra</button>
     </form>
 
     <!-- Botão de Voltar -->
@@ -104,7 +75,7 @@ label {
     color: red;
 }
 
-input, textarea {
+input {
     width: 100%;
     padding: 10px;
     font-size: 14px;
@@ -113,15 +84,9 @@ input, textarea {
     outline: none;
     transition: border-color 0.3s;
     box-sizing: border-box;
-    resize: none;
 }
 
-textarea {
-    min-height: 100px;
-    overflow-y: auto;
-}
-
-input:focus, textarea:focus {
+input:focus {
     border-color: #1976d2;
     box-shadow: 0 0 5px rgba(25, 118, 210, 0.3);
 }

@@ -36,3 +36,20 @@ Route::get('/visualizar-manutencao', function () {
 Route::get('/gerenciar-manutencao', function () {
     return view('gerenciar_manutencao');
 })->name('gerenciar.manutencao');
+
+
+Route::get('/cadastrar-peca', function () {
+    return view('cadastrar-peca'); 
+})->name('cadastrar-peca');
+
+Route::get('/cadastrar-modelo', function () {
+    return view('cadastrar-modelo'); 
+})->name('cadastrar-modelo');
+
+Route::get('/cadastrar-fabricante', function () {
+    return view('cadastrar-fabricante'); 
+})->name('cadastrar-fabricante');
+
+Route::get('/cadastrar-mao-de-obra', function () {
+    return view('cadastrar-mao-de-obra'); 
+})->name('cadastrar-mao-de-obra');

@@ -14,7 +14,7 @@
                 <input type="email" id="email" name="email" required>
             </div>
             <div class="input-group">
-                <label for="phone">Telefone:</label>
+                <label for="phone">Telefone: <span class="required">*</span></label>
                 <input type="tel" id="phone" name="phone" maxlength="15">
             </div>
             <div class="input-group">
@@ -26,7 +26,7 @@
                 <input type="password" id="password" name="password" required>
             </div>
             <div class="input-group">
-                <label for="password_confirmation">Confirmar Senha:</label>
+                <label for="password_confirmation">Confirmar Senha: <span class="required">*</span></label>
                 <input type="password" id="password_confirmation" name="password_confirmation">
             </div>
             <button type="submit" class="btn-register">Cadastrar</button>
