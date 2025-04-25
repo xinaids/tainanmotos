@@ -18,7 +18,7 @@
             <!-- Dropdown agrupado inteiro para evitar sumir -->
             <div class="dropdown">
                 <div class="nav-link dropdown-toggle">
-                    <i class="fas fa-plus"></i> Cadastrar
+                    <i class="fas fa-plus"></i> Cadastros
                 </div>
                 <div class="dropdown-menu">
                 <a href="/cadastrar-peca" class="dropdown-item">Peça</a>
