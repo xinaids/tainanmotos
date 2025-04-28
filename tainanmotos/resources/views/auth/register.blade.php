@@ -4,7 +4,8 @@
 <div class="register-container">
     <div class="register-box">
         <h2>Cadastro</h2>
-        <form id="register-form" action="#" method="POST">
+        <form id="register-form" action="{{ route('register') }}" method="POST">
+        @csrf
             <div class="input-group">
                 <label for="name">Nome Completo: <span class="required">*</span></label>
                 <input type="text" id="name" name="name" required>
