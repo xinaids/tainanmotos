@@ -6,10 +6,18 @@
 <div class="solicitar-container fade-in">
     <h2>Cadastrar Modelo</h2>
     <form action="#" method="POST">
+        @csrf
         <!-- Fabricante -->
         <div class="form-group">
             <label for="fabricante_id">Fabricante <span class="required-asterisk">*</span></label>
-            
+            <select id="fabricante_id" name="fabricante_id" required>
+                <option value="">Selecione um fabricante</option>
+                <option value="honda">Honda</option>
+                <option value="suzuki">Suzuki</option>
+                <option value="yahama">Yahama</option>
+                <option value="royal_enfield">Royal Enfield</option>
+                <option value="harley_davidson">Harley Davidson</option>
+            </select>
         </div>
 
         <!-- Nome do modelo -->
