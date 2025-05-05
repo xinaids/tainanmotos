@@ -34,7 +34,6 @@
                 <td>15/05/2023</td>
                 <td><a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a></td>
             </tr>
-            
         </tbody>
     </table>
 
@@ -48,78 +47,82 @@
         <h3>Detalhes da Manutenção</h3>
 
         <form class="modal-form">
-    <div class="form-row">
-        <div class="form-group">
-            <label for="data_abertura">Data Abertura</label>
-            <input type="date" id="data_abertura" name="data_abertura">
-        </div>
-        <div class="form-group">
-            <label for="data_fechamento">Data Fechamento</label>
-            <input type="date" id="data_fechamento" name="data_fechamento">
-        </div>
-        <div class="form-group">
-            <label for="situacao">Situação</label>
-            <select id="situacao" name="situacao">
-                <option value="Pendente">Pendente</option>
-                <option value="Em andamento">Em andamento</option>
-                <option value="Concluído">Concluído</option>
-            </select>
-        </div>
-    </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="data_abertura">Data Abertura</label>
+                    <input type="date" id="data_abertura" name="data_abertura">
+                </div>
+                <div class="form-group">
+                    <label for="data_fechamento">Data Fechamento</label>
+                    <input type="date" id="data_fechamento" name="data_fechamento">
+                </div>
+                <div class="form-group">
+                    <label for="situacao">Situação</label>
+                    <select id="situacao" name="situacao">
+                        <option value="Pendente">Pendente</option>
+                        <option value="Em andamento">Em andamento</option>
+                        <option value="Concluído">Concluído</option>
+                    </select>
+                </div>
+            </div>
 
-    <div class="form-row">
-        <div class="form-group">
-            <label for="fabricante_moto">Fabricante</label>
-            <input type="text" id="fabricante_moto" name="fabricante_moto">
-        </div>
-        <div class="form-group">
-            <label for="modelo_moto">Modelo</label>
-            <input type="text" id="modelo_moto" name="modelo_moto">
-        </div>
-        <div class="form-group">
-            <label for="placa_moto">Placa</label>
-            <input type="text" id="placa_moto" name="placa_moto">
-        </div>
-        <div class="form-group">
-            <label for="ano_moto">Ano</label>
-            <input type="text" id="ano_moto" name="ano_moto">
-        </div>
-        <div class="form-group">
-            <label for="quilometragem">Quilometragem</label>
-            <input type="text" id="quilometragem" name="quilometragem">
-        </div>
-    </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="fabricante_moto">Fabricante</label>
+                    <input type="text" id="fabricante_moto" name="fabricante_moto">
+                </div>
+                <div class="form-group">
+                    <label for="modelo_moto">Modelo</label>
+                    <input type="text" id="modelo_moto" name="modelo_moto">
+                </div>
+                <div class="form-group">
+                    <label for="placa_moto">Placa</label>
+                    <input type="text" id="placa_moto" name="placa_moto">
+                </div>
+                <div class="form-group">
+                    <label for="ano_moto">Ano</label>
+                    <input type="text" id="ano_moto" name="ano_moto">
+                </div>
+                <div class="form-group">
+                    <label for="quilometragem">Quilometragem</label>
+                    <input type="text" id="quilometragem" name="quilometragem">
+                </div>
+            </div>
 
-    <div class="form-row">
-        <div class="form-group">
-            <label for="valor">Valor</label>
-            <input type="text" id="valor" name="valor">
-        </div>
-        <div class="form-group">
-            <label for="mao_obra">Atribuir Mão de Obra</label>
-            <select id="mao_obra" name="mao_obra">
-                <option value="Troca de óleo">Troca de óleo</option>
-                <option value="Troca de pneu">Troca de pneu</option>
-                <option value="Troca de relação">Troca de relação</option>
-            </select>
-        </div>
-    </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="valor">Valor</label>
+                    <input type="text" id="valor" name="valor">
+                </div>
+                <div class="form-group">
+                    <label for="mao_obra">Atribuir Mão de Obra</label>
+                    <select id="mao_obra" name="mao_obra">
+                        <option value="Troca de óleo">Troca de óleo</option>
+                        <option value="Troca de pneu">Troca de pneu</option>
+                        <option value="Troca de relação">Troca de relação</option>
+                    </select>
+                </div>
+            </div>
 
-    <div class="form-row">
-        <div class="form-group" style="flex: 1;">
-            <label for="descricao">Descrição</label>
-            <textarea id="descricao" name="descricao" rows="4"></textarea>
-        </div>
-    </div>
-</form>
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label for="descricao">Descrição</label>
+                    <textarea id="descricao" name="descricao" rows="4"></textarea>
+                </div>
+            </div>
 
+            <div class="form-row" style="justify-content: flex-end;">
+                <button type="submit" class="btn-enviar">
+                    <i class="fas fa-paper-plane"></i> Enviar Manutenção
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
     function abrirModal(modelo, marca, dataAbertura) {
         document.getElementById("modalDetalhes").style.display = "flex";
-
         document.getElementById("modelo_moto").value = modelo;
         document.getElementById("fabricante_moto").value = marca;
         document.getElementById("data_abertura").value = dataAbertura;
@@ -132,16 +135,13 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         const visualizarBtns = document.querySelectorAll('.btn-visualizar');
-
         visualizarBtns.forEach(btn => {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
-
                 const row = this.closest('tr');
                 const modelo = row.dataset.modelo;
                 const marca = row.dataset.marca;
                 const dataAbertura = row.dataset.data_abertura;
-
                 abrirModal(modelo, marca, dataAbertura);
             });
         });
@@ -400,6 +400,26 @@ body {
 
 .btn-plus:hover {
     background-color: #115293;
+}
+
+.btn-enviar {
+    padding: 12px 20px;
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-enviar:hover {
+    background-color: #115293;
+    transform: translateY(-2px);
 }
 
 </style>
