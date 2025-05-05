@@ -9,7 +9,7 @@
 
     <div class="form-group search-container">
         <input type="text" id="search" name="search" placeholder="Buscar...">
-        <select id="search-type" name="search-type">
+        <select id="search-type" name="search-type" style="appearance: none; background-image: none;">
             <option value="modelo">Modelo</option>
             <option value="marca">Marca</option>
             <option value="nome">Nome do Cliente</option>
@@ -32,7 +32,10 @@
                 <td>Yamaha</td>
                 <td>João Silva</td>
                 <td>15/05/2023</td>
-                <td><a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a></td>
+                <td>
+                    <a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a>
+                    <a href="#" class="btn-historico"><i class="fas fa-history"></i> Histórico</a>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -45,12 +48,11 @@
     <div class="modal-content">
         <span class="close-modal" onclick="fecharModal()">&times;</span>
         <h3>Detalhes da Manutenção</h3>
-
         <form class="modal-form">
             <div class="form-row">
                 <div class="form-group">
                     <label for="data_abertura">Data Abertura</label>
-                    <input type="date" id="data_abertura" name="data_abertura">
+                    <input type="date" id="data_abertura" name="data_abertura" value="2023-05-15">
                 </div>
                 <div class="form-group">
                     <label for="data_fechamento">Data Fechamento</label>
@@ -59,40 +61,38 @@
                 <div class="form-group">
                     <label for="situacao">Situação</label>
                     <select id="situacao" name="situacao">
-                        <option value="Pendente">Pendente</option>
+                        <option value="Pendente" selected>Pendente</option>
                         <option value="Em andamento">Em andamento</option>
                         <option value="Concluído">Concluído</option>
                     </select>
                 </div>
             </div>
-
             <div class="form-row">
                 <div class="form-group">
                     <label for="fabricante_moto">Fabricante</label>
-                    <input type="text" id="fabricante_moto" name="fabricante_moto">
+                    <input type="text" id="fabricante_moto" name="fabricante_moto" value="Yamaha">
                 </div>
                 <div class="form-group">
                     <label for="modelo_moto">Modelo</label>
-                    <input type="text" id="modelo_moto" name="modelo_moto">
+                    <input type="text" id="modelo_moto" name="modelo_moto" value="XTZ 250 Lander">
                 </div>
                 <div class="form-group">
                     <label for="placa_moto">Placa</label>
-                    <input type="text" id="placa_moto" name="placa_moto">
+                    <input type="text" id="placa_moto" name="placa_moto" value="IWG-2171">
                 </div>
                 <div class="form-group">
                     <label for="ano_moto">Ano</label>
-                    <input type="text" id="ano_moto" name="ano_moto">
+                    <input type="text" id="ano_moto" name="ano_moto" value="2015">
                 </div>
                 <div class="form-group">
                     <label for="quilometragem">Quilometragem</label>
-                    <input type="text" id="quilometragem" name="quilometragem">
+                    <input type="text" id="quilometragem" name="quilometragem" value="80834">
                 </div>
             </div>
-
             <div class="form-row">
                 <div class="form-group">
                     <label for="valor">Valor</label>
-                    <input type="text" id="valor" name="valor">
+                    <input type="text" id="valor" name="valor" value="R$ 0">
                 </div>
                 <div class="form-group">
                     <label for="mao_obra">Atribuir Mão de Obra</label>
@@ -101,22 +101,35 @@
                         <option value="Troca de pneu">Troca de pneu</option>
                         <option value="Troca de relação">Troca de relação</option>
                     </select>
+                    <div style="margin-top: 8px; display: flex; gap: 8px;">
+                        <button type="button" class="btn-plus">Adicionar</button>
+                        <button type="button" class="btn-plus" style="background-color: #dc3545;">Remover</button>
+                    </div>
                 </div>
             </div>
-
             <div class="form-row">
                 <div class="form-group" style="flex: 1;">
                     <label for="descricao">Descrição</label>
                     <textarea id="descricao" name="descricao" rows="4"></textarea>
                 </div>
             </div>
-
             <div class="form-row" style="justify-content: flex-end;">
                 <button type="submit" class="btn-enviar">
                     <i class="fas fa-paper-plane"></i> Enviar Manutenção
                 </button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Modal Histórico -->
+<div id="modalHistorico" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <span class="close-modal" onclick="fecharModalHistorico()">&times;</span>
+        <h3>Histórico de Descrições</h3>
+        <div id="historicoDescricao" style="max-height: 300px; overflow-y: auto; padding: 10px; background: #f9f9f9; border: 1px solid #ccc; border-radius: 8px;">
+            <ul id="listaHistorico"></ul>
+        </div>
     </div>
 </div>
 
@@ -133,6 +146,28 @@
         document.getElementById("modalDetalhes").style.display = "none";
     }
 
+    function abrirModalHistorico() {
+        document.getElementById("modalHistorico").style.display = "flex";
+
+        const historico = [
+            "15/05/2023 - Verificação de sistema de freio.",
+            "16/05/2023 - Troca de pastilhas realizada.",
+            "17/05/2023 - Cliente informado sobre conclusão."
+        ];
+
+        const lista = document.getElementById("listaHistorico");
+        lista.innerHTML = "";
+        historico.forEach(item => {
+            const li = document.createElement("li");
+            li.textContent = item;
+            lista.appendChild(li);
+        });
+    }
+
+    function fecharModalHistorico() {
+        document.getElementById("modalHistorico").style.display = "none";
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const visualizarBtns = document.querySelectorAll('.btn-visualizar');
         visualizarBtns.forEach(btn => {
@@ -145,12 +180,22 @@
                 abrirModal(modelo, marca, dataAbertura);
             });
         });
+
+        const historicoBtns = document.querySelectorAll('.btn-historico');
+        historicoBtns.forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                abrirModalHistorico();
+            });
+        });
     });
 </script>
 @endsection
 
+
+
+
 <style>
-/* --- Estilo geral do sistema --- */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f4f6f9;
@@ -360,8 +405,8 @@ body {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
+    /* background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E");
+    */ background-repeat: no-repeat;
     background-position: right 10px center;
     background-size: 16px 16px;
     transition: border-color 0.3s;
@@ -419,6 +464,25 @@ body {
 
 .btn-enviar:hover {
     background-color: #115293;
+    transform: translateY(-2px);
+}
+
+.btn-historico {
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    background-color: #6c757d;
+    color: white;
+    margin-left: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-historico:hover {
+    background-color: #5a6268;
     transform: translateY(-2px);
 }
 

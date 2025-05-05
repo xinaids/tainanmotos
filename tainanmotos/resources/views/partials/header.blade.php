@@ -44,7 +44,7 @@
     <div class="modal-content">
         <span class="close-btn" onclick="fecharModalConfiguracoes()">&times;</span>
         <h2>Configurações</h2>
-        <p>Aqui você pode personalizar suas preferências, alterar senha, etc.</p>
+        <p>Em breve!</p>
         
     </div>
 </div>
