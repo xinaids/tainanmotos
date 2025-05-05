@@ -44,7 +44,7 @@
     <div class="modal-content">
         <span class="close-btn" onclick="fecharModalConfiguracoes()">&times;</span>
         <h2>Configurações</h2>
-        <p>Em breve!</p>
+        <p>Em breve!!!</p>
         
     </div>
 </div>
