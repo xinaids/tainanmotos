@@ -9,7 +9,7 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
-        return view('auth.login'); // ou 'login' se seu arquivo for 'resources/views/login.blade.php'
+        return view('auth.login'); 
     }
 
     public function login(Request $request)
@@ -21,7 +21,7 @@ class LoginController extends Controller
             return redirect()->intended('dashboard'); // ou a página que quiser depois do login
         }
 
-        // Falha no login
+        // falha login
         return back()->withErrors([
             'email' => 'As credenciais informadas não foram encontradas.',
         ])->onlyInput('email');

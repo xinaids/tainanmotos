@@ -15,7 +15,7 @@
                 <i class="fas fa-wrench"></i> Gerenciar
             </a>
 
-            <!-- Dropdown agrupado inteiro para evitar sumir -->
+            
             <div class="dropdown">
                 <div class="nav-link dropdown-toggle">
                     <i class="fas fa-plus"></i> Cadastros
@@ -45,7 +45,7 @@
         <span class="close-btn" onclick="fecharModalConfiguracoes()">&times;</span>
         <h2>Configurações</h2>
         <p>Aqui você pode personalizar suas preferências, alterar senha, etc.</p>
-        <!-- Adicione aqui os itens reais da tela de configurações -->
+        
     </div>
 </div>
 
@@ -226,7 +226,3 @@ function fecharModalConfiguracoes() {
     document.getElementById("modal-config").style.display = "none";
 }
 </script>
-
-
-<!-- Font Awesome (obrigatório no <head>) -->
-<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> -->

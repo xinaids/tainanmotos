@@ -89,7 +89,7 @@
 @endsection
 
 <style>
-/* Mantém todo o estilo anterior, mas remove o botão de concluir */
+
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

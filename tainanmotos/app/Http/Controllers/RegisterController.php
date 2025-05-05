@@ -11,7 +11,7 @@ class RegisterController extends Controller
 {
     public function showRegistrationForm()
     {
-        return view('auth.register'); // ou 'register' se seu arquivo for 'resources/views/register.blade.php'
+        return view('auth.register'); 
     }
 
     public function register(Request $request)

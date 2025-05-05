@@ -34,7 +34,7 @@
                 <td>15/05/2023</td>
                 <td><a href="#" class="btn-visualizar"><i class="fas fa-search"></i> Ver Detalhes</a></td>
             </tr>
-            <!-- Adicione mais linhas com os mesmos atributos data-* -->
+            
         </tbody>
     </table>
 
