@@ -6,49 +6,64 @@
 <div class="solicitar-container fade-in">
     <h2>Solicitar Manutenção</h2>
     <form action="#" method="POST">
-        <!-- Modelo da moto -->
+    <!-- Marca da moto (agora primeiro) -->
+    <div class="form-group">
+        <label for="marca">Marca da Moto <span class="required-asterisk">*</span></label>
+        <select id="marca" name="marca" required>
+            <option value="" disabled selected>Selecione uma marca</option>
+            <option value="honda">Honda</option>
+            <option value="suzuki">Suzuki</option>
+            <option value="yahama">Yahama</option>
+            <option value="royal_enfield">Royal Enfield</option>
+            <option value="harley_davidson">Harley Davidson</option>
+        </select>
+    </div>
+
+    <!-- Modelo da moto -->
+    <div class="form-group">
+        <label for="modelo">Modelo da Moto <span class="required-asterisk">*</span></label>
+        <input type="text" id="modelo" name="modelo" required>
+    </div>
+
+    <!-- Cor da moto -->
+    <div class="form-group">
+        <label for="cor">Cor da Moto <span class="required-asterisk">*</span></label>
+        <input type="text" id="cor" name="cor" required>
+    </div>
+
+    <!-- Placa da moto -->
+<!-- Placa da moto -->
+    <div class="form-group">
+        <label for="placa">Placa da Moto <span class="required-asterisk">*</span></label>
+         <input type="text" id="placa" name="placa" required placeholder="ABC-1234" maxlength="8">
+    </div>
+
+
+    <!-- Quilometragem -->
+    <div class="form-group">
+        <label for="quilometragem">Quilometragem <span class="required-asterisk">*</span></label>
+     <input type="number" id="quilometragem" name="quilometragem" required min="0" max="999999" placeholder="Até 999.999 km">
+    </div>
+
+
+
+    <!-- Ano -->
+    <div class="form-group">
+        <label for="ano">Ano <span class="required-asterisk">*</span></label>
+        <input type="number" id="ano" name="ano" required>
+    </div>
+
+    <!-- Descrição -->
+
         <div class="form-group">
-            <label for="modelo">Modelo da Moto <span class="required-asterisk">*</span></label>
-            <input type="text" id="modelo" name="modelo" required>
+             <label for="descricao">Descrição <span class="required-asterisk">*</span></label>
+            <textarea id="descricao" name="descricao" rows="4" required placeholder="Insira as informações referente à manutenção da moto"></textarea>
         </div>
 
-        <!-- Marca da moto -->
-        <div class="form-group">
-            <label for="marca">Marca da Moto <span class="required-asterisk">*</span></label>
-            <input type="text" id="marca" name="marca" required>
-        </div>
 
-        <!-- Cor da moto -->
-        <div class="form-group">
-            <label for="cor">Cor da Moto <span class="required-asterisk">*</span></label>
-            <input type="text" id="cor" name="cor" required>
-        </div>
+    <button type="submit" class="btn-submit"><i class="fas fa-wrench"></i> Solicitar Manutenção</button>
+</form>
 
-        <!-- Placa da moto -->
-        <div class="form-group">
-            <label for="placa">Placa da Moto <span class="required-asterisk">*</span></label>
-            <input type="text" id="placa" name="placa" required>
-        </div>
-
-        <!-- Quilometragem da moto -->
-        <div class="form-group">
-            <label for="quilometragem">Quilometragem <span class="required-asterisk">*</span></label>
-            <input type="number" id="quilometragem" name="quilometragem" required>
-        </div>
-
-        <div class="form-group">
-            <label for="quilometragem">Ano <span class="required-asterisk">*</span></label>
-            <input type="number" id="quilometragem" name="quilometragem" required>
-        </div>
-
-        <!-- Descrição -->
-        <div class="form-group">
-            <label for="descricao">Descrição <span class="required-asterisk">*</span></label>
-            <textarea id="descricao" name="descricao" rows="4" required></textarea>
-        </div>
-
-        <button type="submit" class="btn-submit"><i class="fas fa-wrench"></i> Solicitar Manutenção</button>
-    </form>
 
     <!-- Botão de Voltar -->
     <a href="{{ route('dashboard') }}" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar</a>
@@ -166,4 +181,57 @@ input:focus, textarea:focus {
     background-color: #5a6268;
     transform: translateY(-2px);
 }
+
+select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+    background-color: white;
+    appearance: none; 
+}
+
+select:focus {
+    border-color: #1976d2;
+    box-shadow: 0 0 5px rgba(25, 118, 210, 0.3);
+}
+
 </style>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const placaInput = document.getElementById('placa');
+
+        placaInput.addEventListener('input', function (e) {
+            let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+            if (value.length > 3) {
+                value = value.slice(0, 3) + '-' + value.slice(3);
+            }
+
+            e.target.value = value.slice(0, 8);
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const quilometragemInput = document.getElementById('quilometragem');
+
+        quilometragemInput.addEventListener('input', function () {
+            const max = 999999;
+            let value = parseInt(this.value);
+
+            if (value > max) {
+                this.value = max;
+            } else if (value < 0 || isNaN(value)) {
+                this.value = '';
+            }
+        });
+    });
+</script>

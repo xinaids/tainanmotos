@@ -4,18 +4,18 @@
 <div class="login-container">
     <div class="login-box">
         <h2>Login</h2>
-        <form action="{{ route('login') }}" method="POST">
-        @csrf
-            <div class="input-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="input-group">
-                <label for="password">Senha:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit" class="btn-login">Entrar</button>
+        <form action="/dashboard" method="GET">
+    <div class="input-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+    </div>
+    <div class="input-group">
+        <label for="password">Senha:</label>
+        <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn-login">Entrar</button>
         </form>
+
         <a href="{{ route('password.request') }}" class="forgot-password">Esqueci minha senha</a>
         <p class="signup-text">Ainda não tem uma conta? <a href="{{ route('register') }}" class="signup-link">Cadastre-se aqui</a></p>
     </div>
