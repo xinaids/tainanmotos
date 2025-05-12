@@ -45,82 +45,91 @@
 
 <!-- Modal Detalhes -->
 <div id="modalDetalhes" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-        <span class="close-modal" onclick="fecharModal()">&times;</span>
-        <h3>Detalhes da Manutenção</h3>
-        <form class="modal-form">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="data_abertura">Data Abertura</label>
-                    <input type="date" id="data_abertura" name="data_abertura" value="2023-05-15">
-                </div>
-                <div class="form-group">
-                    <label for="data_fechamento">Data Fechamento</label>
-                    <input type="date" id="data_fechamento" name="data_fechamento">
-                </div>
-                <div class="form-group">
-                    <label for="situacao">Situação</label>
-                    <select id="situacao" name="situacao">
-                        <option value="Pendente" selected>Pendente</option>
-                        <option value="Em andamento">Em andamento</option>
-                        <option value="Concluído">Concluído</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="fabricante_moto">Fabricante</label>
-                    <input type="text" id="fabricante_moto" name="fabricante_moto" value="Yamaha">
-                </div>
-                <div class="form-group">
-                    <label for="modelo_moto">Modelo</label>
-                    <input type="text" id="modelo_moto" name="modelo_moto" value="XTZ 250 Lander">
-                </div>
-                <div class="form-group">
-                    <label for="placa_moto">Placa</label>
-                    <input type="text" id="placa_moto" name="placa_moto" value="IWG-2171">
-                </div>
-                <div class="form-group">
-                    <label for="ano_moto">Ano</label>
-                    <input type="text" id="ano_moto" name="ano_moto" value="2015">
-                </div>
-                <div class="form-group">
-                    <label for="quilometragem">Quilometragem</label>
-                    <input type="text" id="quilometragem" name="quilometragem" value="80834">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="valor">Valor</label>
-                    <input type="text" id="valor" name="valor" value="R$ 0">
-                </div>
-                <div class="form-group">
-                    <label for="mao_obra">Atribuir Mão de Obra</label>
-                    <select id="mao_obra" name="mao_obra">
-                        <option value="Troca de óleo">Troca de óleo</option>
-                        <option value="Troca de pneu">Troca de pneu</option>
-                        <option value="Troca de relação">Troca de relação</option>
-                    </select>
-                    <div style="margin-top: 8px; display: flex; gap: 8px;">
-                        <button type="button" class="btn-plus">Adicionar</button>
-                        <button type="button" class="btn-plus" style="background-color: #dc3545;">Remover</button>
-                    </div>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group" style="flex: 1;">
-                    <label for="descricao">Descrição</label>
-                    <textarea id="descricao" name="descricao" rows="4"></textarea>
-                </div>
-            </div>
-            <div class="form-row" style="justify-content: flex-end;">
-                <button type="submit" class="btn-enviar">
-                    <i class="fas fa-paper-plane"></i> Enviar Manutenção
-                </button>
-            </div>
-        </form>
-    </div>
+  <div class="modal-content">
+    <span class="close-modal" onclick="fecharModal()">&times;</span>
+    <h3>Detalhes da Manutenção</h3>
+    <form class="modal-form" onsubmit="return enviarFormulario();">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="data_abertura">Data Abertura</label>
+          <input type="date" id="data_abertura" name="data_abertura" value="2023-05-15">
+        </div>
+        <div class="form-group">
+          <label for="data_fechamento">Data Fechamento</label>
+          <input type="date" id="data_fechamento" name="data_fechamento">
+        </div>
+        <div class="form-group">
+          <label for="situacao">Situação</label>
+          <select id="situacao" name="situacao">
+            <option value="Pendente" selected>Pendente</option>
+            <option value="Em andamento">Em andamento</option>
+            <option value="Concluído">Concluído</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="fabricante_moto">Fabricante</label>
+          <input type="text" id="fabricante_moto" name="fabricante_moto" value="Yamaha">
+        </div>
+        <div class="form-group">
+          <label for="modelo_moto">Modelo</label>
+          <input type="text" id="modelo_moto" name="modelo_moto" value="XTZ 250 Lander">
+        </div>
+        <div class="form-group">
+          <label for="placa_moto">Placa</label>
+          <input type="text" id="placa_moto" name="placa_moto" value="IWG-2171">
+        </div>
+        <div class="form-group">
+          <label for="ano_moto">Ano</label>
+          <input type="text" id="ano_moto" name="ano_moto" value="2015">
+        </div>
+        <div class="form-group">
+          <label for="quilometragem">Quilometragem</label>
+          <input type="text" id="quilometragem" name="quilometragem" value="80834">
+        </div>
+      </div>
+
+      <div class="form-row">
+  <div class="form-group" style="flex: 1;">
+    <label for="valor">Valor</label>
+    <input type="text" id="valor" name="valor" value="R$ 0">
+  </div>
 </div>
+
+<div class="form-row">
+  <div class="form-group" style="flex: 1;">
+    <label for="mao_obra">Atribuir Mão de Obra</label>
+    <select id="mao_obra" name="mao_obra">
+      <option value="Troca de óleo">Troca de óleo</option>
+      <option value="Troca de pneu">Troca de pneu</option>
+      <option value="Troca de relação">Troca de relação</option>
+    </select>
+    <div style="margin-top: 8px; display: flex; gap: 8px;">
+      <button type="button" class="btn-plus" id="btnAdicionarMaoObra">Adicionar</button>
+    </div>
+    <ul id="listaMaoObra" style="margin-top: 10px; padding-left: 20px; list-style-type: disc;"></ul>
+    <input type="hidden" name="mao_obra_lista" id="mao_obra_lista">
+  </div>
+</div>
+
+
+      <div class="form-row">
+        <div class="form-group" style="flex: 1;">
+          <label for="descricao">Descrição</label>
+          <textarea id="descricao" name="descricao" rows="4"></textarea>
+        </div>
+      </div>
+      <div class="form-row" style="justify-content: flex-end;">
+        <button type="submit" class="btn-enviar">
+          <i class="fas fa-paper-plane"></i> Enviar Manutenção
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 
 <!-- Modal Histórico -->
 <div id="modalHistorico" class="modal-overlay" style="display: none;">
@@ -189,7 +198,63 @@
             });
         });
     });
+
+    document.addEventListener("DOMContentLoaded", () => {
+  // Código já existente...
+
+  const btnAdicionar = document.getElementById("btnAdicionarMaoObra");
+  const selectMaoObra = document.getElementById("mao_obra");
+  const listaMaoObra = document.getElementById("listaMaoObra");
+  const campoOculto = document.getElementById("mao_obra_lista");
+
+  btnAdicionar.addEventListener("click", () => {
+    const valorSelecionado = selectMaoObra.value;
+    if (!valorSelecionado) return;
+
+    // Verifica se já foi adicionado
+    const itensExistentes = Array.from(listaMaoObra.children).map(li => li.dataset.valor);
+    if (itensExistentes.includes(valorSelecionado)) return;
+
+    const li = document.createElement("li");
+    li.textContent = valorSelecionado;
+    li.dataset.valor = valorSelecionado;
+
+    const btnRemover = document.createElement("button");
+    btnRemover.textContent = "Remover";
+    btnRemover.style.marginLeft = "10px";
+    btnRemover.style.backgroundColor = "#dc3545";
+    btnRemover.style.color = "#fff";
+    btnRemover.style.border = "none";
+    btnRemover.style.borderRadius = "4px";
+    btnRemover.style.padding = "2px 8px";
+    btnRemover.style.cursor = "pointer";
+
+    btnRemover.addEventListener("click", () => {
+      listaMaoObra.removeChild(li);
+      atualizarCampoOculto();
+    });
+
+    li.appendChild(btnRemover);
+    listaMaoObra.appendChild(li);
+    atualizarCampoOculto();
+  });
+
+  function atualizarCampoOculto() {
+    const valores = Array.from(listaMaoObra.children).map(li => li.dataset.valor);
+    campoOculto.value = JSON.stringify(valores);
+  }
+});
+
+// Envia a lista atualizada ao submeter o formulário
+function enviarFormulario() {
+  const maoObraLista = document.getElementById("mao_obra_lista").value;
+  console.log("Enviando lista:", maoObraLista); // para teste
+  return true; // permite envio normal
+}
+
 </script>
+
+
 @endsection
 
 

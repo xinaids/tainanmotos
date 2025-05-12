@@ -6,7 +6,14 @@
 <div class="solicitar-container fade-in">
     <h2>Solicitar Manutenção</h2>
     <form action="#" method="POST">
-    <!-- Marca da moto (agora primeiro) -->
+
+    <!-- Placa da moto -->
+    <div class="form-group">
+        <label for="placa">Placa da Moto <span class="required-asterisk">*</span></label>
+         <input type="text" id="placa" name="placa" required placeholder="ABC-1234" maxlength="8">
+    </div>
+
+    <!-- Marca da moto-->
     <div class="form-group">
         <label for="marca">Marca da Moto <span class="required-asterisk">*</span></label>
         <select id="marca" name="marca" required>
@@ -29,13 +36,6 @@
     <div class="form-group">
         <label for="cor">Cor da Moto <span class="required-asterisk">*</span></label>
         <input type="text" id="cor" name="cor" required>
-    </div>
-
-    <!-- Placa da moto -->
-<!-- Placa da moto -->
-    <div class="form-group">
-        <label for="placa">Placa da Moto <span class="required-asterisk">*</span></label>
-         <input type="text" id="placa" name="placa" required placeholder="ABC-1234" maxlength="8">
     </div>
 
 
