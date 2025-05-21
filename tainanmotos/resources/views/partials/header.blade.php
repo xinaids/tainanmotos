@@ -28,6 +28,10 @@
 
                 </div>
             </div>
+
+            <a href="/motos" class="nav-link">
+                <i class="fa-solid fa-motorcycle"></i> Motos
+            </a>
         </nav>
     </div>
 
