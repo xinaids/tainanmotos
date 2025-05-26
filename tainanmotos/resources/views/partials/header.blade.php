@@ -18,7 +18,7 @@
             
             <div class="dropdown">
                 <div class="nav-link dropdown-toggle">
-                    <i class="fas fa-plus"></i> Cadastros
+                    <i class="fas fa-plus"></i> Cadastro
                 </div>
                 <div class="dropdown-menu">
                 <a href="/cadastrar-peca" class="dropdown-item">Peça</a>
@@ -28,6 +28,20 @@
 
                 </div>
             </div>
+
+             <div class="dropdown">
+                <div class="nav-link dropdown-toggle">
+                    <i class="fa fa-address-book"></i> Cadastrados
+                </div>
+                <div class="dropdown-menu">
+                <a href="/cadastrar-peca" class="dropdown-item">Peça</a>
+                <a href="/cadastrar-modelo" class="dropdown-item">Modelo</a>
+                <a href="/cadastrar-fabricante" class="dropdown-item">Fabricante</a>
+                <a href="/cadastrar-mao-de-obra" class="dropdown-item">Mão de Obra</a>
+
+                </div>
+            </div>
+
 
             <a href="/motos" class="nav-link">
                 <i class="fa-solid fa-motorcycle"></i> Motos

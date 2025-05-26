@@ -5,7 +5,8 @@
 
 <div class="solicitar-container fade-in">
     <h2>Cadastrar Fabricante</h2>
-    <form action="#" method="POST">
+    <form action="{{ route('fabricante.store') }}" method="POST">
+        @csrf
         <!-- Nome do fabricante -->
         <div class="form-group">
             <label for="nome_fabricante">Nome do Fabricante <span class="required-asterisk">*</span></label>
