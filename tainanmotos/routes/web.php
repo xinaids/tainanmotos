@@ -62,4 +62,9 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
-Route::post('/fabricantes', [FabricanteController::class, 'store'])->name('fabricante.store');
+
+Route::get('/cadastrar-fabricante', function () {
+    return view('cadastrar-fabricante');
+})->name('cadastrar-fabricante');
+
+Route::post('/cadastrar-fabricante', [FabricanteController::class, 'store'])->name('fabricante.store');

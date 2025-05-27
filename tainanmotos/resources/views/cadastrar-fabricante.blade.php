@@ -7,18 +7,27 @@
     <h2>Cadastrar Fabricante</h2>
     <form action="{{ route('fabricante.store') }}" method="POST">
         @csrf
-        <!-- Nome do fabricante -->
         <div class="form-group">
             <label for="nome_fabricante">Nome do Fabricante <span class="required-asterisk">*</span></label>
             <input type="text" id="nome_fabricante" name="nome_fabricante" required>
         </div>
 
-        <button type="submit" class="btn-submit"><i class="fas fa-plus-circle"></i> Cadastrar Fabricante</button>
+        <button type="submit" class="btn-submit">
+            <i class="fas fa-plus-circle"></i> Cadastrar Fabricante
+        </button>
     </form>
 
     <!-- Botão de Voltar -->
     <a href="{{ route('dashboard') }}" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar</a>
 </div>
+
+<!-- Modal de sucesso com animação -->
+@if(session('success'))
+<div id="modal-success" class="modal-success">
+    {{ session('success') }}
+</div>
+@endif
+
 @endsection
 
 <style>
@@ -35,7 +44,7 @@ body {
     padding: 25px;
     background: #fff;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
@@ -50,8 +59,15 @@ h2 {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .form-group {
@@ -125,5 +141,27 @@ input:focus {
 .btn-voltar:hover {
     background-color: #5a6268;
     transform: translateY(-2px);
+}
+
+/* Modal de sucesso */
+.modal-success {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #28a745;
+    color: #fff;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    opacity: 0;
+    animation: fadeInOut 3s forwards;
+    z-index: 9999;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-20px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-20px); }
 }
 </style>
