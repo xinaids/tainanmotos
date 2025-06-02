@@ -7,19 +7,25 @@ use Illuminate\Support\Facades\DB;
 
 class FabricanteController extends Controller
 {
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nome_fabricante' => 'required|string|max:40',
-        ]);
+public function store(Request $request)
+{
+    // Inserir o debug aqui dentro
+    DB::listen(function ($query) {
+        logger($query->sql);
+        logger($query->bindings);
+        logger($query->time . ' ms');
+    });
 
-        DB::table('fabricante')->insert([
-            'nome' => $request->input('nome_fabricante'),
-        ]);
+    $request->validate([
+        'nome_fabricante' => 'required|string|max:40',
+    ]);
 
-        return redirect()->back()->with('success', 'Fabricante cadastrado com sucesso!');
-    }
+    DB::table('fabricante')->insert([
+        'nome' => $request->input('nome_fabricante'),
+    ]);
 
+    return redirect()->back()->with('success', 'Fabricante cadastrado com sucesso!');
+}
 public function index(Request $request)
 {
     $ordenarPor = $request->input('ordenar_por', 'codigo');
