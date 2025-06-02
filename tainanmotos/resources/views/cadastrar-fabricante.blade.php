@@ -19,6 +19,13 @@
 
     <!-- Botão de Voltar -->
     <a href="{{ route('dashboard') }}" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar</a>
+
+    <!-- Botões de Visualização -->
+    <div class="visualizar-buttons">
+        <a href="{{ route('fabricante.index') }}" class="btn-visualizar">
+            <i class="fas fa-eye"></i> Visualizar Cadastrados
+        </a>
+    </div>
 </div>
 
 <!-- Modal de sucesso com animação -->
@@ -29,6 +36,7 @@
 @endif
 
 @endsection
+
 
 <style>
 body {
@@ -163,5 +171,28 @@ input:focus {
     10% { opacity: 1; transform: translateY(0); }
     90% { opacity: 1; transform: translateY(0); }
     100% { opacity: 0; transform: translateY(-20px); }
+}
+
+.visualizar-buttons {
+    margin-top: 20px;
+}
+
+.btn-visualizar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-visualizar:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
 }
 </style>

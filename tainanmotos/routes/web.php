@@ -64,7 +64,21 @@ Route::post('/register', [RegisterController::class, 'register']);
 
 
 Route::get('/cadastrar-fabricante', function () {
-    return view('cadastrar-fabricante');
-})->name('cadastrar-fabricante');
+    return view('cadastrar-fabricante');  // view do formulário
+})->name('cadastrarfabricante');
 
+// Salvar fabricante
 Route::post('/cadastrar-fabricante', [FabricanteController::class, 'store'])->name('fabricante.store');
+
+// Visualizar fabricantes
+Route::get('/fabricantes', [FabricanteController::class, 'index'])->name('fabricante.index');
+
+// Rota para editar fabricante
+Route::get('/fabricante/{id}/edit', [FabricanteController::class, 'edit'])->name('fabricante.edit');
+
+// Rota para atualizar fabricante
+Route::put('/fabricante/{id}', [FabricanteController::class, 'update'])->name('fabricante.update');
+
+
+Route::delete('/fabricante/{id}', [FabricanteController::class, 'destroy'])->name('fabricante.destroy');
+
