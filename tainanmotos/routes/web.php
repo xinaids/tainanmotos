@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\ModeloController;
 use App\Http\Controllers\FabricanteController;
 
 
@@ -82,3 +83,5 @@ Route::put('/fabricante/{id}', [FabricanteController::class, 'update'])->name('f
 
 Route::delete('/fabricante/{id}', [FabricanteController::class, 'destroy'])->name('fabricante.destroy');
 
+Route::get('/cadastrar-modelo', [ModeloController::class, 'create'])->name('modelo.create');
+Route::post('/cadastrar-modelo', [ModeloController::class, 'store'])->name('modelo.store');

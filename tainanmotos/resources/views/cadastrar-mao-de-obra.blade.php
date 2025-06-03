@@ -23,7 +23,16 @@
 
     <!-- Botão de Voltar -->
     <a href="{{ route('dashboard') }}" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar</a>
+
+    <!-- Botão Visualizar -->
+    <div class="visualizar-buttons">
+        <a href="{{ route('fabricante.index') }}" class="btn-visualizar">
+            <i class="fas fa-eye"></i> Visualizar Cadastrados
+        </a>
+    </div>
 </div>
+
+
 @endsection
 
 <style>
