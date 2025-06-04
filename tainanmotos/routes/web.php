@@ -79,9 +79,12 @@ Route::get('/fabricante/{id}/edit', [FabricanteController::class, 'edit'])->name
 
 // Rota para atualizar fabricante
 Route::put('/fabricante/{id}', [FabricanteController::class, 'update'])->name('fabricante.update');
-
-
 Route::delete('/fabricante/{id}', [FabricanteController::class, 'destroy'])->name('fabricante.destroy');
 
+
+Route::get('/modelos', [ModeloController::class, 'index'])->name('modelo.index');
 Route::get('/cadastrar-modelo', [ModeloController::class, 'create'])->name('modelo.create');
-Route::post('/cadastrar-modelo', [ModeloController::class, 'store'])->name('modelo.store');
+Route::post('/modelos', [ModeloController::class, 'store'])->name('modelo.store');
+// Se você quiser implementar futuramente
+Route::get('/modelos/{id}/edit', [ModeloController::class, 'edit'])->name('modelo.edit');
+Route::delete('/modelos/{id}', [ModeloController::class, 'destroy'])->name('modelo.destroy');

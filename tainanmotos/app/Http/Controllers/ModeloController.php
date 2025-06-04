@@ -29,4 +29,24 @@ class ModeloController extends Controller
 
         return redirect()->back()->with('success', 'Modelo cadastrado com sucesso!');
     }
+
+public function index(Request $request)
+{
+    $ordenarPor = $request->input('ordenar', 'codigo');
+    $ordem = $request->input('ordem', 'asc');
+    $pesquisa = $request->input('pesquisa');
+
+    $query = DB::table('modelo')
+        ->join('fabricante', 'modelo.cod_fabricante', '=', 'fabricante.codigo')
+        ->select('modelo.*', 'fabricante.nome as fabricante_nome');
+
+    if ($pesquisa) {
+        $query->where('modelo.nome', 'ilike', '%' . $pesquisa . '%');
+    }
+
+    $modelos = $query->orderBy($ordenarPor, $ordem)->paginate(10)->withQueryString();
+
+    return view('modelos.index', compact('modelos', 'ordenarPor', 'ordem'));
+}
+
 }
