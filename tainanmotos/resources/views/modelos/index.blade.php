@@ -49,11 +49,9 @@
                             <td>{{ $modelo->nome }}</td>
                             <td>{{ $modelo->fabricante_nome }}</td>
                             <td class="actions-cell">
-                                <!-- Editar -->
                                 <a href="{{ route('modelo.edit', $modelo->codigo) }}" class="btn-action edit" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <!-- Excluir -->
                                 <form action="{{ route('modelo.destroy', $modelo->codigo) }}" method="POST" style="display: inline;">
                                     @csrf
                                     @method('DELETE')
@@ -68,15 +66,14 @@
             </table>
         </div>
 
-        <!-- Paginação -->
+        <!-- Paginação (padrão, limpa, sem ícones gigantes) -->
         <div class="pagination-container">
-            {{ $modelos->links() }}
+            {{ $modelos->links('pagination::bootstrap-4') }}
         </div>
     @else
         <p class="no-modelos">Nenhum modelo cadastrado.</p>
     @endif
 
-    <!-- Botão de Voltar -->
     <a href="{{ route('modelo.create') }}" class="btn-voltar">
         <i class="fas fa-arrow-left"></i> Voltar
     </a>
@@ -297,6 +294,10 @@ h2 {
     background-color: #1976d2;
     color: white;
     border-color: #1976d2;
+}
+
+.pagination svg {
+    display: none !important;
 }
 </style>
 @endsection

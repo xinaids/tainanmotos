@@ -49,4 +49,33 @@ public function index(Request $request)
     return view('modelos.index', compact('modelos', 'ordenarPor', 'ordem'));
 }
 
+public function edit($id)
+{
+$modelo = DB::table('modelo')
+    ->select('codigo', 'nome', 'cod_fabricante')
+    ->where('codigo', $id)
+    ->first();
+
+    $fabricantes = DB::table('fabricante')->orderBy('nome')->get();
+
+    return view('modelos.edit', compact('modelo', 'fabricantes'));
+}
+
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'nome' => 'required|string|max:100',
+        'fabricante_id' => 'required|exists:fabricante,codigo',
+    ]);
+
+    DB::table('modelo')->where('codigo', $id)->update([
+        'nome' => $request->input('nome'),
+        'cod_fabricante' => $request->input('fabricante_id'),
+    ]);
+
+    return redirect()->route('modelo.index')->with('success', 'Modelo atualizado com sucesso!');
+}
+
+
+
 }

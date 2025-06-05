@@ -6,12 +6,12 @@
 <div class="fabricantes-container fade-in">
     <h2>Fabricantes Cadastrados</h2>
 
-    <!-- Combobox de filtro -->
+    <!-- Filtro com valor padrão: Nome (A-Z) -->
     <form method="GET" action="{{ route('fabricante.index') }}" class="filtro-form">
         <label for="ordenar_por">Ordenar por:</label>
         <select name="ordenar_por" id="ordenar_por" onchange="this.form.submit()">
             <option value="codigo" {{ request('ordenar_por') == 'codigo' ? 'selected' : '' }}>Código</option>
-            <option value="nome" {{ request('ordenar_por') == 'nome' ? 'selected' : '' }}>Nome (A-Z)</option>
+            <option value="nome" {{ request('ordenar_por', 'nome') == 'nome' ? 'selected' : '' }}>Nome (A-Z)</option>
         </select>
     </form>
 
@@ -47,11 +47,15 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Paginação com bootstrap-4 (sem ícones gigantes) -->
+        <div class="pagination-container">
+            {{ $fabricantes->links('pagination::bootstrap-4') }}
+        </div>
     @else
         <p class="no-fabricantes">Nenhum fabricante cadastrado.</p>
     @endif
 
-    <!-- Botão de Voltar -->
     <a href="{{ route('cadastrarfabricante') }}" class="btn-voltar">
         <i class="fas fa-arrow-left"></i> Voltar
     </a>
@@ -218,5 +222,50 @@ h2 {
     background-color: #c82333;
     transform: translateY(-2px);
 }
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.pagination {
+    display: flex;
+    gap: 6px;
+    list-style: none;
+    padding-left: 0;
+}
+
+.pagination li {
+    display: inline;
+}
+
+.pagination li a,
+.pagination li span {
+    display: inline-block;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #333;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.pagination li.active span,
+.pagination li a:hover {
+    background-color: #1976d2;
+    color: white;
+    border-color: #1976d2;
+}
+
+.pagination li.disabled span {
+    color: #999;
+    background-color: #f1f1f1;
+    cursor: not-allowed;
+}
+
+
 </style>
 @endsection

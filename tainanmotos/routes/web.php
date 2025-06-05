@@ -88,3 +88,6 @@ Route::post('/modelos', [ModeloController::class, 'store'])->name('modelo.store'
 // Se você quiser implementar futuramente
 Route::get('/modelos/{id}/edit', [ModeloController::class, 'edit'])->name('modelo.edit');
 Route::delete('/modelos/{id}', [ModeloController::class, 'destroy'])->name('modelo.destroy');
+Route::put('/modelos/{id}', [ModeloController::class, 'update'])->name('modelo.update');
+Route::resource('fabricante', FabricanteController::class);
+
