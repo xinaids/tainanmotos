@@ -76,6 +76,13 @@ public function update(Request $request, $id)
     return redirect()->route('modelo.index')->with('success', 'Modelo atualizado com sucesso!');
 }
 
+public function destroy($id)
+{
+    DB::table('modelo')->where('codigo', $id)->delete();
+
+    return redirect()->route('modelo.index')->with('success', 'Modelo excluído com sucesso!');
+}
+
 
 
 }
