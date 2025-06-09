@@ -5,6 +5,9 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ModeloController;
 use App\Http\Controllers\FabricanteController;
+use App\Http\Controllers\PecaController;
+use App\Http\Controllers\MaoObraController;
+
 
 
 Route::get('/login', function () {
@@ -91,3 +94,26 @@ Route::delete('/modelos/{id}', [ModeloController::class, 'destroy'])->name('mode
 Route::put('/modelos/{id}', [ModeloController::class, 'update'])->name('modelo.update');
 Route::resource('fabricante', FabricanteController::class);
 
+
+Route::get('/cadastrar-peca', [PecaController::class, 'create'])->name('pecas.create');
+Route::post('/pecas', [PecaController::class, 'store'])->name('pecas.store');
+Route::get('/pecas', [PecaController::class, 'index'])->name('pecas.index');
+Route::get('/cadastrar-peca', [PecaController::class, 'create'])->name('cadastrar-peca'); // <- ESSENCIAL
+
+Route::get('/pecas', [PecaController::class, 'index'])->name('pecas.index');
+Route::get('/pecas/{codigo}/edit', [PecaController::class, 'edit'])->name('pecas.edit');
+Route::put('/pecas/{codigo}', [PecaController::class, 'update'])->name('pecas.update');
+Route::delete('/pecas/{codigo}', [PecaController::class, 'destroy'])->name('pecas.destroy');
+
+
+
+Route::get('/maodeobra', [MaoObraController::class, 'index'])->name('maoobra.index');
+Route::get('/cadastrar-mao-de-obra', [MaoObraController::class, 'create'])->name('maoobra.create');
+Route::post('/maodeobra', [MaoObraController::class, 'store'])->name('maoobra.store');
+Route::get('/maodeobra/{id}/edit', [MaoObraController::class, 'edit'])->name('maoobra.edit');
+Route::put('/maodeobra/{id}', [MaoObraController::class, 'update'])->name('maoobra.update');
+Route::delete('/maodeobra/{id}', [MaoObraController::class, 'destroy'])->name('maoobra.destroy');
+
+Route::get('/cadastrar-mao-de-obra', function () {
+    return view('cadastrar-mao-de-obra');
+})->name('cadastrar-mao-de-obra');

@@ -5,7 +5,8 @@
 
 <div class="solicitar-container fade-in">
     <h2>Cadastrar Mão de Obra</h2>
-    <form action="#" method="POST">
+    <form action="{{ route('maoobra.store') }}" method="POST">
+    @csrf
         <!-- Nome da mão de obra -->
         <div class="form-group">
             <label for="nome_mao_obra">Nome da Mão de Obra <span class="required-asterisk">*</span></label>
@@ -15,7 +16,7 @@
         <!-- Preço da mão de obra -->
         <div class="form-group">
             <label for="preco_mao_obra">Preço (R$) <span class="required-asterisk">*</span></label>
-            <input type="number" step="0.01" id="preco_mao_obra" name="preco_mao_obra" required>
+            <input type="number" name="valor_mao_obra" required>
         </div>
 
         <button type="submit" class="btn-submit"><i class="fas fa-plus-circle"></i> Cadastrar Mão de Obra</button>
@@ -26,9 +27,9 @@
 
     <!-- Botão Visualizar -->
     <div class="visualizar-buttons">
-        <a href="{{ route('fabricante.index') }}" class="btn-visualizar">
-            <i class="fas fa-eye"></i> Visualizar Cadastrados
-        </a>
+        <a href="{{ route('maoobra.index') }}" class="btn-visualizar">
+             <i class="fas fa-eye"></i> Visualizar Cadastrados
+            </a>
     </div>
 </div>
 
@@ -140,4 +141,26 @@ input:focus {
     background-color: #5a6268;
     transform: translateY(-2px);
 }
+
+.btn-visualizar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-visualizar:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+
+
 </style>

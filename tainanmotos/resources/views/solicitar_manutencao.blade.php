@@ -27,10 +27,18 @@
     </div>
 
     <!-- Modelo da moto -->
-    <div class="form-group">
-        <label for="modelo">Modelo da Moto <span class="required-asterisk">*</span></label>
-        <input type="text" id="modelo" name="modelo" required>
-    </div>
+<div class="form-group">
+    <label for="modelo">Modelo da Moto <span class="required-asterisk">*</span></label>
+    <select id="modelo" name="modelo" required>
+        <option value="" disabled selected>Selecione um modelo</option>
+        @foreach ($modelos as $modelo)
+            <option value="{{ $modelo->codigo }}">
+                {{ $modelo->nome }} ({{ $modelo->fabricante->nome }})
+            </option>
+        @endforeach
+    </select>
+</div>
+
 
     <!-- Cor da moto -->
     <div class="form-group">

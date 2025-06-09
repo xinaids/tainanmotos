@@ -5,7 +5,8 @@
 
 <div class="solicitar-container fade-in">
     <h2>Cadastrar Peça</h2>
-    <form action="#" method="POST">
+    <form action="{{ route('pecas.store') }}" method="POST">
+        @csrf
         <!-- Nome da peça -->
         <div class="form-group">
             <label for="nome_peca">Nome da Peça <span class="required-asterisk">*</span></label>
@@ -18,16 +19,28 @@
             <input type="number" step="0.01" id="preco_peca" name="preco_peca" required>
         </div>
 
+        <!-- Modelo da peça -->
+        <div class="form-group">
+            <label for="cod_modelo">Modelo <span class="required-asterisk">*</span></label>
+            <select id="cod_modelo" name="cod_modelo" required>
+                <option value="" disabled selected>Selecione o modelo</option>
+                @foreach ($modelos as $modelo)
+                    <option value="{{ $modelo->codigo }}">{{ $modelo->nome }}</option>
+                @endforeach
+            </select>
+        </div>
+
         <button type="submit" class="btn-submit"><i class="fas fa-plus-circle"></i> Cadastrar Peça</button>
     </form>
 
-    <!-- Botão de Voltar -->
+    <!-- Botões -->
     <a href="{{ route('dashboard') }}" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar</a>
+    <a href="{{ route('pecas.index') }}" class="btn-voltar"><i class="fas fa-eye"></i> Visualizar Peças</a>
 </div>
 @endsection
 
-
 <style>
+/* estilos existentes */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f4f6f9;
@@ -76,7 +89,7 @@ label {
     color: red;
 }
 
-input {
+input, select {
     width: 100%;
     padding: 10px;
     font-size: 14px;
@@ -85,9 +98,13 @@ input {
     outline: none;
     transition: border-color 0.3s;
     box-sizing: border-box;
+    background-color: #fff;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
-input:focus {
+input:focus, select:focus {
     border-color: #1976d2;
     box-shadow: 0 0 5px rgba(25, 118, 210, 0.3);
 }
@@ -126,6 +143,7 @@ input:focus {
     border-radius: 10px;
     font-weight: 600;
     transition: background-color 0.3s, transform 0.2s;
+    margin-right: 10px;
 }
 
 .btn-voltar:hover {
