@@ -2,21 +2,24 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ModeloController;
 use App\Http\Controllers\FabricanteController;
 use App\Http\Controllers\PecaController;
 use App\Http\Controllers\MaoObraController;
 
 
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::view('/login', 'login')->name('login');
+Route::get('/', function () {
+    return redirect('/login');
+});
 
 Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register');
+
 
 Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
@@ -117,3 +120,5 @@ Route::delete('/maodeobra/{id}', [MaoObraController::class, 'destroy'])->name('m
 Route::get('/cadastrar-mao-de-obra', function () {
     return view('cadastrar-mao-de-obra');
 })->name('cadastrar-mao-de-obra');
+
+
