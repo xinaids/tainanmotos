@@ -7,6 +7,13 @@
     <h2>Seja bem vindo ao sistema.</h2>
     <p>Selecione uma opção no menu acima para continuar.</p>
 </div>
+
+@if(session('success'))
+    <script>
+        alert("{{ session('success') }}");
+    </script>
+@endif
+
 @endsection
 
 <style>

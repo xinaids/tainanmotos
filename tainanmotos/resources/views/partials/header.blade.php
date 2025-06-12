@@ -5,7 +5,8 @@
 
   <div class="header-center">
     <nav class="nav-links">
-      <!-- Dropdown Manutenções -->
+
+      <!-- Dropdown Manutenções (todos podem ver) -->
       <div class="dropdown">
         <div class="nav-link dropdown-toggle">
           <i class="fas fa-tools"></i> Manutenções
@@ -17,52 +18,50 @@
         </div>
       </div>
 
-      <!-- Dropdown Cadastro -->
-      <div class="dropdown">
-        <div class="nav-link dropdown-toggle">
-          <i class="fas fa-plus"></i> Cadastro
+      <!-- Apenas para tipo 2 (administrador) -->
+      @if(session('usuario') && session('usuario')->tipo == 2)
+        <!-- Dropdown Cadastro -->
+        <div class="dropdown">
+          <div class="nav-link dropdown-toggle">
+            <i class="fas fa-plus"></i> Cadastro
+          </div>
+          <div class="dropdown-menu">
+            <a href="/cadastrar-fabricante" class="dropdown-item">Fabricantes</a>
+            <a href="/cadastrar-modelo" class="dropdown-item">Modelos</a>
+            <a href="/cadastrar-peca" class="dropdown-item">Peças</a>
+            <a href="/cadastrar-mao-de-obra" class="dropdown-item">Mão de Obra</a>
+          </div>
         </div>
-        <div class="dropdown-menu">
-          <a href="/cadastrar-fabricante" class="dropdown-item">Fabricantes</a>
-          <a href="/cadastrar-modelo" class="dropdown-item">Modelos</a>
-          <a href="/cadastrar-peca" class="dropdown-item">Peças</a>
-          <a href="/cadastrar-mao-de-obra" class="dropdown-item">Mão de Obra</a>
-        </div>
-      </div>
 
-      <!-- Link Motos -->
-      <a href="/motos" class="nav-link">
-        <i class="fa-solid fa-motorcycle"></i> Motos
-      </a>
+        <!-- Link Motos -->
+        <a href="/motos" class="nav-link">
+          <i class="fa-solid fa-motorcycle"></i> Motos
+        </a>
 
-      <!-- Link Estatisticas -->
-      <a href="/estatisticas" class="nav-link">
-        <i class="fa-solid fa-table"></i> Estatísticas
-      </a>
+        <!-- Link Estatísticas -->
+        <a href="/estatisticas" class="nav-link">
+          <i class="fa-solid fa-table"></i> Estatísticas
+        </a>
+      @endif
 
     </nav>
   </div>
 
-
-
-
   <div class="header-right">
-    <span class="user-name">Usuário</span>
-    <a href="#" class="settings-icon" onclick="abrirModalConfiguracoes()">
-      <i class="fas fa-cog"></i>
-    </a>
-    <button class="logout-btn">Sair</button>
+    @if(session('usuario'))
+      <span class="user-name">{{ session('usuario')->nome }}</span>
+    @else
+      <span class="user-name">Visitante</span>
+    @endif
+
+    <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+      @csrf
+      <button type="submit" class="logout-btn">Sair</button>
+    </form>
   </div>
 </header>
 
-<!-- Modal de Configurações -->
-<div id="modal-config" class="modal-config">
-  <div class="modal-content">
-    <span class="close-btn" onclick="fecharModalConfiguracoes()">&times;</span>
-    <h2>Configurações</h2>
-    <p>Em breve!!!</p>
-  </div>
-</div>
+</header>
 
 
 <style>

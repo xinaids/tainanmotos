@@ -1,115 +1,82 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LoginController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ModeloController;
 use App\Http\Controllers\FabricanteController;
 use App\Http\Controllers\PecaController;
 use App\Http\Controllers\MaoObraController;
+use App\Models\Modelo;
+use App\Models\Fabricante;
+use App\Http\Controllers\ManutencaoController;
 
+// Redirecionar root para login
+Route::get('/', fn () => redirect('/login'));
 
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::view('/login', 'login')->name('login');
-Route::get('/', function () {
-    return redirect('/login');
-});
-
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
-
-
-Route::get('/forgot-password', function () {
-    return view('auth.forgot-password');
-})->name('password.request');
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
-
-Route::get('/solicitar-manutencao', function () {
-    return view('solicitar_manutencao');
-})->name('solicitar.manutencao');
-
-Route::get('/visualizar-manutencao', function () {
-    return view('visualizar_manutencao');
-})->name('visualizar.manutencao');
-
-Route::get('/gerenciar-manutencao', function () {
-    return view('gerenciar_manutencao');
-})->name('gerenciar.manutencao');
-
-
-Route::get('/cadastrar-peca', function () {
-    return view('cadastrar-peca'); 
-})->name('cadastrar-peca');
-
-Route::get('/cadastrar-modelo', function () {
-    return view('cadastrar-modelo'); 
-})->name('cadastrar-modelo');
-
-Route::get('/cadastrar-fabricante', function () {
-    return view('cadastrar-fabricante'); 
-})->name('cadastrar-fabricante');
-
-Route::get('/cadastrar-mao-de-obra', function () {
-    return view('cadastrar-mao-de-obra'); 
-})->name('cadastrar-mao-de-obra');
-
-Route::get('/motos', function () {
-    return view('motos'); 
-})->name('motos');
-
+// Autenticação
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+// Registro
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
+// Esqueci a senha
+Route::get('/forgot-password', fn () => view('auth.forgot-password'))->name('password.request');
 
-Route::get('/cadastrar-fabricante', function () {
-    return view('cadastrar-fabricante');  // view do formulário
-})->name('cadastrarfabricante');
+// Dashboard
+Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
 
-// Salvar fabricante
+// Manutenções
+Route::get('/solicitar-manutencao', function () {
+    $modelos = Modelo::with('fabricante')->get();
+    $marcas = Fabricante::orderBy('nome')->get(); // ordenado alfabeticamente
+    return view('solicitar_manutencao', compact('modelos', 'marcas'));
+})->name('solicitar.manutencao');
+
+Route::get('/visualizar-manutencao', fn () => view('visualizar_manutencao'))->name('visualizar.manutencao');
+Route::get('/gerenciar-manutencao', fn () => view('gerenciar_manutencao'))->name('gerenciar.manutencao');
+
+// AJAX para obter modelos por fabricante
+Route::get('/modelos-por-fabricante/{fabricante_id}', function ($fabricante_id) {
+    return response()->json(
+        Modelo::where('cod_fabricante', $fabricante_id)
+            ->orderBy('nome')
+            ->get(['codigo', 'nome'])
+    );
+})->name('modelos.por.fabricante');
+
+// Cadastro direto via view
+Route::get('/motos', fn () => view('motos'))->name('motos');
+
+// Fabricante
+Route::get('/cadastrar-fabricante', [FabricanteController::class, 'create'])->name('cadastrarfabricante');
 Route::post('/cadastrar-fabricante', [FabricanteController::class, 'store'])->name('fabricante.store');
-
-// Visualizar fabricantes
 Route::get('/fabricantes', [FabricanteController::class, 'index'])->name('fabricante.index');
-
-// Rota para editar fabricante
 Route::get('/fabricante/{id}/edit', [FabricanteController::class, 'edit'])->name('fabricante.edit');
-
-// Rota para atualizar fabricante
 Route::put('/fabricante/{id}', [FabricanteController::class, 'update'])->name('fabricante.update');
 Route::delete('/fabricante/{id}', [FabricanteController::class, 'destroy'])->name('fabricante.destroy');
+Route::resource('fabricante', FabricanteController::class)->only([]);
 
-
+// Modelo
 Route::get('/modelos', [ModeloController::class, 'index'])->name('modelo.index');
 Route::get('/cadastrar-modelo', [ModeloController::class, 'create'])->name('modelo.create');
 Route::post('/modelos', [ModeloController::class, 'store'])->name('modelo.store');
-// Se você quiser implementar futuramente
 Route::get('/modelos/{id}/edit', [ModeloController::class, 'edit'])->name('modelo.edit');
-Route::delete('/modelos/{id}', [ModeloController::class, 'destroy'])->name('modelo.destroy');
 Route::put('/modelos/{id}', [ModeloController::class, 'update'])->name('modelo.update');
-Route::resource('fabricante', FabricanteController::class);
+Route::delete('/modelos/{id}', [ModeloController::class, 'destroy'])->name('modelo.destroy');
 
-
+// Peça
+Route::get('/pecas', [PecaController::class, 'index'])->name('pecas.index');
 Route::get('/cadastrar-peca', [PecaController::class, 'create'])->name('pecas.create');
 Route::post('/pecas', [PecaController::class, 'store'])->name('pecas.store');
-Route::get('/pecas', [PecaController::class, 'index'])->name('pecas.index');
-Route::get('/cadastrar-peca', [PecaController::class, 'create'])->name('cadastrar-peca'); // <- ESSENCIAL
-
-Route::get('/pecas', [PecaController::class, 'index'])->name('pecas.index');
 Route::get('/pecas/{codigo}/edit', [PecaController::class, 'edit'])->name('pecas.edit');
 Route::put('/pecas/{codigo}', [PecaController::class, 'update'])->name('pecas.update');
 Route::delete('/pecas/{codigo}', [PecaController::class, 'destroy'])->name('pecas.destroy');
 
-
-
+// Mão de Obra
 Route::get('/maodeobra', [MaoObraController::class, 'index'])->name('maoobra.index');
 Route::get('/cadastrar-mao-de-obra', [MaoObraController::class, 'create'])->name('maoobra.create');
 Route::post('/maodeobra', [MaoObraController::class, 'store'])->name('maoobra.store');
@@ -117,8 +84,7 @@ Route::get('/maodeobra/{id}/edit', [MaoObraController::class, 'edit'])->name('ma
 Route::put('/maodeobra/{id}', [MaoObraController::class, 'update'])->name('maoobra.update');
 Route::delete('/maodeobra/{id}', [MaoObraController::class, 'destroy'])->name('maoobra.destroy');
 
-Route::get('/cadastrar-mao-de-obra', function () {
-    return view('cadastrar-mao-de-obra');
-})->name('cadastrar-mao-de-obra');
 
+//manutencao
 
+Route::post('/solicitar-manutencao', [ManutencaoController::class, 'store'])->name('manutencao.store');

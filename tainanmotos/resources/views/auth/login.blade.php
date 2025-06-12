@@ -4,7 +4,8 @@
 <div class="login-container">
     <div class="login-box">
         <h2>Login</h2>
-        <form action="/dashboard" method="GET">
+        <form action="{{ route('login') }}" method="POST">
+    @csrf
     <div class="input-group">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
