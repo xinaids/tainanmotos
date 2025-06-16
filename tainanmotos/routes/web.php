@@ -10,6 +10,14 @@ use App\Http\Controllers\MaoObraController;
 use App\Models\Modelo;
 use App\Models\Fabricante;
 use App\Http\Controllers\ManutencaoController;
+use App\Http\Controllers\MotoController;
+use App\Http\Controllers\ServicoController;
+use App\Models\Moto;
+
+
+
+
+
 
 // Redirecionar root para login
 Route::get('/', fn () => redirect('/login'));
@@ -36,7 +44,9 @@ Route::get('/solicitar-manutencao', function () {
     return view('solicitar_manutencao', compact('modelos', 'marcas'));
 })->name('solicitar.manutencao');
 
-Route::get('/visualizar-manutencao', fn () => view('visualizar_manutencao'))->name('visualizar.manutencao');
+Route::get('/visualizar-manutencao', [ManutencaoController::class, 'visualizar'])
+    ->name('visualizar.manutencao');
+
 Route::get('/gerenciar-manutencao', fn () => view('gerenciar_manutencao'))->name('gerenciar.manutencao');
 
 // AJAX para obter modelos por fabricante
@@ -88,3 +98,30 @@ Route::delete('/maodeobra/{id}', [MaoObraController::class, 'destroy'])->name('m
 //manutencao
 
 Route::post('/solicitar-manutencao', [ManutencaoController::class, 'store'])->name('manutencao.store');
+Route::post('/manutencao/atualizar', [ManutencaoController::class, 'atualizar'])->name('manutencao.atualizar');
+
+
+//motos
+Route::get('/motos', [MotoController::class, 'index'])->name('motos');
+Route::get('/gerenciar_manutencao', [ManutencaoController::class, 'gerenciar'])->name('manutencao.gerenciar');
+Route::get('/gerenciar-manutencao', [ManutencaoController::class, 'gerenciar'])->name('gerenciar.manutencao');
+
+Route::get('/servico/{id}', [ServicoController::class, 'show']);
+
+Route::post('/servico/{id}/atualizar', [ServicoController::class, 'atualizar'])->name('servico.atualizar');
+
+
+Route::get('/moto/por-placa/{placa}', function ($placa) {
+    $moto = Moto::with('modelo.fabricante')->where('placa', $placa)->first();
+
+    if ($moto) {
+        return response()->json([
+            'cor' => $moto->cor,
+            'ano' => $moto->ano,
+            'modelo' => $moto->modelo->codigo,
+            'marca' => $moto->modelo->fabricante->codigo
+        ]);
+    } else {
+        return response()->json(null, 404);
+    }
+});

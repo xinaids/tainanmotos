@@ -7,22 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 class Servico extends Model
 {
     protected $table = 'servico';
+    protected $primaryKey = 'codigo';
+    public $incrementing = true;
+    public $timestamps = false;
 
     protected $fillable = [
         'data_abertura',
-        'data_fechamento',
         'descricao',
         'valor',
         'quilometragem',
         'situacao',
-        'descricao_manutencao',
         'cod_moto'
     ];
 
-    public $timestamps = false;
-
     public function moto()
     {
-        return $this->belongsTo(Moto::class, 'cod_moto');
+        return $this->belongsTo(\App\Models\Moto::class, 'cod_moto');
     }
 }

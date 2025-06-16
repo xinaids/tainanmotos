@@ -11,6 +11,10 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
+        if (session()->has('usuario')) {
+            return redirect()->route('dashboard');
+        }
+
         return view('auth.login');
     }
 
@@ -24,9 +28,7 @@ class LoginController extends Controller
         $usuario = Usuario::where('email', $request->email)->first();
 
         if ($usuario && Hash::check($request->password, $usuario->senha)) {
-            // Autenticar manualmente
             session(['usuario' => $usuario]);
-
             return redirect()->route('dashboard');
         }
 

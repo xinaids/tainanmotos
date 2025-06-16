@@ -290,3 +290,43 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const placaInput = document.getElementById('placa');
+    const marcaSelect = document.getElementById('marca');
+    const modeloSelect = document.getElementById('modelo');
+    const corInput = document.getElementById('cor');
+    const anoInput = document.getElementById('ano');
+
+    placaInput.addEventListener('blur', function () {
+        const placa = this.value.trim().toUpperCase();
+        if (placa.length >= 7) {
+            fetch(`/moto/por-placa/${placa}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Moto não encontrada');
+                    return response.json();
+                })
+                .then(data => {
+                    corInput.value = data.cor;
+                    anoInput.value = data.ano;
+
+                    // Define a marca
+                    marcaSelect.value = data.marca;
+                    marcaSelect.dispatchEvent(new Event('change'));
+
+                    // Aguarda um pouco para popular os modelos
+                    setTimeout(() => {
+                        modeloSelect.value = data.modelo;
+                    }, 200);
+                })
+                .catch(() => {
+                    corInput.value = '';
+                    anoInput.value = '';
+                    modeloSelect.value = '';
+                });
+        }
+    });
+});
+</script>
+

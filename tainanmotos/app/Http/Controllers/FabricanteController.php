@@ -26,6 +26,16 @@ class FabricanteController extends Controller
         return redirect()->back()->with('success', 'Fabricante cadastrado com sucesso!');
     }
 
+public function create()
+{
+    if (!session()->has('usuario')) {
+        return redirect()->route('login');
+    }
+
+    return view('cadastrar-fabricante');
+}
+
+
     public function index(Request $request)
     {
         $ordenarPor = $request->input('ordenar_por', 'nome'); // nome como padrão
