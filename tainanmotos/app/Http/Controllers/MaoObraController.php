@@ -18,14 +18,16 @@ class MaoObraController extends Controller
         return view('cadastrar-mao-de-obra');
     }
 
-    public function store(Request $request)
-    {
-        MaoObra::create([
-            'nome' => $request->input('nome_mao_obra'),
-            'valor' => $request->input('preco_mao_obra'),
-        ]);
-        return redirect()->route('maoobra.index')->with('success', 'Mão de obra cadastrada com sucesso.');
-    }
+ public function store(Request $request)
+{
+    MaoObra::create([
+        'nome' => $request->input('nome_mao_obra'),
+        'valor' => $request->input('valor'),
+    ]);
+
+    return redirect()->route('maoobra.index')->with('success', 'Mão de obra cadastrada com sucesso!');
+}
+
 
     public function edit($id)
     {
@@ -48,4 +50,11 @@ class MaoObraController extends Controller
         MaoObra::destroy($id);
         return redirect()->route('maoobra.index')->with('success', 'Mão de obra excluída com sucesso.');
     }
+
+    public function listar()
+{
+    return MaoObra::select('nome', 'valor')->get();
+}
+
+
 }

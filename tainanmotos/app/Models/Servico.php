@@ -24,4 +24,12 @@ class Servico extends Model
     {
         return $this->belongsTo(\App\Models\Moto::class, 'cod_moto');
     }
+
+    public function maosObra()
+{
+    return $this->belongsToMany(MaoObra::class, 'servico_maodeobra', 'cod_servico', 'cod_maodeobra')
+                ->withPivot('quantidade');
+}
+
+
 }

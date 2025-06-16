@@ -44,7 +44,7 @@
         </table>
     </div>
 
-        <a href="{{ route('cadastrar-mao-de-obra') }}" class="btn-voltar">
+        <a href="{{ route('maoobra.create') }}" class="btn-voltar">
                  <i class="fas fa-arrow-left"></i> Voltar
         </a>
 

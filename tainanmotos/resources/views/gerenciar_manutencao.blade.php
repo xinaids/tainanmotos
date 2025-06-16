@@ -53,8 +53,8 @@
     <div class="modal-content">
         <span class="close-modal" onclick="fecharModal()">&times;</span>
         <h3>Detalhes da Manutenção</h3>
-        <form class="modal-form" id="formDetalhes" method="POST">
-             @csrf
+        <form class="modal-form" id="formDetalhes" method="POST" onsubmit="return prepararEnvioDescricao();">
+            @csrf
             <div class="form-row">
                 <div class="form-group">
                     <label for="data_abertura">Data Abertura</label>
@@ -107,11 +107,8 @@
             <div class="form-row">
                 <div class="form-group" style="flex: 1;">
                     <label for="mao_obra">Atribuir Mão de Obra</label>
-                    <select id="mao_obra" name="mao_obra">
-                        <option value="Troca de óleo">Troca de óleo</option>
-                        <option value="Troca de pneu">Troca de pneu</option>
-                        <option value="Troca de relação">Troca de relação</option>
-                    </select>
+                    <select id="mao_obra" name="mao_obra"></select>
+
                     <div style="margin-top: 8px; display: flex; gap: 8px;">
                         <button type="button" class="btn-plus" id="btnAdicionarMaoObra">Adicionar</button>
                     </div>
@@ -125,6 +122,19 @@
                 <div class="form-group" style="flex: 1;">
                     <label for="descricao">Descrição</label>
                     <textarea id="descricao" name="descricao" rows="4"></textarea>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="descricao_historico">Histórico de Descrições</label>
+                    <textarea id="descricao_historico" rows="6" readonly style="background-color: #f5f5f5;"></textarea>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label>Mão de Obra Registrada</label>
+                    <ul id="maoObraRegistrada" style="background-color: #f5f5f5; padding: 10px; border-radius: 8px; list-style-type: disc;">
+                        <li><em>Nenhuma mão de obra registrada.</em></li>
+                    </ul>
                 </div>
             </div>
             <div class="form-row" style="justify-content: flex-end;">
@@ -195,6 +205,7 @@
                     .then(data => {
                         document.getElementById("data_abertura").value = data.data_abertura;
                         document.getElementById("data_fechamento").value = data.data_fechamento ?? "";
+                        document.getElementById("descricao_historico").value = data.descricao_manutencao ?? "";
                         document.getElementById("situacao").value = {
                             1: "Pendente",
                             2: "Em andamento",
@@ -208,6 +219,24 @@
                         document.getElementById("quilometragem").value = data.quilometragem;
                         document.getElementById("valor").value = "R$ " + parseFloat(data.valor).toFixed(2);
                         document.getElementById("descricao").value = data.descricao_manutencao ?? "";
+
+                        // Atualiza a lista de mão de obra registrada
+                        const ulMaoObra = document.getElementById("maoObraRegistrada");
+                        ulMaoObra.innerHTML = "";
+
+                        if (data.maos_obra && data.maos_obra.length > 0) {
+                            data.maos_obra.forEach(m => {
+                                const li = document.createElement("li");
+                                li.textContent = `${m.nome} — R$ ${parseFloat(m.valor).toFixed(2).replace(".", ",")}`;
+                                ulMaoObra.appendChild(li);
+                            });
+                        } else {
+                            const li = document.createElement("li");
+                            li.innerHTML = "<em>Nenhuma mão de obra registrada.</em>";
+                            ulMaoObra.appendChild(li);
+                        }
+
+                        document.getElementById("formDetalhes").action = `/manutencao/${data.codigo}/descricao`;
 
                         document.getElementById("modalDetalhes").style.display = "flex";
                     })
@@ -280,7 +309,112 @@
         console.log("Enviando lista:", maoObraLista); // para teste
         return true; // permite envio normal
     }
+
+    function prepararEnvioDescricao() {
+        const descricaoInput = document.getElementById("descricao");
+        const historicoTextarea = document.getElementById("descricao_historico");
+
+        const novaDescricao = descricaoInput.value.trim();
+        if (!novaDescricao) return true; // Não faz nada se vazio
+
+        const dataAtual = new Date();
+        const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
+        const novaEntrada = `${dataFormatada} - ${novaDescricao}`;
+
+        // Adiciona nova entrada ao histórico existente
+        const historicoAtual = historicoTextarea.value.trim();
+        const novoHistorico = historicoAtual ? `${historicoAtual}\n${novaEntrada}` : novaEntrada;
+
+        historicoTextarea.value = novoHistorico;
+
+        // Clona o conteúdo para enviar com o form
+        const campoClone = document.createElement("input");
+        campoClone.type = "hidden";
+        campoClone.name = "descricao";
+        campoClone.value = novoHistorico;
+        document.getElementById("formDetalhes").appendChild(campoClone);
+
+        return true; // prossegue com o envio
+    }
 </script>
+
+<script>
+    let maoDeObraDisponiveis = [];
+    let maoDeObraAdicionadas = [];
+
+    function atualizarValorTotal() {
+        const total = maoDeObraAdicionadas.reduce((soma, item) => soma + parseFloat(item.valor), 0);
+        document.getElementById("valor").value = "R$ " + total.toFixed(2).replace(".", ",");
+    }
+
+    function carregarMaoDeObra() {
+        fetch('/mao-obra/listar')
+            .then(res => res.json())
+            .then(data => {
+                maoDeObraDisponiveis = data;
+
+                const select = document.getElementById("mao_obra");
+                select.innerHTML = ''; // limpar
+
+                data.forEach(item => {
+                    const option = document.createElement("option");
+                    option.value = item.nome;
+                    option.textContent = `${item.nome} - R$ ${parseFloat(item.valor).toFixed(2).replace(".", ",")}`;
+                    option.dataset.valor = item.valor;
+                    select.appendChild(option);
+                });
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        carregarMaoDeObra();
+
+        const btnAdicionar = document.getElementById("btnAdicionarMaoObra");
+        const select = document.getElementById("mao_obra");
+        const lista = document.getElementById("listaMaoObra");
+        const campoOculto = document.getElementById("mao_obra_lista");
+
+        btnAdicionar.addEventListener("click", () => {
+            const nomeSelecionado = select.value;
+            const jaAdicionada = maoDeObraAdicionadas.some(item => item.nome === nomeSelecionado);
+            if (jaAdicionada) return;
+
+            const mao = maoDeObraDisponiveis.find(m => m.nome === nomeSelecionado);
+            if (!mao) return;
+
+            maoDeObraAdicionadas.push(mao);
+
+            const li = document.createElement("li");
+            li.textContent = `${mao.nome} - R$ ${parseFloat(mao.valor).toFixed(2).replace(".", ",")}`;
+            li.dataset.nome = mao.nome;
+
+            const btnRemover = document.createElement("button");
+            btnRemover.textContent = "Remover";
+            btnRemover.style.marginLeft = "10px";
+            btnRemover.style.backgroundColor = "#dc3545";
+            btnRemover.style.color = "#fff";
+            btnRemover.style.border = "none";
+            btnRemover.style.borderRadius = "4px";
+            btnRemover.style.padding = "2px 8px";
+            btnRemover.style.cursor = "pointer";
+
+            btnRemover.addEventListener("click", () => {
+                maoDeObraAdicionadas = maoDeObraAdicionadas.filter(m => m.nome !== mao.nome);
+                lista.removeChild(li);
+                atualizarValorTotal();
+                campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
+            });
+
+            li.appendChild(btnRemover);
+            lista.appendChild(li);
+            campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
+            atualizarValorTotal();
+        });
+    });
+</script>
+
+
+
 
 
 @endsection

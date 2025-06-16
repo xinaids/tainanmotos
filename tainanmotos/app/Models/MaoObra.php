@@ -12,4 +12,12 @@ class MaoObra extends Model
     public $timestamps = false;
 
     protected $fillable = ['nome', 'valor'];
+
+    public function servicos()
+{
+    return $this->belongsToMany(Servico::class, 'servico_maodeobra', 'cod_maodeobra', 'cod_servico')
+                ->withPivot('quantidade');
+}
+
+
 }

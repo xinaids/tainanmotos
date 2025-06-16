@@ -93,12 +93,15 @@ Route::post('/maodeobra', [MaoObraController::class, 'store'])->name('maoobra.st
 Route::get('/maodeobra/{id}/edit', [MaoObraController::class, 'edit'])->name('maoobra.edit');
 Route::put('/maodeobra/{id}', [MaoObraController::class, 'update'])->name('maoobra.update');
 Route::delete('/maodeobra/{id}', [MaoObraController::class, 'destroy'])->name('maoobra.destroy');
+Route::get('/mao-obra/listar', [MaoObraController::class, 'listar'])->name('maoobra.listar');
+
 
 
 //manutencao
 
 Route::post('/solicitar-manutencao', [ManutencaoController::class, 'store'])->name('manutencao.store');
 Route::post('/manutencao/atualizar', [ManutencaoController::class, 'atualizar'])->name('manutencao.atualizar');
+Route::post('/manutencao/{id}/descricao', [ManutencaoController::class, 'atualizarDescricao'])->name('manutencao.atualizarDescricao');
 
 
 //motos

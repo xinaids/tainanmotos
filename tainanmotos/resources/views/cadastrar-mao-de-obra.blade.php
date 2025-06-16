@@ -16,7 +16,7 @@
         <!-- Preço da mão de obra -->
         <div class="form-group">
             <label for="preco_mao_obra">Preço (R$) <span class="required-asterisk">*</span></label>
-            <input type="number" name="valor_mao_obra" required>
+            <input type="number" name="valor" required>
         </div>
 
         <button type="submit" class="btn-submit"><i class="fas fa-plus-circle"></i> Cadastrar Mão de Obra</button>

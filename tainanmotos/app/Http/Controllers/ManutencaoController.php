@@ -7,7 +7,6 @@ use App\Models\Moto;
 use App\Models\Servico;
 use Illuminate\Support\Facades\Auth;
 
-
 class ManutencaoController extends Controller
 {
     public function store(Request $request)
@@ -15,7 +14,6 @@ class ManutencaoController extends Controller
         if (!session()->has('usuario')) {
             return redirect()->route('login')->withErrors(['msg' => 'Você precisa estar logado para acessar.']);
         }
-
 
         $request->validate([
             'placa' => 'required|max:8',
@@ -32,7 +30,6 @@ class ManutencaoController extends Controller
         // Verifica se a moto já existe
         $moto = Moto::where('placa', $request->placa)->first();
 
-        // Se não existe, cria a moto com o cpf do usuário
         if (!$moto) {
             $moto = Moto::create([
                 'placa' => $request->placa,
@@ -58,13 +55,12 @@ class ManutencaoController extends Controller
 
     public function gerenciar()
     {
-        $servicos = Servico::where('situacao', 1)
+        $servicos = Servico::whereIn('situacao', [1, 2])
             ->with(['moto.modelo.fabricante', 'moto.usuario'])
             ->get();
 
         return view('gerenciar_manutencao', compact('servicos'));
     }
-
 
     public function visualizar()
     {
@@ -76,10 +72,50 @@ class ManutencaoController extends Controller
 
         $servicos = Servico::with('moto.modelo.fabricante', 'moto.usuario')
             ->whereHas('moto', function ($query) use ($usuario) {
-                $query->where('cpf_usuario', $usuario->cpf);
+                $query->where('cpf_usuario', $usuario['cpf']);
             })
             ->get();
 
         return view('visualizar_manutencao', compact('servicos'));
     }
+
+    public function atualizarDescricao(Request $request, $id)
+{
+    $servico = Servico::findOrFail($id);
+
+    $request->validate([
+        'descricao' => 'required|string',
+        'mao_obra_lista' => 'nullable|string' // string JSON
+    ]);
+
+    // Atualiza a descrição e situação
+    $servico->descricao_manutencao = $request->descricao;
+    $servico->situacao = 2;
+
+    // Limpa as mãos de obra anteriores (se houver)
+    $servico->maosObra()->detach();
+
+    $valorTotal = 0;
+
+    // Verifica se recebeu a lista de mãos de obra via JSON
+    $maoObraIds = json_decode($request->input('mao_obra_lista'), true);
+
+    if (is_array($maoObraIds)) {
+        foreach ($maoObraIds as $idMao) {
+            if ($idMao) {
+                $maoObra = \App\Models\MaoObra::find($idMao);
+                if ($maoObra) {
+                    $servico->maosObra()->attach($maoObra->codigo, ['quantidade' => 1]); // pode ajustar a quantidade
+                    $valorTotal += $maoObra->valor;
+                }
+            }
+        }
+    }
+
+    $servico->valor = $valorTotal;
+    $servico->save();
+
+    return redirect()->route('gerenciar.manutencao')->with('success', 'Manutenção atualizada com sucesso!');
+}
+
 }

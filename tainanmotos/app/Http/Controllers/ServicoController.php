@@ -42,5 +42,19 @@ class ServicoController extends Controller
     return redirect()->route('manutencao.gerenciar')->with('success', 'Serviço atualizado com sucesso!');
 }
 
+public function atualizarDescricao(Request $request, $id)
+{
+    $servico = Servico::findOrFail($id);
+    $servico->descricao_manutencao = now()->format('Y-m-d H:i:s') . " - " . $request->input('descricao');
+
+    $servico->situacao = 2;
+
+    $servico->save();
+
+    return redirect()->route('gerenciar.manutencao')->with('success', 'Manutenção atualizada com sucesso!');
+}
+
+
+
 
 }
