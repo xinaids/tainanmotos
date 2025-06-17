@@ -12,6 +12,16 @@
         </div>
     @endif
 
+
+    <form method="GET" action="{{ route('maoobra.index') }}" style="margin-bottom: 20px; display: flex; gap: 10px;">
+    <input type="text" name="busca" placeholder="Buscar mão de obra..." value="{{ $busca ?? '' }}"
+        style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc;">
+    <button type="submit" class="btn-submit" style="background-color: #1976d2; color: white; border: none; border-radius: 8px; padding: 10px 20px;">
+        <i class="fas fa-search"></i> Buscar
+    </button>
+</form>
+
+
     <div class="table-container">
         <table class="modelos-table">
             <thead>
