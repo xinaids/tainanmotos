@@ -260,10 +260,32 @@
 
                                 const li = document.createElement("li");
                                 li.textContent = `${m.nome} — R$ ${parseFloat(m.valor).toFixed(2).replace(".", ",")}`;
+
+                                const btnRemover = document.createElement("button");
+                                btnRemover.textContent = "✖";
+                                btnRemover.style.marginLeft = "10px";
+                                btnRemover.style.background = "none";
+                                btnRemover.style.border = "none";
+                                btnRemover.style.color = "red";
+                                btnRemover.style.cursor = "pointer";
+
+                                btnRemover.onclick = () => {
+                                    // Remove visual
+                                    li.remove();
+                                    // Remove da variável
+                                    maoDeObraAdicionadas = maoDeObraAdicionadas.filter(mao => mao.codigo !== m.codigo);
+                                    // Atualiza o valor e campo oculto
+                                    const totalAtualizado = maoDeObraAdicionadas.reduce((soma, item) => soma + parseFloat(item.valor), 0);
+                                    document.getElementById("valor").value = "R$ " + totalAtualizado.toFixed(2).replace(".", ",");
+                                    campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
+                                };
+
+                                li.appendChild(btnRemover);
                                 ulMaoObra.appendChild(li);
 
                                 total += parseFloat(m.valor);
                             });
+
 
                             campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
                             document.getElementById("valor").value = "R$ " + total.toFixed(2).replace(".", ",");
@@ -292,10 +314,10 @@
 
     const historicoBtns = document.querySelectorAll('.btn-historico');
     historicoBtns.forEach(btn => {
-    btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        abrirModalHistorico();
-    });
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            abrirModalHistorico();
+        });
     });
 
 
@@ -411,15 +433,30 @@
 
                 const item = document.createElement("li");
                 item.textContent = `${mao.nome} - R$ ${parseFloat(mao.valor).toFixed(2).replace(".", ",")}`;
+
+                const btnRemover = document.createElement("button");
+                btnRemover.textContent = "✖";
+                btnRemover.style.marginLeft = "10px";
+                btnRemover.style.background = "none";
+                btnRemover.style.border = "none";
+                btnRemover.style.color = "red";
+                btnRemover.style.cursor = "pointer";
+
+                btnRemover.onclick = () => {
+                    maoDeObraAdicionadas = maoDeObraAdicionadas.filter(m => m.codigo !== mao.codigo);
+                    item.remove();
+                    atualizarValorTotal();
+                    campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
+                };
+
+                item.appendChild(btnRemover);
                 lista.appendChild(item);
 
-                const total = maoDeObraAdicionadas.reduce((soma, m) => soma + parseFloat(m.valor), 0);
-
-                document.getElementById("valor").value = "R$ " + total.toFixed(2).replace(".", ",");
-
+                atualizarValorTotal();
                 campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
             }
         });
+
     });
 </script>
 
