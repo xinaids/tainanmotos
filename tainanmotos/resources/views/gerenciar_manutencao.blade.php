@@ -240,45 +240,64 @@
                         document.getElementById("placa_moto").value = data.moto.placa;
                         document.getElementById("ano_moto").value = data.moto.ano;
                         document.getElementById("quilometragem").value = data.quilometragem;
-                        document.getElementById("valor").value = "R$ " + parseFloat(data.valor).toFixed(2);
                         document.getElementById("descricao").value = data.descricao_manutencao ?? "";
 
-                        // Atualiza a lista de mão de obra registrada
+                        // Atualiza a lista visual e a variável de controle
                         const ulMaoObra = document.getElementById("maoObraRegistrada");
+                        const campoOculto = document.getElementById("mao_obra_lista");
                         ulMaoObra.innerHTML = "";
+                        maoDeObraAdicionadas = [];
 
                         if (data.maos_obra && data.maos_obra.length > 0) {
+                            let total = 0;
+
                             data.maos_obra.forEach(m => {
+                                maoDeObraAdicionadas.push({
+                                    codigo: m.codigo,
+                                    nome: m.nome,
+                                    valor: parseFloat(m.valor)
+                                });
+
                                 const li = document.createElement("li");
                                 li.textContent = `${m.nome} — R$ ${parseFloat(m.valor).toFixed(2).replace(".", ",")}`;
                                 ulMaoObra.appendChild(li);
+
+                                total += parseFloat(m.valor);
                             });
+
+                            campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
+                            document.getElementById("valor").value = "R$ " + total.toFixed(2).replace(".", ",");
                         } else {
                             const li = document.createElement("li");
                             li.innerHTML = "<em>Nenhuma mão de obra registrada.</em>";
                             ulMaoObra.appendChild(li);
+                            campoOculto.value = "[]";
+                            document.getElementById("valor").value = "R$ 0,00";
                         }
 
+                        // Atualiza a rota do formulário
                         document.getElementById("formDetalhes").action = `/manutencao/${data.codigo}/descricao`;
 
+                        // Exibe o modal
                         document.getElementById("modalDetalhes").style.display = "flex";
                     })
                     .catch(error => {
                         console.error("Erro ao carregar detalhes do serviço:", error);
                         alert("Erro ao carregar dados da manutenção.");
                     });
-
-            });
-        });
-
-        const historicoBtns = document.querySelectorAll('.btn-historico');
-        historicoBtns.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                abrirModalHistorico();
             });
         });
     });
+
+
+    const historicoBtns = document.querySelectorAll('.btn-historico');
+    historicoBtns.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        abrirModalHistorico();
+    });
+    });
+
 
 
     // Envia a lista atualizada ao submeter o formulário
@@ -345,27 +364,27 @@
     }
 
     function carregarMaoDeObra() {
-    const select = document.getElementById("mao_obra");
-    fetch('/api/mao-de-obra')
-        .then(res => res.json())
-        .then(data => {
-            maoDeObraDisponiveis = data;
-            select.innerHTML = ''; // limpa o select
-            data.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.codigo;
-                option.textContent = `${item.nome} - R$ ${parseFloat(item.valor).toFixed(2).replace(".", ",")}`;
-                option.dataset.nome = item.nome;
-                option.dataset.valor = item.valor;
-                select.appendChild(option);
+        const select = document.getElementById("mao_obra");
+        fetch('/api/mao-de-obra')
+            .then(res => res.json())
+            .then(data => {
+                maoDeObraDisponiveis = data;
+                select.innerHTML = ''; // limpa o select
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.codigo;
+                    option.textContent = `${item.nome} - R$ ${parseFloat(item.valor).toFixed(2).replace(".", ",")}`;
+                    option.dataset.nome = item.nome;
+                    option.dataset.valor = item.valor;
+                    select.appendChild(option);
+                });
             });
-        });
     }
 
 
 
 
-       document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
         carregarMaoDeObra();
 
         const btnAdicionar = document.getElementById("btnAdicionarMaoObra");
@@ -395,21 +414,62 @@
                 lista.appendChild(item);
 
                 const total = maoDeObraAdicionadas.reduce((soma, m) => soma + parseFloat(m.valor), 0);
-                valorTotal.textContent = `R$ ${total.toFixed(2).replace(".", ",")}`;
+
+                document.getElementById("valor").value = "R$ " + total.toFixed(2).replace(".", ",");
 
                 campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
             }
         });
     });
+</script>
 
+<script>
+    function mapearSituacao(situacao) {
+        switch (situacao) {
+            case 1:
+                return 'Pendente';
+            case 2:
+                return 'Em andamento';
+            case 3:
+                return 'Concluído';
+            default:
+                return 'Pendente';
+        }
+    }
+
+    function preencherModalComDados(servico) {
+        document.querySelector('#descricao_historico').value = servico.descricao_manutencao || '';
+        document.querySelector('#situacao').value = mapearSituacao(servico.situacao);
+        document.querySelector('#data_fechamento').value = servico.data_fechamento || '';
+
+        let total = 0;
+        const lista = [];
+
+        const listaElement = document.getElementById('mao_obra_adicionada');
+        listaElement.innerHTML = '';
+
+        servico.maos_obra.forEach(mao => {
+            const item = {
+                codigo: mao.codigo,
+                nome: mao.nome,
+                valor: parseFloat(mao.valor)
+            };
+
+            lista.push(item);
+            total += item.valor;
+
+            const li = document.createElement('li');
+            li.textContent = `${item.nome} - R$ ${item.valor.toFixed(2)}`;
+            listaElement.appendChild(li);
+        });
+
+        document.querySelector('#valor_total').value = `R$ ${total.toFixed(2)}`;
+        document.querySelector('#mao_obra_lista').value = JSON.stringify(lista);
+    }
 </script>
 
 
-
-
-
 @endsection
-
 
 
 

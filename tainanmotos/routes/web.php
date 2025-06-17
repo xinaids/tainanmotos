@@ -112,7 +112,7 @@ Route::get('/gerenciar_manutencao', [ManutencaoController::class, 'gerenciar'])-
 Route::get('/gerenciar-manutencao', [ManutencaoController::class, 'gerenciar'])->name('gerenciar.manutencao');
 
 Route::get('/servico/{id}', [ServicoController::class, 'show']);
-
+Route::post('/manutencao/{id}/descricao', [ServicoController::class, 'atualizarDescricao'])->name('manutencao.descricao');
 Route::post('/servico/{id}/atualizar', [ServicoController::class, 'atualizar'])->name('servico.atualizar');
 
 

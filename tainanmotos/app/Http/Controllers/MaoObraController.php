@@ -51,9 +51,9 @@ class MaoObraController extends Controller
         return redirect()->route('maoobra.index')->with('success', 'Mão de obra excluída com sucesso.');
     }
 
-    public function listar()
+public function listar()
 {
-    return MaoObra::select('nome', 'valor')->get();
+    return MaoObra::select('codigo', 'nome', 'valor')->get();
 }
 
 
