@@ -28,16 +28,15 @@
         </thead>
         <tbody>
             @foreach ($servicos as $servico)
-            <tr data-modelo="{{ $servico->moto->modelo->nome ?? '' }}"
-                data-marca="{{ $servico->moto->modelo->fabricante->nome ?? '' }}"
-                data-data_abertura="{{ \Carbon\Carbon::parse($servico->data_abertura)->format('Y-m-d') }}">
+            <tr data-id="{{ $servico->codigo }}">
                 <td>{{ $servico->moto->modelo->nome ?? '-' }}</td>
                 <td>{{ $servico->moto->modelo->fabricante->nome ?? '-' }}</td>
                 <td>{{ $servico->moto->usuario->nome ?? '-' }}</td>
                 <td>{{ \Carbon\Carbon::parse($servico->data_abertura)->format('d/m/Y') }}</td>
                 <td>
-                    <a href="#" class="btn-visualizar"
-                        data-id="{{ $servico->codigo }}"><i class="fas fa-search"></i> Ver Detalhes</a>
+                    <a href="#" class="btn-visualizar" data-id="{{ $servico->codigo }}">
+                        <i class="fas fa-search"></i> Ver Detalhes
+                    </a>
                 </td>
             </tr>
             @endforeach
@@ -56,65 +55,52 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="data_abertura">Data Abertura</label>
-                    <input type="date" id="data_abertura" name="data_abertura" value="2023-05-15" readonly>
+                    <input type="date" id="data_abertura" name="data_abertura" readonly>
                 </div>
                 <div class="form-group">
                     <label for="situacao">Situação</label>
-                    <select id="situacao" name="situacao" disabled>
-                        <option value="Pendente" selected>Pendente</option>
-                        <option value="Em andamento">Em andamento</option>
-                        <option value="Concluído">Concluído</option>
-                    </select>
+                    <input type="text" id="situacao" name="situacao" readonly>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label for="fabricante_moto">Fabricante</label>
-                    <input type="text" id="fabricante_moto" name="fabricante_moto" value="Yamaha" readonly>
+                    <input type="text" id="fabricante_moto" name="fabricante_moto" readonly>
                 </div>
                 <div class="form-group">
                     <label for="modelo_moto">Modelo</label>
-                    <input type="text" id="modelo_moto" name="modelo_moto" value="XTZ 250 Lander" readonly>
+                    <input type="text" id="modelo_moto" name="modelo_moto" readonly>
                 </div>
                 <div class="form-group">
                     <label for="placa_moto">Placa</label>
-                    <input type="text" id="placa_moto" name="placa_moto" value="IWG-2171" readonly>
+                    <input type="text" id="placa_moto" name="placa_moto" readonly>
                 </div>
                 <div class="form-group">
                     <label for="ano_moto">Ano</label>
-                    <input type="text" id="ano_moto" name="ano_moto" value="2015" readonly>
+                    <input type="text" id="ano_moto" name="ano_moto" readonly>
                 </div>
                 <div class="form-group">
                     <label for="quilometragem">Quilometragem</label>
-                    <input type="text" id="quilometragem" name="quilometragem" value="80834" readonly>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="valor">Valor da Manutenção</label>
-                    <input type="text" id="valor" name="valor" value="R$ 0" readonly>
+                    <input type="text" id="quilometragem" name="quilometragem" readonly>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group" style="flex: 1;">
                     <label for="descricao">Descrição</label>
-                    <textarea id="descricao" name="descricao" rows="4" readonly>Revisão geral, verificar relação e freios</textarea>
+                    <textarea id="descricao" name="descricao" rows="4" readonly></textarea>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="valor">Valor Total</label>
+                    <input type="text" id="valor" name="valor" readonly>
                 </div>
             </div>
         </form>
-
     </div>
 </div>
 
 <script>
-    function abrirModal(modelo, marca, dataAbertura) {
-        document.getElementById("modalDetalhes").style.display = "flex";
-        document.getElementById("modelo_moto").value = modelo;
-        document.getElementById("fabricante_moto").value = marca;
-        document.getElementById("data_abertura").value = dataAbertura;
-        document.getElementById("situacao").value = "Pendente";
-    }
-
     function fecharModal() {
         document.getElementById("modalDetalhes").style.display = "none";
     }
@@ -124,16 +110,35 @@
         visualizarBtns.forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
-                const row = this.closest('tr');
-                const modelo = row.dataset.modelo;
-                const marca = row.dataset.marca;
-                const dataAbertura = row.dataset.data_abertura;
-                abrirModal(modelo, marca, dataAbertura);
+                const idServico = this.dataset.id;
+
+                fetch(`/servico/${idServico}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById("data_abertura").value = data.data_abertura;
+                        document.getElementById("situacao").value = {
+                            1: "Pendente",
+                            2: "Em andamento",
+                            3: "Concluído"
+                        }[data.situacao] ?? "-";
+                        document.getElementById("fabricante_moto").value = data.moto.modelo.fabricante.nome;
+                        document.getElementById("modelo_moto").value = data.moto.modelo.nome;
+                        document.getElementById("placa_moto").value = data.moto.placa;
+                        document.getElementById("ano_moto").value = data.moto.ano;
+                        document.getElementById("quilometragem").value = data.quilometragem;
+                        document.getElementById("descricao").value = data.descricao_manutencao ?? '';
+                        document.getElementById("valor").value = "R$ " + parseFloat(data.valor).toFixed(2).replace(".", ",");
+
+                        document.getElementById("modalDetalhes").style.display = "flex";
+                    })
+                    .catch(err => {
+                        alert("Erro ao buscar detalhes da manutenção.");
+                        console.error(err);
+                    });
             });
         });
     });
 </script>
-@endsection
 
 <style>
     body {

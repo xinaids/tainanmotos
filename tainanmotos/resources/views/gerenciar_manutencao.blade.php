@@ -14,6 +14,13 @@
             <option value="marca">Marca</option>
             <option value="nome">Nome do Cliente</option>
         </select>
+        <select id="filtroSituacao" name="filtroSituacao">
+            <option value="todas">Todas</option>
+            <option value="pendente">Pendentes</option>
+            <option value="em_andamento">Em andamento</option>
+            <option value="concluido">Concluídas</option>
+        </select>
+
     </div>
 
     <table class="manutencao-table">
@@ -23,6 +30,7 @@
                 <th>Marca</th>
                 <th>Nome do Cliente</th>
                 <th>Data de Abertura</th>
+                <th>Situação</th>
                 <th>Detalhes</th>
             </tr>
         </thead>
@@ -30,15 +38,30 @@
             @foreach ($servicos as $servico)
             <tr data-modelo="{{ $servico->moto->modelo->nome ?? '' }}"
                 data-marca="{{ $servico->moto->modelo->fabricante->nome ?? '' }}"
-                data-data_abertura="{{ \Carbon\Carbon::parse($servico->data_abertura)->format('Y-m-d') }}">
+                data-data_abertura="{{ \Carbon\Carbon::parse($servico->data_abertura)->format('Y-m-d') }}"
+                data-situacao="{{ match($servico->situacao) {
+        1 => 'pendente',
+        2 => 'em_andamento',
+        3 => 'concluido',
+        default => '',
+    } }}">
                 <td>{{ $servico->moto->modelo->nome ?? '-' }}</td>
                 <td>{{ $servico->moto->modelo->fabricante->nome ?? '-' }}</td>
                 <td>{{ $servico->moto->usuario->nome ?? '-' }}</td>
                 <td>{{ \Carbon\Carbon::parse($servico->data_abertura)->format('d/m/Y') }}</td>
                 <td>
-                    <a href="#" class="btn-visualizar" data-id="{{ $servico->codigo }}"><i class="fas fa-search"></i> Ver Detalhes</a>
-                    <a href="#" class="btn-historico"><i class="fas fa-history"></i> Histórico</a>
+                    {{ match($servico->situacao) {
+        1 => 'Pendente',
+        2 => 'Em andamento',
+        3 => 'Concluído',
+        default => '-',
+    } }}
                 </td>
+                <td>
+                    <a href="#" class="btn-visualizar" data-id="{{ $servico->codigo }}"><i class="fas fa-search"></i> Ver Detalhes</a>
+                </td>
+
+
             </tr>
             @endforeach
         </tbody>
@@ -257,51 +280,6 @@
         });
     });
 
-    document.addEventListener("DOMContentLoaded", () => {
-        // Código já existente...
-
-        const btnAdicionar = document.getElementById("btnAdicionarMaoObra");
-        const selectMaoObra = document.getElementById("mao_obra");
-        const listaMaoObra = document.getElementById("listaMaoObra");
-        const campoOculto = document.getElementById("mao_obra_lista");
-
-        btnAdicionar.addEventListener("click", () => {
-            const valorSelecionado = selectMaoObra.value;
-            if (!valorSelecionado) return;
-
-            // Verifica se já foi adicionado
-            const itensExistentes = Array.from(listaMaoObra.children).map(li => li.dataset.valor);
-            if (itensExistentes.includes(valorSelecionado)) return;
-
-            const li = document.createElement("li");
-            li.textContent = valorSelecionado;
-            li.dataset.valor = valorSelecionado;
-
-            const btnRemover = document.createElement("button");
-            btnRemover.textContent = "Remover";
-            btnRemover.style.marginLeft = "10px";
-            btnRemover.style.backgroundColor = "#dc3545";
-            btnRemover.style.color = "#fff";
-            btnRemover.style.border = "none";
-            btnRemover.style.borderRadius = "4px";
-            btnRemover.style.padding = "2px 8px";
-            btnRemover.style.cursor = "pointer";
-
-            btnRemover.addEventListener("click", () => {
-                listaMaoObra.removeChild(li);
-                atualizarCampoOculto();
-            });
-
-            li.appendChild(btnRemover);
-            listaMaoObra.appendChild(li);
-            atualizarCampoOculto();
-        });
-
-        function atualizarCampoOculto() {
-            const valores = Array.from(listaMaoObra.children).map(li => li.dataset.valor);
-            campoOculto.value = JSON.stringify(valores);
-        }
-    });
 
     // Envia a lista atualizada ao submeter o formulário
     function enviarFormulario() {
@@ -321,21 +299,40 @@
         const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
         const novaEntrada = `${dataFormatada} - ${novaDescricao}`;
 
+
         // Adiciona nova entrada ao histórico existente
         const historicoAtual = historicoTextarea.value.trim();
         const novoHistorico = historicoAtual ? `${historicoAtual}\n${novaEntrada}` : novaEntrada;
 
+        // Atualiza o campo readonly para visualização
         historicoTextarea.value = novoHistorico;
 
-        // Clona o conteúdo para enviar com o form
-        const campoClone = document.createElement("input");
-        campoClone.type = "hidden";
-        campoClone.name = "descricao";
-        campoClone.value = novoHistorico;
-        document.getElementById("formDetalhes").appendChild(campoClone);
+        // Cria campo oculto para enviar o histórico completo
+        const campoHistorico = document.createElement("input");
+        campoHistorico.type = "hidden";
+        campoHistorico.name = "descricao_historico";
+        campoHistorico.value = novoHistorico;
+        document.getElementById("formDetalhes").appendChild(campoHistorico);
+
+        // Substitui o valor de descrição por apenas o novo texto (caso precise salvar separado)
+        descricaoInput.value = novaDescricao;
+
 
         return true; // prossegue com o envio
     }
+
+    document.getElementById('filtroSituacao').addEventListener('change', function() {
+        const filtro = this.value;
+
+        document.querySelectorAll('table.manutencao-table tbody tr').forEach(row => {
+            const situacao = row.getAttribute('data-situacao');
+            const deveMostrar = (
+                filtro === 'todas' || filtro === situacao
+            );
+
+            row.style.display = deveMostrar ? '' : 'none';
+        });
+    });
 </script>
 
 <script>
@@ -348,25 +345,27 @@
     }
 
     function carregarMaoDeObra() {
-        fetch('/mao-obra/listar')
-            .then(res => res.json())
-            .then(data => {
-                maoDeObraDisponiveis = data;
-
-                const select = document.getElementById("mao_obra");
-                select.innerHTML = ''; // limpar
-
-                data.forEach(item => {
-                    const option = document.createElement("option");
-                    option.value = item.nome;
-                    option.textContent = `${item.nome} - R$ ${parseFloat(item.valor).toFixed(2).replace(".", ",")}`;
-                    option.dataset.valor = item.valor;
-                    select.appendChild(option);
-                });
+    const select = document.getElementById("mao_obra");
+    fetch('/api/mao-de-obra')
+        .then(res => res.json())
+        .then(data => {
+            maoDeObraDisponiveis = data;
+            select.innerHTML = ''; // limpa o select
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.codigo;
+                option.textContent = `${item.nome} - R$ ${parseFloat(item.valor).toFixed(2).replace(".", ",")}`;
+                option.dataset.nome = item.nome;
+                option.dataset.valor = item.valor;
+                select.appendChild(option);
             });
+        });
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+
+
+
+       document.addEventListener('DOMContentLoaded', () => {
         carregarMaoDeObra();
 
         const btnAdicionar = document.getElementById("btnAdicionarMaoObra");
@@ -375,42 +374,34 @@
         const campoOculto = document.getElementById("mao_obra_lista");
 
         btnAdicionar.addEventListener("click", () => {
-            const nomeSelecionado = select.value;
-            const jaAdicionada = maoDeObraAdicionadas.some(item => item.nome === nomeSelecionado);
-            if (jaAdicionada) return;
+            const codigoSelecionado = parseInt(select.value);
+            const mao = maoDeObraDisponiveis.find(m => m.codigo === codigoSelecionado);
 
-            const mao = maoDeObraDisponiveis.find(m => m.nome === nomeSelecionado);
-            if (!mao) return;
+            if (mao) {
+                const existe = maoDeObraAdicionadas.some(m => m.codigo === mao.codigo);
+                if (existe) {
+                    alert("Essa mão de obra já foi adicionada.");
+                    return;
+                }
 
-            maoDeObraAdicionadas.push(mao);
+                maoDeObraAdicionadas.push({
+                    codigo: mao.codigo,
+                    nome: mao.nome,
+                    valor: mao.valor
+                });
 
-            const li = document.createElement("li");
-            li.textContent = `${mao.nome} - R$ ${parseFloat(mao.valor).toFixed(2).replace(".", ",")}`;
-            li.dataset.nome = mao.nome;
+                const item = document.createElement("li");
+                item.textContent = `${mao.nome} - R$ ${parseFloat(mao.valor).toFixed(2).replace(".", ",")}`;
+                lista.appendChild(item);
 
-            const btnRemover = document.createElement("button");
-            btnRemover.textContent = "Remover";
-            btnRemover.style.marginLeft = "10px";
-            btnRemover.style.backgroundColor = "#dc3545";
-            btnRemover.style.color = "#fff";
-            btnRemover.style.border = "none";
-            btnRemover.style.borderRadius = "4px";
-            btnRemover.style.padding = "2px 8px";
-            btnRemover.style.cursor = "pointer";
+                const total = maoDeObraAdicionadas.reduce((soma, m) => soma + parseFloat(m.valor), 0);
+                valorTotal.textContent = `R$ ${total.toFixed(2).replace(".", ",")}`;
 
-            btnRemover.addEventListener("click", () => {
-                maoDeObraAdicionadas = maoDeObraAdicionadas.filter(m => m.nome !== mao.nome);
-                lista.removeChild(li);
-                atualizarValorTotal();
                 campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
-            });
-
-            li.appendChild(btnRemover);
-            lista.appendChild(li);
-            campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
-            atualizarValorTotal();
+            }
         });
     });
+
 </script>
 
 
@@ -469,7 +460,9 @@
         margin: 20px 0;
         display: flex;
         gap: 10px;
+        flex-wrap: wrap;
     }
+
 
     .search-container input,
     .search-container select {
@@ -702,19 +695,15 @@
         transform: translateY(-2px);
     }
 
+    .btn-visualizar,
     .btn-historico {
-        padding: 8px 14px;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 13px;
-        display: inline-flex;
+        height: 36px;
+        display: flex;
         align-items: center;
-        text-decoration: none;
-        background-color: #6c757d;
-        color: white;
-        margin-left: 5px;
-        transition: background-color 0.3s ease, transform 0.2s ease;
+        justify-content: center;
+        padding: 0 12px;
     }
+
 
     .btn-historico:hover {
         background-color: #5a6268;

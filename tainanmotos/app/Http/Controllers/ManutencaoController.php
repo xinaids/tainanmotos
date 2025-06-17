@@ -88,24 +88,21 @@ class ManutencaoController extends Controller
         'mao_obra_lista' => 'nullable|string' // string JSON
     ]);
 
-    // Atualiza a descrição e situação
     $servico->descricao_manutencao = $request->descricao;
     $servico->situacao = 2;
 
-    // Limpa as mãos de obra anteriores (se houver)
-    $servico->maosObra()->detach();
-
+    $servico->maosObra()->detach(); // limpa anteriores
     $valorTotal = 0;
 
-    // Verifica se recebeu a lista de mãos de obra via JSON
-    $maoObraIds = json_decode($request->input('mao_obra_lista'), true);
+    $maoObraItens = json_decode($request->input('mao_obra_lista'), true);
 
-    if (is_array($maoObraIds)) {
-        foreach ($maoObraIds as $idMao) {
+    if (is_array($maoObraItens)) {
+        foreach ($maoObraItens as $item) {
+            $idMao = $item['codigo'] ?? null;
             if ($idMao) {
                 $maoObra = \App\Models\MaoObra::find($idMao);
                 if ($maoObra) {
-                    $servico->maosObra()->attach($maoObra->codigo, ['quantidade' => 1]); // pode ajustar a quantidade
+                    $servico->maosObra()->attach($maoObra->codigo, ['quantidade' => 1]);
                     $valorTotal += $maoObra->valor;
                 }
             }

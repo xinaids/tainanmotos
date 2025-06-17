@@ -102,6 +102,8 @@ Route::get('/mao-obra/listar', [MaoObraController::class, 'listar'])->name('maoo
 Route::post('/solicitar-manutencao', [ManutencaoController::class, 'store'])->name('manutencao.store');
 Route::post('/manutencao/atualizar', [ManutencaoController::class, 'atualizar'])->name('manutencao.atualizar');
 Route::post('/manutencao/{id}/descricao', [ManutencaoController::class, 'atualizarDescricao'])->name('manutencao.atualizarDescricao');
+Route::get('/servico/{id}', [\App\Http\Controllers\ServicoController::class, 'show']);
+Route::post('/manutencao/{id}/descricao', [ManutencaoController::class, 'atualizarDescricao'])->name('manutencao.atualizarDescricao');
 
 
 //motos
