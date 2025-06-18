@@ -509,7 +509,6 @@
 @endsection
 
 
-
 <style>
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -560,7 +559,6 @@
         flex-wrap: wrap;
     }
 
-
     .search-container input,
     .search-container select {
         padding: 10px;
@@ -577,7 +575,6 @@
         box-shadow: 0 0 5px rgba(25, 118, 210, 0.3);
     }
 
-    /* --- Tabela --- */
     .manutencao-table {
         width: 100%;
         border-collapse: collapse;
@@ -608,7 +605,6 @@
         background-color: #f9f9f9;
     }
 
-    /* --- Botões --- */
     .btn-visualizar,
     .btn-voltar,
     .btn-concluir {
@@ -662,7 +658,6 @@
         margin-right: 5px;
     }
 
-    /* --- Modal --- */
     .modal-overlay {
         position: fixed;
         top: 0;
@@ -680,8 +675,8 @@
         background: #fff;
         padding: 30px;
         border-radius: 12px;
-        width: 90%;
-        max-width: 900px;
+        width: 95%;
+        max-width: 1400px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         position: relative;
         animation: fadeIn 0.3s ease-in-out;
@@ -696,17 +691,17 @@
         color: #555;
     }
 
-    /* --- Formulário Modal --- */
     .modal-form .form-row {
-        display: flex;
-        gap: 15px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
         margin-bottom: 20px;
-        flex-wrap: wrap;
     }
 
     .modal-form .form-group {
         flex: 1;
-        min-width: 150px;
+        min-width: 200px;
+        max-width: 100%;
     }
 
     .modal-form label {
@@ -720,29 +715,16 @@
     .modal-form textarea,
     .modal-form select {
         width: 100%;
-        padding: 10px;
+        padding: 12px;
         border-radius: 8px;
         border: 1px solid #ccc;
-        font-size: 14px;
+        font-size: 15px;
         box-sizing: border-box;
         background-color: white;
         appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        /* background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3Cpath d='M0 0h24v24H0z' fill='none'/%3E%3C/svg%3E");
-    */
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        background-size: 16px 16px;
-        transition: border-color 0.3s;
     }
 
-    .modal-form select:focus {
-        border-color: #1976d2;
-        box-shadow: 0 0 5px rgba(25, 118, 210, 0.3);
-        outline: none;
-    }
-
+    .modal-form input:focus,
     .modal-form textarea:focus,
     .modal-form select:focus {
         border-color: #1976d2;
@@ -752,12 +734,8 @@
 
     .modal-form select {
         background-color: white;
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
     }
 
-    /* --- Botão + --- */
     .btn-plus {
         padding: 10px 12px;
         background-color: #1976d2;
@@ -801,9 +779,25 @@
         padding: 0 12px;
     }
 
-
     .btn-historico:hover {
         background-color: #5a6268;
         transform: translateY(-2px);
+    }
+
+    #listaMaoObra li,
+    #maoObraRegistrada li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-right: 10px;
+    }
+
+    #listaMaoObra li button,
+    #maoObraRegistrada li button {
+        background: none;
+        border: none;
+        color: red;
+        font-weight: bold;
+        cursor: pointer;
     }
 </style>

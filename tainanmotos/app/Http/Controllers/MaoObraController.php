@@ -10,13 +10,19 @@ class MaoObraController extends Controller
     public function index(Request $request)
     {
         $busca = $request->input('busca');
+        $ordenarPor = $request->input('ordenar_por', 'nome');
+        $ordem = $request->input('ordem', 'asc');
 
-        $maos = MaoObra::when($busca, function ($query, $busca) {
-            return $query->where('nome', 'ILIKE', "%$busca%");
-        })->get();
+        $maos = \App\Models\MaoObra::when($busca, function ($query, $busca) {
+            $query->whereRaw('LOWER(nome) LIKE ?', ['%' . strtolower($busca) . '%']);
+        })
+            ->orderBy($ordenarPor, $ordem)
+            ->paginate(10)
+            ->appends($request->query());
 
         return view('maoobra.index', compact('maos', 'busca'));
     }
+
 
 
     public function create()

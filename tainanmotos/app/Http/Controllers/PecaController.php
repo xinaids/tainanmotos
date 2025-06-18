@@ -33,7 +33,18 @@ class PecaController extends Controller
 
 public function index(Request $request)
 {
-    $pecas = Peca::with('modelo')->paginate(10); // paginação com 10 por página
+    $ordenarPor = $request->input('ordenar_por', 'nome');
+    $ordem = $request->input('ordem', 'asc');
+    $pesquisa = $request->input('pesquisa');
+
+    $pecas = Peca::with('modelo')
+        ->when($pesquisa, function ($query, $pesquisa) {
+            $query->whereRaw('LOWER(nome) LIKE ?', ['%' . strtolower($pesquisa) . '%']);
+        })
+        ->orderBy($ordenarPor, $ordem)
+        ->paginate(10)
+        ->appends($request->query());
+
     return view('pecas.index', compact('pecas'));
 }
 

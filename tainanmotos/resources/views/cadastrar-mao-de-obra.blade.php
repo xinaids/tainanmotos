@@ -22,15 +22,17 @@
         <button type="submit" class="btn-submit"><i class="fas fa-plus-circle"></i> Cadastrar Mão de Obra</button>
     </form>
 
-    <!-- Botão de Voltar -->
-    <a href="{{ route('dashboard') }}" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar</a>
-
     <!-- Botão Visualizar -->
     <div class="visualizar-buttons">
         <a href="{{ route('maoobra.index') }}" class="btn-visualizar">
              <i class="fas fa-eye"></i> Visualizar Cadastrados
             </a>
     </div>
+    
+    <!-- Botão de Voltar -->
+    <a href="{{ route('dashboard') }}" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar</a>
+
+
 </div>
 
 

@@ -26,22 +26,34 @@ class FabricanteController extends Controller
         return redirect()->back()->with('success', 'Fabricante cadastrado com sucesso!');
     }
 
-public function create()
-{
-    if (!session()->has('usuario')) {
-        return redirect()->route('login');
-    }
+    public function create()
+    {
+        if (!session()->has('usuario')) {
+            return redirect()->route('login');
+        }
 
-    return view('cadastrar-fabricante');
-}
+        return view('cadastrar-fabricante');
+    }
 
 
     public function index(Request $request)
     {
-        $ordenarPor = $request->input('ordenar_por', 'nome'); // nome como padrão
+        if (!session()->has('usuario')) {
+            return redirect()->route('login');
+        }
 
-        $fabricantes = DB::table('fabricante')
-            ->orderBy($ordenarPor, 'asc')
+        $ordenarPor = $request->input('ordenar_por', 'nome');
+        $ordem = $request->input('ordem', 'asc');
+        $pesquisa = $request->input('pesquisa');
+
+        $query = DB::table('fabricante');
+
+        if ($pesquisa) {
+            $query->whereRaw('LOWER(nome) LIKE ?', ['%' . strtolower($pesquisa) . '%']);
+        }
+
+        $fabricantes = $query
+            ->orderBy($ordenarPor, $ordem)
             ->paginate(10)
             ->appends($request->query());
 
@@ -65,15 +77,14 @@ public function create()
         return redirect()->route('fabricante.index')->with('success', 'Fabricante excluído com sucesso!');
     }
 
-public function update(Request $request, $codigo)
-{
-    $fabricante = DB::table('fabricante')->where('codigo', $codigo)->first();
+    public function update(Request $request, $codigo)
+    {
+        $fabricante = DB::table('fabricante')->where('codigo', $codigo)->first();
 
-    DB::table('fabricante')
-        ->where('codigo', $codigo)
-        ->update(['nome' => $request->input('nome')]);
+        DB::table('fabricante')
+            ->where('codigo', $codigo)
+            ->update(['nome' => $request->input('nome')]);
 
-    return redirect()->route('fabricante.index')->with('success', 'Fabricante atualizado com sucesso!');
-}
-
+        return redirect()->route('fabricante.index')->with('success', 'Fabricante atualizado com sucesso!');
+    }
 }

@@ -7,20 +7,38 @@
     <h2>Fabricantes Cadastrados</h2>
 
     <!-- Filtro com valor padrão: Nome (A-Z) -->
-    <form method="GET" action="{{ route('fabricante.index') }}" class="filtro-form">
-        <label for="ordenar_por">Ordenar por:</label>
-        <select name="ordenar_por" id="ordenar_por" onchange="this.form.submit()">
-            <option value="codigo" {{ request('ordenar_por') == 'codigo' ? 'selected' : '' }}>Código</option>
-            <option value="nome" {{ request('ordenar_por', 'nome') == 'nome' ? 'selected' : '' }}>Nome (A-Z)</option>
-        </select>
-    </form>
+<!-- Filtro de ordenação e campo de pesquisa -->
+<form method="GET" action="{{ route('fabricante.index') }}" class="filtro-form">
+    <div class="filtro-row">
+        <div class="filtro-campo">
+            <label for="ordenar_por">Ordenar por:</label>
+            <select name="ordenar_por" id="ordenar_por">
+                <option value="nome" {{ request('ordenar_por', 'nome') == 'nome' ? 'selected' : '' }}>Nome</option>
+                <option value="codigo" {{ request('ordenar_por') == 'codigo' ? 'selected' : '' }}>Código</option>
+            </select>
+
+            <select name="ordem" id="ordem">
+                <option value="asc" {{ request('ordem', 'asc') == 'asc' ? 'selected' : '' }}>A-Z</option>
+                <option value="desc" {{ request('ordem') == 'desc' ? 'selected' : '' }}>Z-A</option>
+            </select>
+        </div>
+
+        <div class="filtro-campo">
+            <label for="pesquisa">Pesquisar:</label>
+            <input type="text" name="pesquisa" id="pesquisa" placeholder="Buscar fabricante..." value="{{ request('pesquisa') }}">
+        </div>
+
+        <button type="submit" class="btn-submit filtro-btn">Filtrar</button>
+    </div>
+</form>
+
 
     @if($fabricantes->count() > 0)
         <div class="table-container">
             <table class="fabricantes-table">
                 <thead>
                     <tr>
-                        <th>Código</th>
+                        <!-- <th>Código</th> -->
                         <th>Nome</th>
                         <th>Ações</th>
                     </tr>
@@ -28,7 +46,7 @@
                 <tbody>
                     @foreach($fabricantes as $fabricante)
                         <tr>
-                            <td>{{ $fabricante->codigo }}</td>
+                            <!-- <td>{{ $fabricante->codigo }}</td>  -->
                             <td>{{ $fabricante->nome }}</td>
                             <td class="actions-cell">
                                 <a href="{{ route('fabricante.edit', $fabricante->codigo) }}" class="btn-action edit" title="Editar">
@@ -185,6 +203,9 @@ h2 {
 .actions-cell {
     display: flex;
     gap: 8px;
+    justify-content: center;
+    align-items: center; 
+    height: 100%;
 }
 
 .btn-action {
@@ -199,6 +220,7 @@ h2 {
     transition: background-color 0.3s, transform 0.2s;
     text-decoration: none;
 }
+
 
 .btn-action i {
     color: white;
@@ -265,6 +287,52 @@ h2 {
     background-color: #f1f1f1;
     cursor: not-allowed;
 }
+
+.filtro-row {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.filtro-campo {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+}
+
+.filtro-campo label {
+    font-size: 14px;
+    margin-bottom: 4px;
+    font-weight: bold;
+    color: #333;
+}
+
+.filtro-campo input,
+.filtro-campo select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.filtro-btn {
+    padding: 10px 16px;
+    font-size: 14px;
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.filtro-btn:hover {
+    background-color: #125a9c;
+}
+
 
 
 </style>
