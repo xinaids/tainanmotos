@@ -31,11 +31,11 @@ class PecaController extends Controller
         return redirect()->route('pecas.index')->with('success', 'Peça cadastrada com sucesso!');
     }
 
-    public function index()
-    {
-        $pecas = Peca::with('modelo')->get();
-        return view('pecas.index', compact('pecas'));
-    }
+public function index(Request $request)
+{
+    $pecas = Peca::with('modelo')->paginate(10); // paginação com 10 por página
+    return view('pecas.index', compact('pecas'));
+}
 
     public function edit($codigo)
 {

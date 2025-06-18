@@ -13,6 +13,7 @@ use App\Http\Controllers\ManutencaoController;
 use App\Http\Controllers\MotoController;
 use App\Http\Controllers\ServicoController;
 use App\Models\Moto;
+use App\Http\Controllers\EstatisticaController;
 
 
 
@@ -114,6 +115,9 @@ Route::get('/gerenciar-manutencao', [ManutencaoController::class, 'gerenciar'])-
 Route::get('/servico/{id}', [ServicoController::class, 'show']);
 Route::post('/manutencao/{id}/descricao', [ServicoController::class, 'atualizarDescricao'])->name('manutencao.descricao');
 Route::post('/servico/{id}/atualizar', [ServicoController::class, 'atualizar'])->name('servico.atualizar');
+
+//est
+Route::get('/estatisticas', [EstatisticaController::class, 'index'])->name('estatisticas');
 
 
 Route::get('/moto/por-placa/{placa}', function ($placa) {

@@ -22,4 +22,18 @@ class Modelo extends Model
 {
     return $this->belongsTo(Fabricante::class, 'cod_fabricante');
 }
+
+public function servicos()
+{
+    return $this->hasManyThrough(
+        \App\Models\Servico::class,
+        \App\Models\Moto::class,
+        'cod_modelo', // foreign key de Moto que aponta para Modelo
+        'cod_moto',   // foreign key de Servico que aponta para Moto
+        'codigo',     // chave local do Modelo
+        'codigo'      // chave local do Moto
+    );
+}
+
+
 }

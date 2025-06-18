@@ -11,4 +11,11 @@ class Fabricante extends Model
     public $timestamps = false;
 
     protected $fillable = ['nome'];
+
+    public function modelos()
+{
+    return $this->hasMany(\App\Models\Modelo::class, 'cod_fabricante', 'codigo');
+}
+
+
 }
