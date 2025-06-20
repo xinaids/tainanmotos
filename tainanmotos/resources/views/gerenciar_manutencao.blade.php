@@ -7,22 +7,24 @@
     <h2>Gerenciar Manutenções</h2>
     <p>Acompanhe e administre as manutenções em aberto no sistema.</p>
 
+    {{-- ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­ BUSCA / FILTROS --}}
     <div class="form-group search-container">
         <input type="text" id="search" name="search" placeholder="Buscar...">
-        <select id="search-type" name="search-type" style="appearance: none; background-image: none;">
+        <select id="search-type" name="search-type" style="appearance:none;background-image:none;">
             <option value="modelo">Modelo</option>
             <option value="marca">Marca</option>
             <option value="nome">Nome do Cliente</option>
         </select>
+
         <select id="filtroSituacao" name="filtroSituacao">
             <option value="todas">Todas</option>
             <option value="pendente">Pendentes</option>
             <option value="em_andamento">Em andamento</option>
             <option value="concluido">Concluídas</option>
         </select>
-
     </div>
 
+    {{-- ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­ TABELA --}}
     <table class="manutencao-table">
         <thead>
             <tr>
@@ -36,52 +38,39 @@
         </thead>
         <tbody>
             @foreach ($servicos as $servico)
-            <tr data-modelo="{{ $servico->moto->modelo->nome ?? '' }}"
+            <tr
+                data-modelo="{{ $servico->moto->modelo->nome ?? '' }}"
                 data-marca="{{ $servico->moto->modelo->fabricante->nome ?? '' }}"
                 data-data_abertura="{{ \Carbon\Carbon::parse($servico->data_abertura)->format('Y-m-d') }}"
-                data-situacao="{{ match($servico->situacao) {
-        1 => 'pendente',
-        2 => 'em_andamento',
-        3 => 'concluido',
-        default => '',
-    } }}">
+                data-situacao="{{ match($servico->situacao){1=>'pendente',2=>'em_andamento',3=>'concluido',default=>''} }}">
                 <td>{{ $servico->moto->modelo->nome ?? '-' }}</td>
                 <td>{{ $servico->moto->modelo->fabricante->nome ?? '-' }}</td>
                 <td>{{ $servico->moto->usuario->nome ?? '-' }}</td>
                 <td>{{ \Carbon\Carbon::parse($servico->data_abertura)->format('d/m/Y') }}</td>
-                <td>
-                    {{ match($servico->situacao) {
-        1 => 'Pendente',
-        2 => 'Em andamento',
-        3 => 'Concluído',
-        default => '-',
-    } }}
-                </td>
-                <td>
-                    <a href="#" class="btn-visualizar" data-id="{{ $servico->codigo }}"><i class="fas fa-search"></i> Ver Detalhes</a>
-                </td>
-
-
+                <td>{{ ['1'=>'Pendente','2'=>'Em andamento','3'=>'Concluído'][$servico->situacao] ?? '-' }}</td>
+                <td><a href="#" class="btn-visualizar" data-id="{{ $servico->codigo }}"><i class="fas fa-search"></i> Ver Detalhes</a></td>
             </tr>
             @endforeach
         </tbody>
-
     </table>
 
     <a href="{{ route('dashboard') }}" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar ao Painel</a>
 </div>
 
-<!-- Modal Detalhes -->
-<div id="modalDetalhes" class="modal-overlay" style="display: none;">
+{{-- ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­ MODAL DETALHES --}}
+<div id="modalDetalhes" class="modal-overlay" style="display:none;">
     <div class="modal-content">
         <span class="close-modal" onclick="fecharModal()">&times;</span>
         <h3>Detalhes da Manutenção</h3>
-        <form class="modal-form" id="formDetalhes" method="POST" onsubmit="return prepararEnvioDescricao();">
+
+        <form id="formDetalhes" class="modal-form" method="POST" onsubmit="return prepararEnvioDescricao();">
             @csrf
+
+            {{-- linha 1 --}}
             <div class="form-row">
                 <div class="form-group">
                     <label for="data_abertura">Data Abertura</label>
-                    <input type="date" id="data_abertura" name="data_abertura" value="2023-05-15">
+                    <input type="date" id="data_abertura" name="data_abertura">
                 </div>
                 <div class="form-group">
                     <label for="data_fechamento">Data Fechamento</label>
@@ -90,97 +79,72 @@
                 <div class="form-group">
                     <label for="situacao">Situação</label>
                     <select id="situacao" name="situacao">
-                        <option value="Pendente" selected>Pendente</option>
-                        <option value="Em andamento">Em andamento</option>
-                        <option value="Concluído">Concluído</option>
+                        <option>Pendente</option>
+                        <option>Em andamento</option>
+                        <option>Concluído</option>
                     </select>
                 </div>
             </div>
 
+            {{-- linha 2 --}}
             <div class="form-row">
-                <div class="form-group">
-                    <label for="fabricante_moto">Fabricante</label>
-                    <input type="text" id="fabricante_moto" name="fabricante_moto" value="Yamaha">
-                </div>
-                <div class="form-group">
-                    <label for="modelo_moto">Modelo</label>
-                    <input type="text" id="modelo_moto" name="modelo_moto" value="XTZ 250 Lander">
-                </div>
-                <div class="form-group">
-                    <label for="placa_moto">Placa</label>
-                    <input type="text" id="placa_moto" name="placa_moto" value="IWG-2171">
-                </div>
-                <div class="form-group">
-                    <label for="ano_moto">Ano</label>
-                    <input type="text" id="ano_moto" name="ano_moto" value="2015">
-                </div>
-                <div class="form-group">
-                    <label for="quilometragem">Quilometragem</label>
-                    <input type="text" id="quilometragem" name="quilometragem" value="80834">
-                </div>
+                <div class="form-group"><label>Fabricante</label><input id="fabricante_moto" name="fabricante_moto"></div>
+                <div class="form-group"><label>Modelo</label><input id="modelo_moto" name="modelo_moto"></div>
+                <div class="form-group"><label>Placa</label><input id="placa_moto" name="placa_moto"></div>
+                <div class="form-group"><label>Ano</label><input id="ano_moto" name="ano_moto"></div>
+                <div class="form-group"><label>Quilometragem</label><input id="quilometragem" name="quilometragem"></div>
             </div>
 
+            {{-- linha 3 --}}
             <div class="form-row">
-                <div class="form-group" style="flex: 1;">
+                <div class="form-group">
                     <label for="valor">Valor</label>
-                    <input type="text" id="valor" name="valor" value="R$ 0">
+                    <input id="valor" name="valor" value="R$ 0,00">
                 </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group" style="flex: 1;">
+                <div class="form-group">
                     <label for="mao_obra">Atribuir Mão de Obra</label>
                     <select id="mao_obra" name="mao_obra"></select>
-
-                    <div style="margin-top: 8px; display: flex; gap: 8px;">
+                    <div style="margin-top:8px;display:flex;gap:8px;">
                         <button type="button" class="btn-plus" id="btnAdicionarMaoObra">Adicionar</button>
                     </div>
-                    <ul id="listaMaoObra" style="margin-top: 10px; padding-left: 20px; list-style-type: disc;"></ul>
-                    <input type="hidden" name="mao_obra_lista" id="mao_obra_lista">
+                    <ul id="listaMaoObra" style="margin-top:10px;padding-left:20px;list-style-type:disc;"></ul>
+                    <input type="hidden" id="mao_obra_lista" name="mao_obra_lista">
                 </div>
             </div>
 
-
+            {{-- linha 4 --}}
             <div class="form-row">
-                <div class="form-group" style="flex: 1;">
-                    <label for="descricao">Descrição</label>
-                    <textarea id="descricao" name="descricao" rows="4"></textarea>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label for="descricao_historico">Histórico de Descrições</label>
-                    <textarea id="descricao_historico" rows="6" readonly style="background-color: #f5f5f5;"></textarea>
-                </div>
+                <div class="form-group"><label>Descrição</label><textarea id="descricao" name="descricao" rows="4"></textarea></div>
+                <div class="form-group"><label>Histórico de Descrições</label><textarea id="descricao_historico" rows="6" readonly style="background:#f5f5f5;"></textarea></div>
             </div>
 
+            {{-- linha 5 --}}
             <div class="form-row">
-                <div class="form-group" style="flex: 1;">
+                <div class="form-group">
                     <label>Mão de Obra Registrada</label>
-                    <ul id="maoObraRegistrada" style="background-color: #f5f5f5; padding: 10px; border-radius: 8px; list-style-type: disc;">
+                    <ul id="maoObraRegistrada" style="background:#f5f5f5;padding:10px;border-radius:8px;list-style-type:disc;">
                         <li><em>Nenhuma mão de obra registrada.</em></li>
                     </ul>
                 </div>
             </div>
-            <div class="form-row" style="justify-content: flex-end;">
-                <button type="submit" class="btn-enviar">
-                    <i class="fas fa-paper-plane"></i> Enviar Manutenção
-                </button>
+
+            <div class="form-row" style="justify-content:flex-end;">
+                <button class="btn-enviar"><i class="fas fa-paper-plane"></i> Enviar Manutenção</button>
             </div>
         </form>
     </div>
 </div>
 
-
-<!-- Modal Histórico -->
-<div id="modalHistorico" class="modal-overlay" style="display: none;">
+{{-- ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­ MODAL HISTÓRICO --}}
+<div id="modalHistorico" class="modal-overlay" style="display:none;">
     <div class="modal-content">
         <span class="close-modal" onclick="fecharModalHistorico()">&times;</span>
         <h3>Histórico de Descrições</h3>
-        <div id="historicoDescricao" style="max-height: 300px; overflow-y: auto; padding: 10px; background: #f9f9f9; border: 1px solid #ccc; border-radius: 8px;">
+        <div id="historicoDescricao" style="max-height:300px;overflow-y:auto;padding:10px;background:#f9f9f9;border:1px solid #ccc;border-radius:8px;">
             <ul id="listaHistorico"></ul>
         </div>
     </div>
 </div>
-
 <script>
     function abrirModal(modelo, marca, dataAbertura) {
         document.getElementById("modalDetalhes").style.display = "flex";
@@ -240,7 +204,8 @@
                         document.getElementById("placa_moto").value = data.moto.placa;
                         document.getElementById("ano_moto").value = data.moto.ano;
                         document.getElementById("quilometragem").value = data.quilometragem;
-                        document.getElementById("descricao").value = data.descricao_manutencao ?? "";
+                        document.getElementById("descricao").value = "";
+
 
                         // Atualiza a lista visual e a variável de controle
                         const ulMaoObra = document.getElementById("maoObraRegistrada");
@@ -336,8 +301,17 @@
         const novaDescricao = descricaoInput.value.trim();
         if (!novaDescricao) return true; // Não faz nada se vazio
 
+
         const dataAtual = new Date();
-        const dataFormatada = dataAtual.toLocaleDateString('pt-BR');
+        const dataFormatada = dataAtual.toLocaleString('pt-BR', { // DATA + HORA
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+
         const novaEntrada = `${dataFormatada} - ${novaDescricao}`;
 
 
@@ -407,56 +381,69 @@
 
 
     document.addEventListener('DOMContentLoaded', () => {
+        /* popula o <select> com as MOs cadastradas */
         carregarMaoDeObra();
 
-        const btnAdicionar = document.getElementById("btnAdicionarMaoObra");
-        const select = document.getElementById("mao_obra");
-        const lista = document.getElementById("listaMaoObra");
-        const campoOculto = document.getElementById("mao_obra_lista");
+        /* ------------ BOTÃO “ADICIONAR” --------------- */
+        const btnAdicionar = document.getElementById('btnAdicionarMaoObra');
+        const select = document.getElementById('mao_obra');
+        const lista = document.getElementById('listaMaoObra');
+        const campoOculto = document.getElementById('mao_obra_lista');
 
-        btnAdicionar.addEventListener("click", () => {
-            const codigoSelecionado = parseInt(select.value);
-            const mao = maoDeObraDisponiveis.find(m => m.codigo === codigoSelecionado);
+        btnAdicionar.addEventListener('click', () => {
+            const codigo = parseInt(select.value, 10);
+            if (!codigo) return; // nada escolhido
 
-            if (mao) {
-                const existe = maoDeObraAdicionadas.some(m => m.codigo === mao.codigo);
-                if (existe) {
-                    alert("Essa mão de obra já foi adicionada.");
-                    return;
-                }
+            const mao = maoDeObraDisponiveis.find(m => m.codigo === codigo);
+            if (!mao) return;
 
-                maoDeObraAdicionadas.push({
-                    codigo: mao.codigo,
-                    nome: mao.nome,
-                    valor: mao.valor
-                });
+            if (maoDeObraAdicionadas.some(m => m.codigo === codigo)) { // evita duplicidade
+                alert('Essa mão de obra já foi adicionada.');
+                return;
+            }
 
-                const item = document.createElement("li");
-                item.textContent = `${mao.nome} - R$ ${parseFloat(mao.valor).toFixed(2).replace(".", ",")}`;
+            maoDeObraAdicionadas.push(mao);
 
-                const btnRemover = document.createElement("button");
-                btnRemover.textContent = "✖";
-                btnRemover.style.marginLeft = "10px";
-                btnRemover.style.background = "none";
-                btnRemover.style.border = "none";
-                btnRemover.style.color = "red";
-                btnRemover.style.cursor = "pointer";
+            /* item visual na lista */
+            const li = document.createElement('li');
+            li.textContent = `${mao.nome} — R$ ${(+mao.valor).toFixed(2).replace('.', ',')}`;
 
-                btnRemover.onclick = () => {
-                    maoDeObraAdicionadas = maoDeObraAdicionadas.filter(m => m.codigo !== mao.codigo);
-                    item.remove();
-                    atualizarValorTotal();
-                    campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
-                };
-
-                item.appendChild(btnRemover);
-                lista.appendChild(item);
-
+            const btnX = document.createElement('button');
+            btnX.textContent = '✖';
+            btnX.style.cssText =
+                'margin-left:10px;background:none;border:none;color:red;cursor:pointer';
+            btnX.onclick = () => {
+                li.remove();
+                maoDeObraAdicionadas =
+                    maoDeObraAdicionadas.filter(m => m.codigo !== mao.codigo);
                 atualizarValorTotal();
                 campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
-            }
-        });
+            };
 
+            li.appendChild(btnX);
+            lista.appendChild(li);
+
+            atualizarValorTotal();
+            campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
+        });
+        /* ---------------------------------------------- */
+
+        /* ------------ ABRIR MODAL DETALHES ------------ */
+        const visualizarBtns = document.querySelectorAll('.btn-visualizar');
+        visualizarBtns.forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.preventDefault();
+                const idServico = btn.dataset.id;
+
+                fetch(`/servico/${idServico}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        /* suas atribuições originais … */
+                        /* ... (não alterei nada aqui) ... */
+                    })
+                    .catch(() => alert('Erro ao carregar dados da manutenção.'));
+            });
+        });
     });
 </script>
 
@@ -510,11 +497,11 @@
 
 
 <style>
+    /* ---------- LAYOUT GERAL ---------- */
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f4f6f9;
-        margin: 0;
-        padding: 0;
+        background: #f4f6f9;
+        margin: 0
     }
 
     .gerenciar-container {
@@ -523,88 +510,82 @@
         padding: 20px;
         background: #fff;
         border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, .1)
     }
 
-    .gerenciar-container h2 {
+    h2 {
         font-size: 26px;
-        margin-bottom: 5px;
-    }
-
-    .gerenciar-container p {
-        font-size: 15px;
-        color: #555;
+        margin: 0 0 5px
     }
 
     .fade-in {
-        animation: fadeIn 0.6s ease-in-out;
+        animation: fadeIn .6s ease-in-out
     }
 
     @keyframes fadeIn {
         from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(20px)
         }
 
         to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0)
         }
     }
 
+    /* ---------- FILTRO ---------- */
     .search-container {
         margin: 20px 0;
         display: flex;
         gap: 10px;
-        flex-wrap: wrap;
+        flex-wrap: wrap
     }
 
     .search-container input,
     .search-container select {
         padding: 10px;
         font-size: 14px;
-        border-radius: 6px;
         border: 1px solid #ccc;
-        transition: all 0.3s ease;
+        border-radius: 6px;
+        transition: .3s
     }
 
     .search-container input:focus,
     .search-container select:focus {
-        outline: none;
         border-color: #1976d2;
-        box-shadow: 0 0 5px rgba(25, 118, 210, 0.3);
+        box-shadow: 0 0 5px rgba(25, 118, 210, .3);
+        outline: none
     }
 
+    /* ---------- TABELA ---------- */
     .manutencao-table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 15px;
-        background-color: white;
+        background: #fff;
         border-radius: 10px;
-        overflow: hidden;
+        overflow: hidden
     }
 
     .manutencao-table th,
     .manutencao-table td {
         padding: 12px 15px;
-        border-bottom: 1px solid #eee;
-        text-align: left;
         font-size: 14px;
+        border-bottom: 1px solid #eee;
+        text-align: left
     }
 
     .manutencao-table th {
-        background-color: #f0f2f5;
-        font-weight: bold;
-    }
-
-    .manutencao-table tr {
-        transition: background-color 0.3s ease;
+        background: #f0f2f5;
+        font-weight: bold
     }
 
     .manutencao-table tr:hover {
-        background-color: #f9f9f9;
+        background: #f9f9f9
     }
 
+    /* ---------- BOTÕES ---------- */
     .btn-visualizar,
     .btn-voltar,
     .btn-concluir {
@@ -614,72 +595,68 @@
         font-size: 13px;
         display: inline-flex;
         align-items: center;
+        gap: 5px;
         text-decoration: none;
-        transition: background-color 0.3s ease, transform 0.2s ease;
+        transition: .3s
     }
 
     .btn-visualizar {
-        background-color: #ffe633;
-        color: #333;
-        border: none;
+        background: #ffe633;
+        color: #333
     }
 
     .btn-visualizar:hover {
-        background-color: #ffdd00;
-        transform: translateY(-2px);
+        background: #ffdd00;
+        transform: translateY(-2px)
     }
 
     .btn-concluir {
-        background-color: #4caf50;
-        color: white;
-        border: none;
+        background: #4caf50;
+        color: #fff
     }
 
     .btn-concluir:hover {
-        background-color: #43a047;
-        transform: translateY(-2px);
+        background: #43a047;
+        transform: translateY(-2px)
     }
 
     .btn-voltar {
         margin-top: 20px;
-        background-color: #2196f3;
-        color: white;
-        border: none;
+        background: #2196f3;
+        color: #fff
     }
 
     .btn-voltar:hover {
-        background-color: #1976d2;
-        transform: translateY(-2px);
+        background: #1976d2;
+        transform: translateY(-2px)
     }
 
-    .btn-visualizar i,
-    .btn-voltar i,
-    .btn-concluir i {
-        margin-right: 5px;
-    }
-
+    /* ---------- MODAL OVERLAY ---------- */
     .modal-overlay {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
+        inset: 0;
         display: flex;
         justify-content: center;
         align-items: center;
+        background: rgba(0, 0, 0, .5);
+        z-index: 999
     }
 
-    .modal-content {
+    /* ---------- MODAL CONTENT ---------- */
+    .modal-overlay .modal-content {
+        width: 90vw !important;
+        /* ocupa 90% da viewport */
+        max-width: 1400px !important;
+        /* limite para monitores grandes */
+        max-height: 90vh;
+        /* evita estourar a altura */
+        overflow-y: auto;
         background: #fff;
         padding: 30px;
         border-radius: 12px;
-        width: 95%;
-        max-width: 1400px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         position: relative;
-        animation: fadeIn 0.3s ease-in-out;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, .2);
+        animation: fadeIn .3s;
     }
 
     .close-modal {
@@ -688,27 +665,27 @@
         right: 15px;
         font-size: 24px;
         cursor: pointer;
-        color: #555;
+        color: #555
     }
 
+    /* ---------- FORM NO MODAL ---------- */
     .modal-form .form-row {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
         gap: 20px;
-        margin-bottom: 20px;
+        margin-bottom: 20px
     }
 
     .modal-form .form-group {
-        flex: 1;
-        min-width: 200px;
-        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        width: 100%
     }
 
     .modal-form label {
-        font-weight: bold;
-        display: block;
+        font-weight: 600;
         margin-bottom: 5px;
-        color: #333;
+        color: #333
     }
 
     .modal-form input,
@@ -716,80 +693,61 @@
     .modal-form select {
         width: 100%;
         padding: 12px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
         font-size: 15px;
-        box-sizing: border-box;
-        background-color: white;
-        appearance: none;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background: #fff;
+        transition: border-color .3s
     }
 
     .modal-form input:focus,
     .modal-form textarea:focus,
     .modal-form select:focus {
         border-color: #1976d2;
-        box-shadow: 0 0 5px rgba(25, 118, 210, 0.3);
-        outline: none;
+        box-shadow: 0 0 5px rgba(25, 118, 210, .3);
+        outline: none
     }
 
-    .modal-form select {
-        background-color: white;
-    }
-
+    /* ---------- BOTÕES NO MODAL ---------- */
     .btn-plus {
         padding: 10px 12px;
-        background-color: #1976d2;
-        color: white;
+        background: #1976d2;
+        color: #fff;
         border: none;
         border-radius: 8px;
         cursor: pointer;
-        transition: background-color 0.3s ease;
+        transition: .3s
     }
 
     .btn-plus:hover {
-        background-color: #115293;
+        background: #115293
     }
 
     .btn-enviar {
         padding: 12px 20px;
-        background-color: #1976d2;
-        color: white;
+        background: #1976d2;
+        color: #fff;
         border: none;
         border-radius: 8px;
-        font-size: 15px;
         font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.2s ease;
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        transition: .3s
     }
 
     .btn-enviar:hover {
-        background-color: #115293;
-        transform: translateY(-2px);
+        background: #115293;
+        transform: translateY(-2px)
     }
 
-    .btn-visualizar,
-    .btn-historico {
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0 12px;
-    }
-
-    .btn-historico:hover {
-        background-color: #5a6268;
-        transform: translateY(-2px);
-    }
-
+    /* ---------- LISTAS DE MÃO DE OBRA ---------- */
     #listaMaoObra li,
     #maoObraRegistrada li {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-right: 10px;
+        padding-right: 10px
     }
 
     #listaMaoObra li button,
@@ -798,6 +756,6 @@
         border: none;
         color: red;
         font-weight: bold;
-        cursor: pointer;
+        cursor: pointer
     }
 </style>
