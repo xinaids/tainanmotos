@@ -14,34 +14,37 @@
         <div class="dropdown-menu">
           <a href="/solicitar-manutencao" class="dropdown-item">Solicitar</a>
           <a href="/visualizar-manutencao" class="dropdown-item">Visualizar</a>
+          {{-- só mostra para quem NÃO é cliente (tipo 1) --}}
+          @if(session('usuario') && session('usuario')->tipo != 1)
           <a href="/gerenciar-manutencao" class="dropdown-item">Gerenciar</a>
+          @endif
         </div>
       </div>
 
       <!-- Apenas para tipo 2 (administrador) -->
       @if(session('usuario') && session('usuario')->tipo == 2)
-        <!-- Dropdown Cadastro -->
-        <div class="dropdown">
-          <div class="nav-link dropdown-toggle">
-            <i class="fas fa-plus"></i> Cadastro
-          </div>
-          <div class="dropdown-menu">
-            <a href="/cadastrar-fabricante" class="dropdown-item">Fabricantes</a>
-            <a href="/cadastrar-modelo" class="dropdown-item">Modelos</a>
-            <a href="/cadastrar-peca" class="dropdown-item">Peças</a>
-            <a href="/cadastrar-mao-de-obra" class="dropdown-item">Mão de Obra</a>
-          </div>
+      <!-- Dropdown Cadastro -->
+      <div class="dropdown">
+        <div class="nav-link dropdown-toggle">
+          <i class="fas fa-plus"></i> Cadastro
         </div>
+        <div class="dropdown-menu">
+          <a href="/cadastrar-fabricante" class="dropdown-item">Fabricantes</a>
+          <a href="/cadastrar-modelo" class="dropdown-item">Modelos</a>
+          <a href="/cadastrar-peca" class="dropdown-item">Peças</a>
+          <a href="/cadastrar-mao-de-obra" class="dropdown-item">Mão de Obra</a>
+        </div>
+      </div>
 
-        <!-- Link Motos -->
-        <a href="/motos" class="nav-link">
-          <i class="fa-solid fa-motorcycle"></i> Motos
-        </a>
+      <!-- Link Motos -->
+      <a href="/motos" class="nav-link">
+        <i class="fa-solid fa-motorcycle"></i> Motos
+      </a>
 
-        <!-- Link Estatísticas -->
-        <a href="/estatisticas" class="nav-link">
-          <i class="fa-solid fa-table"></i> Estatísticas
-        </a>
+      <!-- Link Estatísticas -->
+      <a href="/estatisticas" class="nav-link">
+        <i class="fa-solid fa-table"></i> Estatísticas
+      </a>
       @endif
 
     </nav>
@@ -49,9 +52,9 @@
 
   <div class="header-right">
     @if(session('usuario'))
-      <span class="user-name">{{ session('usuario')->nome }}</span>
+    <span class="user-name">{{ session('usuario')->nome }}</span>
     @else
-      <span class="user-name">Visitante</span>
+    <span class="user-name">Visitante</span>
     @endif
 
     <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
