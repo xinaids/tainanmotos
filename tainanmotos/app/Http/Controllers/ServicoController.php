@@ -18,8 +18,28 @@ class ServicoController extends Controller
             'maosObra'
         ])->findOrFail($id);
 
-        return response()->json($servico);
+        // 🔹 Busca peças associadas ao serviço
+        $pecas = DB::table('servico_peca')
+            ->join('peca', 'servico_peca.cod_peca', '=', 'peca.codigo')
+            ->where('servico_peca.cod_servico', $servico->codigo)
+            ->select('peca.codigo', 'peca.nome', 'peca.preco')
+            ->get();
+
+        // 🔸 Inclui no JSON final
+        return response()->json([
+            'codigo' => $servico->codigo,
+            'data_abertura' => $servico->data_abertura,
+            'data_fechamento' => $servico->data_fechamento,
+            'descricao_manutencao' => $servico->descricao_manutencao,
+            'situacao' => $servico->situacao,
+            'valor' => $servico->valor,
+            'quilometragem' => $servico->quilometragem,
+            'moto' => $servico->moto,
+            'maos_obra' => $servico->maosObra,
+            'pecas' => $pecas,
+        ]);
     }
+
 
     // 💾 Atualiza campos do serviço: situação, valor e histórico
     public function atualizar(Request $request, $id)
@@ -58,30 +78,43 @@ class ServicoController extends Controller
     {
         $servico = Servico::findOrFail($id);
 
-        // Atualiza descrição
+        // Atualiza a descrição
         $servico->descricao_manutencao = $request->input('descricao_historico');
 
-        // Decodifica lista de mão de obra (JSON do front)
-        $listaJson = $request->input('mao_obra_lista');
-        $listaMaoObra = $listaJson ? json_decode($listaJson, true) : [];
+        // ===== 1. Salvar MÃO DE OBRA =====
+        $listaMaoObra = $request->input('mao_obra_lista');
+        $listaMaoObra = $listaMaoObra ? json_decode($listaMaoObra, true) : [];
 
-        // Remove vínculos antigos
         DB::table('servico_maodeobra')->where('cod_servico', $servico->codigo)->delete();
 
-        // Reinsere e soma os valores
-        $valorTotal = 0;
+        $valorMaoObra = 0;
         foreach ($listaMaoObra as $mao) {
             DB::table('servico_maodeobra')->insert([
                 'cod_servico' => $servico->codigo,
                 'cod_maodeobra' => $mao['codigo'],
                 'quantidade' => 1
             ]);
-
-            $valorTotal += floatval($mao['valor']);
+            $valorMaoObra += floatval($mao['valor']);
         }
 
-        // Atualiza valor final no serviço
-        $servico->valor = $valorTotal;
+        // ===== 2. Salvar PEÇAS =====
+        $listaPecas = $request->input('peca_lista');
+        $listaPecas = $listaPecas ? json_decode($listaPecas, true) : [];
+
+        DB::table('servico_peca')->where('cod_servico', $servico->codigo)->delete();
+
+        $valorPecas = 0;
+        foreach ($listaPecas as $peca) {
+            DB::table('servico_peca')->insert([
+                'cod_servico' => $servico->codigo,
+                'cod_peca' => $peca['codigo'],
+                'quantidade' => 1
+            ]);
+            $valorPecas += floatval($peca['preco']);
+        }
+
+        // ===== 3. Atualiza valor total =====
+        $servico->valor = $valorMaoObra + $valorPecas;
         $servico->save();
 
         return redirect()->route('manutencao.gerenciar')->with('success', 'Manutenção atualizada com sucesso!');

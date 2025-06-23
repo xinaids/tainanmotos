@@ -76,6 +76,12 @@ public function update(Request $request, $codigo)
     return redirect()->route('pecas.index')->with('success', 'Peça atualizada com sucesso!');
 }
 
+public function pecasPorModelo($codModelo)
+{
+    return response()->json(
+        Peca::where('cod_modelo', $codModelo)->get()
+    );
+}
 
 
 }

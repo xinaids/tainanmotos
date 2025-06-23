@@ -21,7 +21,7 @@ use App\Http\Controllers\EstatisticaController;
 
 
 // Redirecionar root para login
-Route::get('/', fn () => redirect('/login'));
+Route::get('/', fn() => redirect('/login'));
 
 // Autenticação
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -33,10 +33,10 @@ Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->na
 Route::post('/register', [RegisterController::class, 'register']);
 
 // Esqueci a senha
-Route::get('/forgot-password', fn () => view('auth.forgot-password'))->name('password.request');
+Route::get('/forgot-password', fn() => view('auth.forgot-password'))->name('password.request');
 
 // Dashboard
-Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
+Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
 
 // Manutenções
 Route::get('/solicitar-manutencao', function () {
@@ -48,7 +48,7 @@ Route::get('/solicitar-manutencao', function () {
 Route::get('/visualizar-manutencao', [ManutencaoController::class, 'visualizar'])
     ->name('visualizar.manutencao');
 
-Route::get('/gerenciar-manutencao', fn () => view('gerenciar_manutencao'))->name('gerenciar.manutencao');
+Route::get('/gerenciar-manutencao', fn() => view('gerenciar_manutencao'))->name('gerenciar.manutencao');
 
 // AJAX para obter modelos por fabricante
 Route::get('/modelos-por-fabricante/{fabricante_id}', function ($fabricante_id) {
@@ -60,7 +60,7 @@ Route::get('/modelos-por-fabricante/{fabricante_id}', function ($fabricante_id) 
 })->name('modelos.por.fabricante');
 
 // Cadastro direto via view
-Route::get('/motos', fn () => view('motos'))->name('motos');
+Route::get('/motos', fn() => view('motos'))->name('motos');
 
 // Fabricante
 Route::get('/cadastrar-fabricante', [FabricanteController::class, 'create'])->name('cadastrarfabricante');
@@ -118,6 +118,8 @@ Route::post('/servico/{id}/atualizar', [ServicoController::class, 'atualizar'])-
 
 //est
 Route::get('/estatisticas', [EstatisticaController::class, 'index'])->name('estatisticas');
+Route::get('/api/pecas/{codModelo}', [PecaController::class, 'pecasPorModelo']);
+Route::post('/manutencao/{id}/atualizar', [ManutencaoController::class, 'atualizarDescricao'])->name('manutencao.atualizarDescricao');
 
 
 Route::get('/moto/por-placa/{placa}', function ($placa) {

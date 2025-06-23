@@ -112,6 +112,21 @@
                 </div>
             </div>
 
+            {{-- linha nova — ATRIBUIR PEÇAS --}}
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="peca">Atribuir Peça</label>
+                    <select id="peca" name="peca"></select>
+                    <div style="margin-top:8px;display:flex;gap:8px;">
+                        <button type="button" class="btn-plus" id="btnAdicionarPeca">Adicionar</button>
+                    </div>
+                    <ul id="listaPecas" style="margin-top:10px;padding-left:20px;list-style-type:disc;"></ul>
+                    <input type="hidden" id="peca_lista" name="peca_lista">
+                </div>
+            </div>
+
+
+
             {{-- linha 4 --}}
             <div class="form-row">
                 <div class="form-group"><label>Descrição</label><textarea id="descricao" name="descricao" rows="4"></textarea></div>
@@ -127,6 +142,18 @@
                     </ul>
                 </div>
             </div>
+
+            {{-- linha 6 -- PEÇAS REGISTRADAS --}}
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Peças Registradas</label>
+                    <ul id="pecasRegistradas" style="background:#f5f5f5;padding:10px;border-radius:8px;list-style-type:disc;">
+                        <li><em>Nenhuma peça registrada.</em></li>
+                    </ul>
+                </div>
+            </div>
+
+
 
             <div class="form-row" style="justify-content:flex-end;">
                 <button class="btn-enviar"><i class="fas fa-paper-plane"></i> Enviar Manutenção</button>
@@ -201,11 +228,13 @@
 
                         document.getElementById("fabricante_moto").value = data.moto.modelo.fabricante.nome;
                         document.getElementById("modelo_moto").value = data.moto.modelo.nome;
+
                         document.getElementById("placa_moto").value = data.moto.placa;
                         document.getElementById("ano_moto").value = data.moto.ano;
                         document.getElementById("quilometragem").value = data.quilometragem;
                         document.getElementById("descricao").value = "";
 
+                        carregarPecas(data.moto.modelo.codigo);
 
                         // Atualiza a lista visual e a variável de controle
                         const ulMaoObra = document.getElementById("maoObraRegistrada");
@@ -297,13 +326,22 @@
     function prepararEnvioDescricao() {
         const descricaoInput = document.getElementById("descricao");
         const historicoTextarea = document.getElementById("descricao_historico");
+        const pecaLista = document.getElementById("peca_lista");
+        const maoObraLista = document.getElementById("mao_obra_lista");
 
+        // Atualiza os campos ocultos com os JSONs corretos
+        pecaLista.value = JSON.stringify(pecasAdicionadas);
+        maoObraLista.value = JSON.stringify(maoDeObraAdicionadas);
+
+        console.log("🔧 JSON enviado - Peças:", pecaLista.value);
+        console.log("🔧 JSON enviado - Mão de obra:", maoObraLista.value);
+
+        // Gera o histórico de descrição
         const novaDescricao = descricaoInput.value.trim();
-        if (!novaDescricao) return true; // Não faz nada se vazio
-
+        if (!novaDescricao) return true;
 
         const dataAtual = new Date();
-        const dataFormatada = dataAtual.toLocaleString('pt-BR', { // DATA + HORA
+        const dataFormatada = dataAtual.toLocaleString('pt-BR', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
@@ -313,28 +351,21 @@
         });
 
         const novaEntrada = `${dataFormatada} - ${novaDescricao}`;
-
-
-        // Adiciona nova entrada ao histórico existente
         const historicoAtual = historicoTextarea.value.trim();
         const novoHistorico = historicoAtual ? `${historicoAtual}\n${novaEntrada}` : novaEntrada;
 
-        // Atualiza o campo readonly para visualização
         historicoTextarea.value = novoHistorico;
 
-        // Cria campo oculto para enviar o histórico completo
+        // Cria input hidden com histórico final
         const campoHistorico = document.createElement("input");
         campoHistorico.type = "hidden";
         campoHistorico.name = "descricao_historico";
         campoHistorico.value = novoHistorico;
         document.getElementById("formDetalhes").appendChild(campoHistorico);
 
-        // Substitui o valor de descrição por apenas o novo texto (caso precise salvar separado)
-        descricaoInput.value = novaDescricao;
-
-
-        return true; // prossegue com o envio
+        return true; // Prossegue com envio
     }
+
 
     document.getElementById('filtroSituacao').addEventListener('change', function() {
         const filtro = this.value;
@@ -348,6 +379,60 @@
             row.style.display = deveMostrar ? '' : 'none';
         });
     });
+
+    let pecasDisponiveis = [];
+    let pecasAdicionadas = [];
+
+    function carregarPecas(codModelo) {
+        const select = document.getElementById("peca");
+        fetch(`/api/pecas/${codModelo}`)
+            .then(res => res.json())
+            .then(data => {
+                pecasDisponiveis = data;
+                select.innerHTML = '';
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.codigo;
+                    option.textContent = `${item.nome} - R$ ${parseFloat(item.preco).toFixed(2).replace(".", ",")}`;
+                    option.dataset.nome = item.nome;
+                    option.dataset.preco = item.preco;
+                    select.appendChild(option);
+                });
+            });
+    }
+
+    document.getElementById('btnAdicionarPeca').addEventListener('click', () => {
+        const select = document.getElementById('peca');
+        const codigo = parseInt(select.value, 10);
+        if (!codigo) return;
+
+        const peca = pecasDisponiveis.find(p => p.codigo === codigo);
+        if (!peca || pecasAdicionadas.some(p => p.codigo === codigo)) {
+            alert('Peça já adicionada ou inválida.');
+            return;
+        }
+
+        pecasAdicionadas.push(peca);
+
+        const li = document.createElement('li');
+        li.textContent = `${peca.nome} — R$ ${(+peca.preco).toFixed(2).replace('.', ',')}`;
+
+        const btnX = document.createElement('button');
+        btnX.textContent = '✖';
+        btnX.style.cssText = 'margin-left:10px;background:none;border:none;color:red;cursor:pointer';
+        btnX.onclick = () => {
+            li.remove();
+            pecasAdicionadas = pecasAdicionadas.filter(p => p.codigo !== peca.codigo);
+            atualizarValorTotal();
+            document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
+        };
+
+        li.appendChild(btnX);
+        document.getElementById("listaPecas").appendChild(li);
+
+        atualizarValorTotal();
+        document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
+    });
 </script>
 
 <script>
@@ -355,9 +440,13 @@
     let maoDeObraAdicionadas = [];
 
     function atualizarValorTotal() {
-        const total = maoDeObraAdicionadas.reduce((soma, item) => soma + parseFloat(item.valor), 0);
-        document.getElementById("valor").value = "R$ " + total.toFixed(2).replace(".", ",");
+        const totalMao = maoDeObraAdicionadas.reduce((soma, item) => soma + parseFloat(item.valor), 0);
+        const totalPeca = pecasAdicionadas.reduce((soma, item) => soma + parseFloat(item.preco), 0);
+        const totalGeral = totalMao + totalPeca;
+
+        document.getElementById("valor").value = "R$ " + totalGeral.toFixed(2).replace(".", ",");
     }
+
 
     function carregarMaoDeObra() {
         const select = document.getElementById("mao_obra");
