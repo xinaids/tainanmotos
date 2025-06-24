@@ -15,31 +15,12 @@ class ServicoController extends Controller
             'moto.modelo.fabricante',
             'moto.modelo',
             'moto.usuario',
-            'maosObra'
+            'maosObra',
+            'pecas' // RELACIONAMENTO DEFINIDO NO MODEL
         ])->findOrFail($id);
 
-        // 🔹 Busca peças associadas ao serviço
-        $pecas = DB::table('servico_peca')
-            ->join('peca', 'servico_peca.cod_peca', '=', 'peca.codigo')
-            ->where('servico_peca.cod_servico', $servico->codigo)
-            ->select('peca.codigo', 'peca.nome', 'peca.preco')
-            ->get();
-
-        // 🔸 Inclui no JSON final
-        return response()->json([
-            'codigo' => $servico->codigo,
-            'data_abertura' => $servico->data_abertura,
-            'data_fechamento' => $servico->data_fechamento,
-            'descricao_manutencao' => $servico->descricao_manutencao,
-            'situacao' => $servico->situacao,
-            'valor' => $servico->valor,
-            'quilometragem' => $servico->quilometragem,
-            'moto' => $servico->moto,
-            'maos_obra' => $servico->maosObra,
-            'pecas' => $pecas,
-        ]);
+        return response()->json($servico);
     }
-
 
     // 💾 Atualiza campos do serviço: situação, valor e histórico
     public function atualizar(Request $request, $id)
@@ -73,7 +54,7 @@ class ServicoController extends Controller
         return redirect()->route('manutencao.gerenciar')->with('success', 'Serviço atualizado com sucesso!');
     }
 
-    // 🛠 Atualiza histórico e salva lista de mão de obra associada
+    // 🛠 Atualiza histórico e salva lista de mão de obra e peças associadas
     public function atualizarDescricao(Request $request, $id)
     {
         $servico = Servico::findOrFail($id);
@@ -105,12 +86,15 @@ class ServicoController extends Controller
 
         $valorPecas = 0;
         foreach ($listaPecas as $peca) {
+            $quantidade = $peca['quantidade'] ?? 1;
+
             DB::table('servico_peca')->insert([
                 'cod_servico' => $servico->codigo,
                 'cod_peca' => $peca['codigo'],
-                'quantidade' => 1
+                'quantidade' => $quantidade
             ]);
-            $valorPecas += floatval($peca['preco']);
+
+            $valorPecas += floatval($peca['preco']) * $quantidade;
         }
 
         // ===== 3. Atualiza valor total =====

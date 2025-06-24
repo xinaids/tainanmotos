@@ -4,38 +4,135 @@
 <div class="register-container">
     <div class="register-box">
         <h2>Cadastro</h2>
+
         <form id="register-form" action="{{ route('register') }}" method="POST">
         @csrf
+            {{-- NOME --}}
             <div class="input-group">
                 <label for="name">Nome Completo: <span class="required">*</span></label>
                 <input type="text" id="name" name="name" required>
             </div>
+
+            {{-- E-MAIL --}}
             <div class="input-group">
                 <label for="email">Email: <span class="required">*</span></label>
                 <input type="email" id="email" name="email" required>
             </div>
+
+            {{-- TELEFONE --}}
             <div class="input-group">
                 <label for="phone">Telefone: <span class="required">*</span></label>
-                <input type="tel" id="phone" name="phone" maxlength="15">
+                <input type="tel" id="phone" name="phone" maxlength="15" required>
             </div>
+
+            {{-- CPF (11 dígitos) --}}
             <div class="input-group">
                 <label for="cpf">CPF: <span class="required">*</span></label>
-                <input type="text" id="cpf" name="cpf" required maxlength="14">
+                <input type="text" id="cpf" name="cpf" maxlength="14" required>
             </div>
+
+            {{-- SENHA --}}
             <div class="input-group">
                 <label for="password">Senha: <span class="required">*</span></label>
-                <input type="password" id="password" name="password" required>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                    pattern="(?=.*\d)(?=.*[A-Za-z]).{8,}"
+                    title="A senha deve ter no mínimo 8 caracteres e conter pelo menos 1 número."
+                >
+                <small id="password-hint" class="hint hidden">
+                    A senha deve ter <strong>mínimo 8 caracteres</strong> e conter pelo menos <strong>1 número</strong>.
+                </small>
             </div>
+
+            {{-- CONFIRMAR SENHA --}}
             <div class="input-group">
                 <label for="password_confirmation">Confirmar Senha: <span class="required">*</span></label>
-                <input type="password" id="password_confirmation" name="password_confirmation">
+                <input type="password" id="password_confirmation" name="password_confirmation" required>
             </div>
+
             <button type="submit" class="btn-register">Cadastrar</button>
         </form>
-        <p class="login-text">Já tem uma conta? <a href="{{ route('login') }}" class="login-link">Faça login aqui</a></p>
+
+        <p class="login-text">
+            Já tem uma conta?
+            <a href="{{ route('login') }}" class="login-link">Faça login aqui</a>
+        </p>
     </div>
 </div>
 @endsection
+
+{{-- === ESTILOS EXTRAS (permanece igual) ================================= --}}
+<style>
+/* ... todo o CSS anterior ... */
+
+.hint   { display:block;margin-top:6px;font-size:12px;color:#666; }
+.hidden { display:none; }
+</style>
+
+{{-- === SCRIPT DE VALIDAÇÃO ============================================= --}}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const cpfInput     = document.getElementById("cpf");
+    const phoneInput   = document.getElementById("phone");
+    const password     = document.getElementById("password");
+    const passwordHint = document.getElementById("password-hint");
+    const form         = document.getElementById("register-form");
+
+    /* --- Máscara CPF --- */
+    cpfInput.addEventListener("input", () => {
+        let v = cpfInput.value.replace(/\D/g, "").slice(0, 11);
+        v = v.replace(/(\d{3})(\d)/, "$1.$2")
+             .replace(/(\d{3})(\d)/, "$1.$2")
+             .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        cpfInput.value = v;
+    });
+
+    /* --- Máscara Telefone --- */
+    phoneInput.addEventListener("input", () => {
+        let v = phoneInput.value.replace(/\D/g, "").slice(0, 11);
+        v = v.replace(/^(\d{2})(\d)/, "($1) $2")
+             .replace(/(\d{5})(\d{1,4})$/, "$1-$2");
+        phoneInput.value = v;
+    });
+
+    /* --- Dica de senha ao focar --- */
+    password.addEventListener("focus", () =>  passwordHint.classList.remove("hidden"));
+    password.addEventListener("blur",  () =>  passwordHint.classList.add("hidden"));
+
+    /* --- Validação no submit --- */
+    form.addEventListener("submit", (e) => {
+        const cpfDigits   = cpfInput.value.replace(/\D/g, "");
+        const phoneDigits = phoneInput.value.replace(/\D/g, "");
+        const pwdValue    = password.value;
+
+        /* CPF deve ter 11 dígitos */
+        if (cpfDigits.length !== 11) {
+            e.preventDefault();
+            alert("CPF deve conter exatamente 11 números.");
+            return;
+        }
+
+        /* Telefone: 10 ou 11 dígitos */
+        if (phoneDigits.length < 10 || phoneDigits.length > 11) {
+            e.preventDefault();
+            alert("Telefone deve conter 10 ou 11 números (incluindo DDD).");
+            return;
+        }
+
+        /* Senha: mínimo 8 caracteres, com pelo menos 1 letra + 1 número */
+        const pwdRegex = /^(?=.*\d)(?=.*[A-Za-z]).{8,}$/;
+        if (!pwdRegex.test(pwdValue)) {
+            e.preventDefault();
+            alert("A senha deve ter no mínimo 8 caracteres e conter pelo menos 1 número.");
+            return;
+        }
+    });
+});
+</script>
+
 
 <style>
 /* Fundo da página */

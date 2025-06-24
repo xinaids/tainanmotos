@@ -5,6 +5,11 @@
 <div class="container fade-in">
     <h2>Motos Cadastradas</h2>
 
+    <form method="GET" action="{{ route('moto.index') }}" class="form-inline" style="margin-bottom: 20px;">
+        <input type="text" name="search" class="form-control" placeholder="Buscar por placa, modelo, usuário..." value="{{ request('search') }}" style="padding: 10px; width: 70%; max-width: 500px; margin-right: 10px;">
+        <button type="submit" class="btn-voltar" style="background-color: #1976d2;">Buscar</button>
+    </form>
+
     <table class="table">
         <thead>
             <tr>
@@ -30,6 +35,12 @@
         </tbody>
 
     </table>
+
+    <div style="text-align: center;">
+        {{ $motos->withQueryString()->links() }}
+    </div>
+
+
 
     <a href="{{ route('dashboard') }}" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar</a>
 </div>

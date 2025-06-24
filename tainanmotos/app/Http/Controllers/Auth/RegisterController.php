@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller; 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -14,6 +14,17 @@ class RegisterController extends Controller
     {
         return view('auth.register');
     }
+
+    // app/Http/Controllers/Auth/RegisterController.php
+    protected function registered(Request $request, $user)
+    {
+        // qualquer lógica extra …
+
+        return redirect()
+            ->route('login')
+            ->with('register_success', true);
+    }
+
 
     public function register(Request $request)
     {

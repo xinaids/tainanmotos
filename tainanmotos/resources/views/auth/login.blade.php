@@ -5,22 +5,41 @@
     <div class="login-box">
         <h2>Login</h2>
         <form action="{{ route('login') }}" method="POST">
-    @csrf
-    <div class="input-group">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-    </div>
-    <div class="input-group">
-        <label for="password">Senha:</label>
-        <input type="password" id="password" name="password" required>
-        </div>
-        <button type="submit" class="btn-login">Entrar</button>
+            @csrf
+            <div class="input-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Senha:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn-login">Entrar</button>
         </form>
 
-        <a href="{{ route('password.request') }}" class="forgot-password">Esqueci minha senha</a>
-        <p class="signup-text">Ainda não tem uma conta? <a href="{{ route('register') }}" class="signup-link">Cadastre-se aqui</a></p>
+        <p class="signup-text">
+            Ainda não tem uma conta?
+            <a href="{{ route('register') }}" class="signup-link">Cadastre-se aqui</a>
+        </p>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+    {{-- Importa SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {{-- Exibe alerta de cadastro realizado com sucesso --}}
+    @if(session('register_success'))
+        <script>
+            Swal.fire({
+                title: 'Cadastro concluído!',
+                text: 'Seu cadastro foi realizado com sucesso. Faça login para continuar.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        </script>
+    @endif
 @endsection
 
 <style>
@@ -97,20 +116,6 @@ input {
 
 .btn-login:hover {
     background-color: #0056b3;
-}
-
-/* Estilo do link de esqueci a senha */
-.forgot-password {
-    display: block;
-    margin-top: 10px;
-    font-size: 14px;
-    color: #007bff;
-    text-decoration: none;
-    transition: text-decoration 0.3s;
-}
-
-.forgot-password:hover {
-    text-decoration: underline;
 }
 
 /* Texto para cadastro */

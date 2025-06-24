@@ -66,7 +66,7 @@
         <form id="formDetalhes" class="modal-form" method="POST" onsubmit="return prepararEnvioDescricao();">
             @csrf
 
-            {{-- linha 1 --}}
+            {{-- linha 1 — agora com VALOR ao lado de Situação --}}
             <div class="form-row">
                 <div class="form-group">
                     <label for="data_abertura">Data Abertura</label>
@@ -84,7 +84,12 @@
                         <option>Concluído</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="valor">Valor</label>
+                    <input id="valor" name="valor" value="R$ 0,00" readonly>
+                </div>
             </div>
+
 
             {{-- linha 2 --}}
             <div class="form-row">
@@ -95,12 +100,8 @@
                 <div class="form-group"><label>Quilometragem</label><input id="quilometragem" name="quilometragem"></div>
             </div>
 
-            {{-- linha 3 --}}
+            {{-- linha 3 — MÃO DE OBRA + PEÇAS --}}
             <div class="form-row">
-                <div class="form-group">
-                    <label for="valor">Valor</label>
-                    <input id="valor" name="valor" value="R$ 0,00">
-                </div>
                 <div class="form-group">
                     <label for="mao_obra">Atribuir Mão de Obra</label>
                     <select id="mao_obra" name="mao_obra"></select>
@@ -110,10 +111,7 @@
                     <ul id="listaMaoObra" style="margin-top:10px;padding-left:20px;list-style-type:disc;"></ul>
                     <input type="hidden" id="mao_obra_lista" name="mao_obra_lista">
                 </div>
-            </div>
 
-            {{-- linha nova — ATRIBUIR PEÇAS --}}
-            <div class="form-row">
                 <div class="form-group">
                     <label for="peca">Atribuir Peça</label>
                     <select id="peca" name="peca"></select>
@@ -124,6 +122,7 @@
                     <input type="hidden" id="peca_lista" name="peca_lista">
                 </div>
             </div>
+
 
 
 
@@ -217,6 +216,7 @@
                 fetch(`/servico/${idServico}`)
                     .then(response => response.json())
                     .then(data => {
+                        carregarPecasRegistradas(data);  // 🔧 INSERIDO
                         document.getElementById("data_abertura").value = data.data_abertura;
                         document.getElementById("data_fechamento").value = data.data_fechamento ?? "";
                         document.getElementById("descricao_historico").value = data.descricao_manutencao ?? "";
@@ -407,6 +407,58 @@
         if (!codigo) return;
 
         const peca = pecasDisponiveis.find(p => p.codigo === codigo);
+        if (!peca) return;
+
+        // Verifica se já foi adicionada
+        const existente = pecasAdicionadas.find(p => p.codigo === codigo);
+        if (existente) {
+            existente.quantidade += 1;
+        } else {
+            peca.quantidade = 1;
+            pecasAdicionadas.push(peca);
+        }
+
+        atualizarListaPecas();
+    });
+
+    function atualizarListaPecas() {
+        const ul = document.getElementById("listaPecas");
+        ul.innerHTML = "";
+
+        pecasAdicionadas.forEach(peca => {
+            const li = document.createElement("li");
+            li.textContent = `${peca.nome} — R$ ${(peca.preco * peca.quantidade).toFixed(2).replace('.', ',')} (x${peca.quantidade})`;
+
+            const btnRemover = document.createElement("button");
+            btnRemover.textContent = "✖";
+            btnRemover.style.cssText = "margin-left:10px;background:none;border:none;color:red;cursor:pointer";
+            btnRemover.onclick = () => {
+                pecasAdicionadas = pecasAdicionadas.filter(p => p.codigo !== peca.codigo);
+                atualizarListaPecas();
+            };
+
+            li.appendChild(btnRemover);
+            ul.appendChild(li);
+        });
+
+        atualizarValorTotal();
+        document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
+    }
+
+    function atualizarValorTotal() {
+        const totalMao = maoDeObraAdicionadas.reduce((soma, item) => soma + parseFloat(item.valor), 0);
+        const totalPeca = pecasAdicionadas.reduce((soma, item) => soma + parseFloat(item.preco) * item.quantidade, 0);
+        const totalGeral = totalMao + totalPeca;
+
+        document.getElementById("valor").value = "R$ " + totalGeral.toFixed(2).replace(".", ",");
+    }
+
+    document.getElementById('btnAdicionarPeca').addEventListener('click', () => {
+        const select = document.getElementById('peca');
+        const codigo = parseInt(select.value, 10);
+        if (!codigo) return;
+
+        const peca = pecasDisponiveis.find(p => p.codigo === codigo);
         if (!peca || pecasAdicionadas.some(p => p.codigo === codigo)) {
             alert('Peça já adicionada ou inválida.');
             return;
@@ -433,6 +485,40 @@
         atualizarValorTotal();
         document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
     });
+
+    function carregarPecasRegistradas(data) {
+        const ulPecas = document.getElementById("pecasRegistradas");
+        ulPecas.innerHTML = "";
+        pecasAdicionadas = [];
+
+        if (data.pecas && data.pecas.length > 0) {
+            let totalPecas = 0;
+
+            data.pecas.forEach(p => {
+                const item = {
+                    codigo: p.codigo,
+                    nome: p.nome,
+                    preco: parseFloat(p.preco),
+                    quantidade: 1
+                };
+                pecasAdicionadas.push(item);
+
+                const li = document.createElement("li");
+                li.textContent = `${item.nome} — R$ ${item.preco.toFixed(2).replace(".", ",")}`;
+                ulPecas.appendChild(li);
+                totalPecas += item.preco;
+            });
+
+            document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
+        } else {
+            const li = document.createElement("li");
+            li.innerHTML = "<em>Nenhuma peça registrada.</em>";
+            ulPecas.appendChild(li);
+            document.getElementById("peca_lista").value = "[]";
+        }
+
+        atualizarValorTotal();
+    }
 </script>
 
 <script>
@@ -527,6 +613,7 @@
                 fetch(`/servico/${idServico}`)
                     .then(r => r.json())
                     .then(data => {
+                        carregarPecasRegistradas(data);  // 🔧 INSERIDO
                         /* suas atribuições originais … */
                         /* ... (não alterei nada aqui) ... */
                     })
@@ -534,6 +621,40 @@
             });
         });
     });
+
+    function carregarPecasRegistradas(data) {
+        const ulPecas = document.getElementById("pecasRegistradas");
+        ulPecas.innerHTML = "";
+        pecasAdicionadas = [];
+
+        if (data.pecas && data.pecas.length > 0) {
+            let totalPecas = 0;
+
+            data.pecas.forEach(p => {
+                const item = {
+                    codigo: p.codigo,
+                    nome: p.nome,
+                    preco: parseFloat(p.preco),
+                    quantidade: 1
+                };
+                pecasAdicionadas.push(item);
+
+                const li = document.createElement("li");
+                li.textContent = `${item.nome} — R$ ${item.preco.toFixed(2).replace(".", ",")}`;
+                ulPecas.appendChild(li);
+                totalPecas += item.preco;
+            });
+
+            document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
+        } else {
+            const li = document.createElement("li");
+            li.innerHTML = "<em>Nenhuma peça registrada.</em>";
+            ulPecas.appendChild(li);
+            document.getElementById("peca_lista").value = "[]";
+        }
+
+        atualizarValorTotal();
+    }
 </script>
 
 <script>
@@ -578,6 +699,40 @@
 
         document.querySelector('#valor_total').value = `R$ ${total.toFixed(2)}`;
         document.querySelector('#mao_obra_lista').value = JSON.stringify(lista);
+    }
+
+    function carregarPecasRegistradas(data) {
+        const ulPecas = document.getElementById("pecasRegistradas");
+        ulPecas.innerHTML = "";
+        pecasAdicionadas = [];
+
+        if (data.pecas && data.pecas.length > 0) {
+            let totalPecas = 0;
+
+            data.pecas.forEach(p => {
+                const item = {
+                    codigo: p.codigo,
+                    nome: p.nome,
+                    preco: parseFloat(p.preco),
+                    quantidade: 1
+                };
+                pecasAdicionadas.push(item);
+
+                const li = document.createElement("li");
+                li.textContent = `${item.nome} — R$ ${item.preco.toFixed(2).replace(".", ",")}`;
+                ulPecas.appendChild(li);
+                totalPecas += item.preco;
+            });
+
+            document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
+        } else {
+            const li = document.createElement("li");
+            li.innerHTML = "<em>Nenhuma peça registrada.</em>";
+            ulPecas.appendChild(li);
+            document.getElementById("peca_lista").value = "[]";
+        }
+
+        atualizarValorTotal();
     }
 </script>
 

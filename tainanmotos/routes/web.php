@@ -120,6 +120,7 @@ Route::post('/servico/{id}/atualizar', [ServicoController::class, 'atualizar'])-
 Route::get('/estatisticas', [EstatisticaController::class, 'index'])->name('estatisticas');
 Route::get('/api/pecas/{codModelo}', [PecaController::class, 'pecasPorModelo']);
 Route::post('/manutencao/{id}/atualizar', [ManutencaoController::class, 'atualizarDescricao'])->name('manutencao.atualizarDescricao');
+Route::get('/motos', [MotoController::class, 'index'])->name('moto.index');
 
 
 Route::get('/moto/por-placa/{placa}', function ($placa) {
