@@ -66,7 +66,7 @@
         <form id="formDetalhes" class="modal-form" method="POST" onsubmit="return prepararEnvioDescricao();">
             @csrf
 
-            {{-- linha 1 — agora com VALOR ao lado de Situação --}}
+            {{-- linha 1 - agora com VALOR ao lado de Situação --}}
             <div class="form-row">
                 <div class="form-group">
                     <label for="data_abertura">Data Abertura</label>
@@ -100,7 +100,7 @@
                 <div class="form-group"><label>Quilometragem</label><input id="quilometragem" name="quilometragem"></div>
             </div>
 
-            {{-- linha 3 — MÃO DE OBRA + PEÇAS --}}
+            {{-- linha 3 - MÃO DE OBRA + PEÇAS --}}
             <div class="form-row">
                 <div class="form-group">
                     <label for="mao_obra">Atribuir Mão de Obra</label>
@@ -253,7 +253,8 @@
                                 });
 
                                 const li = document.createElement("li");
-                                li.textContent = `${m.nome} — R$ ${parseFloat(m.valor).toFixed(2).replace(".", ",")}`;
+                                li.textContent = `${m.nome} - R$ ${parseFloat(m.valor).toFixed(2).replace(".", ",")}`;
+
 
                                 const btnRemover = document.createElement("button");
                                 btnRemover.textContent = "✖";
@@ -432,15 +433,20 @@
         const ul = document.getElementById("listaPecas");
         ul.innerHTML = "";
 
-        pecasAdicionadas.forEach(peca => {
+        pecasAdicionadas.forEach((peca, index) => {
             const li = document.createElement("li");
-            li.textContent = `${peca.nome} — R$ ${(peca.preco * peca.quantidade).toFixed(2).replace('.', ',')} (x${peca.quantidade})`;
+            li.textContent = `${peca.nome} - R$ ${(peca.preco * peca.quantidade).toFixed(2).replace('.', ',')} (x${peca.quantidade})`;
+
 
             const btnRemover = document.createElement("button");
             btnRemover.textContent = "✖";
             btnRemover.style.cssText = "margin-left:10px;background:none;border:none;color:red;cursor:pointer";
             btnRemover.onclick = () => {
-                pecasAdicionadas = pecasAdicionadas.filter(p => p.codigo !== peca.codigo);
+                if (peca.quantidade > 1) {
+                    peca.quantidade -= 1;
+                } else {
+                    pecasAdicionadas.splice(index, 1);
+                }
                 atualizarListaPecas();
             };
 
@@ -450,7 +456,23 @@
 
         atualizarValorTotal();
         document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
-    }
+        li.textContent = `${peca.nome} - R$ ${(peca.preco * peca.quantidade).toFixed(2).replace('.', ',')} (x${peca.quantidade})`;
+
+        const btnRemover = document.createElement("button");
+        btnRemover.textContent = "✖";
+        btnRemover.style.cssText = "margin-left:10px;background:none;border:none;color:red;cursor:pointer";
+        btnRemover.onclick = () => {
+            pecasAdicionadas = pecasAdicionadas.filter(p => p.codigo !== peca.codigo);
+            atualizarListaPecas();
+        };
+
+        li.appendChild(btnRemover);
+        ul.appendChild(li);
+    };
+
+    atualizarValorTotal();
+    document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
+
 
     function atualizarValorTotal() {
         const totalMao = maoDeObraAdicionadas.reduce((soma, item) => soma + parseFloat(item.valor), 0);
@@ -474,7 +496,7 @@
         pecasAdicionadas.push(peca);
 
         const li = document.createElement('li');
-        li.textContent = `${peca.nome} — R$ ${(+peca.preco).toFixed(2).replace('.', ',')}`;
+        li.textContent = `${peca.nome} - R$ ${(+peca.preco).toFixed(2).replace('.', ',')}`;
 
         const btnX = document.createElement('button');
         btnX.textContent = '✖';
@@ -493,37 +515,7 @@
         document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
     });
 
-    function carregarPecasRegistradas(data) {
-        const ulPecas = document.getElementById("pecasRegistradas");
-        ulPecas.innerHTML = "";
-        pecasAdicionadas = [];
-
-        if (data.pecas && data.pecas.length > 0) {
-            data.pecas.forEach(p => {
-                const item = {
-                    codigo: p.codigo,
-                    nome: p.nome,
-                    preco: parseFloat(p.preco),
-                    quantidade: p.pivot?.quantidade || 1
-                };
-                pecasAdicionadas.push(item);
-
-                const li = document.createElement("li");
-                li.textContent = `${item.nome} — R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")} (x${item.quantidade})`;
-
-                ulPecas.appendChild(li);
-            });
-
-            document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
-        } else {
-            const li = document.createElement("li");
-            li.innerHTML = "<em>Nenhuma peça registrada.</em>";
-            ulPecas.appendChild(li);
-            document.getElementById("peca_lista").value = "[]";
-        }
-
-        atualizarValorTotal();
-    }
+    
 </script>
 
 <script>
@@ -586,7 +578,7 @@
 
             /* item visual na lista */
             const li = document.createElement('li');
-            li.textContent = `${mao.nome} — R$ ${(+mao.valor).toFixed(2).replace('.', ',')}`;
+            li.textContent = `${mao.nome} - R$ ${(+mao.valor).toFixed(2).replace('.', ',')}`;
 
             const btnX = document.createElement('button');
             btnX.textContent = '✖';
@@ -627,39 +619,7 @@
         });
     });
 
-    function carregarPecasRegistradas(data) {
-        const ulPecas = document.getElementById("pecasRegistradas");
-        ulPecas.innerHTML = "";
-        pecasAdicionadas = [];
-
-        if (data.pecas && data.pecas.length > 0) {
-            let totalPecas = 0;
-
-            data.pecas.forEach(p => {
-                const item = {
-                    codigo: p.codigo,
-                    nome: p.nome,
-                    preco: parseFloat(p.preco),
-                    quantidade: 1
-                };
-                pecasAdicionadas.push(item);
-
-                const li = document.createElement("li");
-                li.textContent = `${item.nome} — R$ ${item.preco.toFixed(2).replace(".", ",")}`;
-                ulPecas.appendChild(li);
-                totalPecas += item.preco;
-            });
-
-            document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
-        } else {
-            const li = document.createElement("li");
-            li.innerHTML = "<em>Nenhuma peça registrada.</em>";
-            ulPecas.appendChild(li);
-            document.getElementById("peca_lista").value = "[]";
-        }
-
-        atualizarValorTotal();
-    }
+    
 </script>
 
 <script>
@@ -707,38 +667,59 @@
     }
 
     function carregarPecasRegistradas(data) {
-        const ulPecas = document.getElementById("pecasRegistradas");
-        ulPecas.innerHTML = "";
-        pecasAdicionadas = [];
+    const ulPecas = document.getElementById("pecasRegistradas");
+    ulPecas.innerHTML = "";
+    pecasAdicionadas = [];
 
-        if (data.pecas && data.pecas.length > 0) {
-            let totalPecas = 0;
+    if (data.pecas && data.pecas.length > 0) {
+        data.pecas.forEach((p, index) => {
+            const item = {
+                codigo: p.codigo,
+                nome: p.nome,
+                preco: parseFloat(p.preco),
+                quantidade: p.pivot?.quantidade || 1
+            };
+            pecasAdicionadas.push(item);
 
-            data.pecas.forEach(p => {
-                const item = {
-                    codigo: p.codigo,
-                    nome: p.nome,
-                    preco: parseFloat(p.preco),
-                    quantidade: 1
-                };
-                pecasAdicionadas.push(item);
-
-                const li = document.createElement("li");
-                li.textContent = `${item.nome} — R$ ${item.preco.toFixed(2).replace(".", ",")}`;
-                ulPecas.appendChild(li);
-                totalPecas += item.preco;
-            });
-
-            document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
-        } else {
             const li = document.createElement("li");
-            li.innerHTML = "<em>Nenhuma peça registrada.</em>";
-            ulPecas.appendChild(li);
-            document.getElementById("peca_lista").value = "[]";
-        }
+            li.textContent = `${item.nome} - R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")} (x${item.quantidade})`;
 
-        atualizarValorTotal();
+            const btnRemover = document.createElement("button");
+            btnRemover.textContent = "✖";
+            btnRemover.style.cssText = "margin-left:10px;background:none;border:none;color:red;cursor:pointer";
+            btnRemover.onclick = () => {
+                if (item.quantidade > 1) {
+                    item.quantidade -= 1;
+                } else {
+                    pecasAdicionadas.splice(index, 1);
+                }
+                atualizarValorTotal();
+                document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
+                carregarPecasRegistradas({
+                    pecas: pecasAdicionadas.map(p => ({
+                        codigo: p.codigo,
+                        nome: p.nome,
+                        preco: p.preco,
+                        pivot: { quantidade: p.quantidade }
+                    }))
+                });
+            };
+
+            li.appendChild(btnRemover);
+            ulPecas.appendChild(li);
+        });
+
+        document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
+    } else {
+        const li = document.createElement("li");
+        li.innerHTML = "<em>Nenhuma peça registrada.</em>";
+        ulPecas.appendChild(li);
+        document.getElementById("peca_lista").value = "[]";
     }
+
+    atualizarValorTotal();
+}
+
 </script>
 
 
