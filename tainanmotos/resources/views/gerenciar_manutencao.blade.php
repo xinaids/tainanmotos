@@ -216,7 +216,7 @@
                 fetch(`/servico/${idServico}`)
                     .then(response => response.json())
                     .then(data => {
-                        carregarPecasRegistradas(data);  // 🔧 INSERIDO
+                        carregarPecasRegistradas(data); // 🔧 INSERIDO
                         document.getElementById("data_abertura").value = data.data_abertura;
                         document.getElementById("data_fechamento").value = data.data_fechamento ?? "";
                         document.getElementById("descricao_historico").value = data.descricao_manutencao ?? "";
@@ -407,19 +407,26 @@
         if (!codigo) return;
 
         const peca = pecasDisponiveis.find(p => p.codigo === codigo);
-        if (!peca) return;
+        if (!peca) {
+            alert('Peça inválida.');
+            return;
+        }
 
-        // Verifica se já foi adicionada
         const existente = pecasAdicionadas.find(p => p.codigo === codigo);
         if (existente) {
             existente.quantidade += 1;
         } else {
-            peca.quantidade = 1;
-            pecasAdicionadas.push(peca);
+            pecasAdicionadas.push({
+                codigo: peca.codigo,
+                nome: peca.nome,
+                preco: parseFloat(peca.preco),
+                quantidade: 1
+            });
         }
 
         atualizarListaPecas();
     });
+
 
     function atualizarListaPecas() {
         const ul = document.getElementById("listaPecas");
@@ -492,21 +499,19 @@
         pecasAdicionadas = [];
 
         if (data.pecas && data.pecas.length > 0) {
-            let totalPecas = 0;
-
             data.pecas.forEach(p => {
                 const item = {
                     codigo: p.codigo,
                     nome: p.nome,
                     preco: parseFloat(p.preco),
-                    quantidade: 1
+                    quantidade: p.pivot?.quantidade || 1
                 };
                 pecasAdicionadas.push(item);
 
                 const li = document.createElement("li");
-                li.textContent = `${item.nome} — R$ ${item.preco.toFixed(2).replace(".", ",")}`;
+                li.textContent = `${item.nome} — R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")} (x${item.quantidade})`;
+
                 ulPecas.appendChild(li);
-                totalPecas += item.preco;
             });
 
             document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
@@ -613,7 +618,7 @@
                 fetch(`/servico/${idServico}`)
                     .then(r => r.json())
                     .then(data => {
-                        carregarPecasRegistradas(data);  // 🔧 INSERIDO
+                        carregarPecasRegistradas(data); // 🔧 INSERIDO
                         /* suas atribuições originais … */
                         /* ... (não alterei nada aqui) ... */
                     })
