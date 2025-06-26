@@ -1,6 +1,10 @@
 <header class="header">
   <div class="header-left">
-    <h1><a href="{{ route('dashboard') }}" class="logo-link">Tainan Motos</a></h1>
+    {{-- Substitui o texto "Tainan Motos" pela tag de imagem da logo --}}
+    <a href="{{ route('dashboard') }}" class="logo-link">
+        {{-- Use a URL da sua logo real aqui. Exemplo: asset('images/logo.png') --}}
+        <img src="{{ asset('imagens/tainanlogo.png') }}" alt="Logo Tainan Motos" style="height: 40px; width: auto; border-radius: 5px;">
+    </a>
   </div>
 
   <div class="header-center">
@@ -27,24 +31,31 @@
       <div class="dropdown">
         <div class="nav-link dropdown-toggle">
           <i class="fas fa-plus"></i> Cadastro
-        </div>
+        {</div>
         <div class="dropdown-menu">
-          <a href="/cadastrar-fabricante" class="dropdown-item">Fabricantes</a>
-          <a href="/cadastrar-modelo" class="dropdown-item">Modelos</a>
-          <a href="/cadastrar-peca" class="dropdown-item">Peças</a>
+          <a href="/cadastrar-fabricante" class="dropdown-item">Fabricante</a>
+          <a href="/cadastrar-modelo" class="dropdown-item">Modelo</a>
+          <a href="/cadastrar-peca" class="dropdown-item">Peça</a>
           <a href="/cadastrar-mao-de-obra" class="dropdown-item">Mão de Obra</a>
         </div>
       </div>
 
-      <!-- Link Motos -->
-      <a href="/motos" class="nav-link">
-        <i class="fa-solid fa-motorcycle"></i> Motos
-      </a>
+      <!-- Dropdown Consultas -->
+      <div class="dropdown">
+        <div class="nav-link dropdown-toggle">
+          <i class="fas fa-search"></i> Consultas
+        </div>
+        <div class="dropdown-menu">
+          <a href="/fabricantes" class="dropdown-item">Fabricantes</a>
+          <a href="/modelos" class="dropdown-item">Modelos</a>
+          <a href="/pecas" class="dropdown-item">Peças</a>
+          <a href="/maodeobra" class="dropdown-item">Mão de Obra</a>
+          <a href="/motos" class="dropdown-item">Motos</a>
+        </div>
+      </div>
 
-      <!-- Link Estatísticas -->
-      <a href="/estatisticas" class="nav-link">
-        <i class="fa-solid fa-table"></i> Estatísticas
-      </a>
+      <!-- Relatórios -->
+      <a href="/estatisticas" class="nav-link"><i class="fas fa-chart-bar"></i> Relatórios</a>
       @endif
 
     </nav>
@@ -52,255 +63,196 @@
 
   <div class="header-right">
     @if(session('usuario'))
-    <span class="user-name">{{ session('usuario')->nome }}</span>
-    @else
-    <span class="user-name">Visitante</span>
-    @endif
-
-    <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+    <div class="user-info">
+      <i class="fas fa-user-circle"></i>
+      <span>Olá, {{ session('usuario')->nome }}</span>
+    </div>
+    <form action="{{ route('logout') }}" method="POST" style="display:inline;">
       @csrf
-      <button type="submit" class="logout-btn">Sair</button>
+      <button type="submit" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Sair</button>
     </form>
+    @else
+    <a href="{{ route('login') }}" class="login-btn"><i class="fas fa-sign-in-alt"></i> Entrar</a>
+    @endif
   </div>
-</header>
 
-</header>
-
-
-<style>
-  /* Header principal */
-  .header {
-    background-color: rgb(17, 19, 20);
-    color: white;
-    padding: 15px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    flex-wrap: wrap;
-  }
-
-  .header-left h1 {
-    margin: 0;
-    font-size: 22px;
-  }
-
-  .header-center {
-    flex-grow: 1;
-    text-align: center;
-  }
-
-  .nav-links {
-    display: inline-flex;
-    gap: 30px;
-    align-items: center;
-    position: relative;
-  }
-
-  /* Links do menu */
-  .nav-link {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 15px;
-    transition: color 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-  }
-
-  .nav-link:hover {
-    color: #007bff;
-  }
-
-  /* Área à direita */
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-
-  .user-name {
-    font-size: 16px;
-    font-weight: bold;
-  }
-
-  .settings-icon i {
-    font-size: 20px;
-    color: white;
-  }
-
-  .logout-btn {
-    background-color: #dc3545;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 5px;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    transition: background-color 0.3s ease-in-out;
-  }
-
-  .logout-btn:hover {
-    background-color: #c82333;
-  }
-
-  /* Dropdown menu */
-  .dropdown {
-    position: relative;
-  }
-
-  .dropdown:hover .dropdown-menu {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: rgb(17, 19, 20);
-    border-radius: 5px;
-    padding: 5px 0;
-    z-index: 100;
-    min-width: 130px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  }
-
-  .dropdown-item {
-    color: white;
-    padding: 10px 15px;
-    text-decoration: none;
-    font-size: 14px;
-    transition: background-color 0.3s;
-    white-space: nowrap;
-  }
-
-  .dropdown-item:hover {
-    background-color: #007bff;
-  }
-
-  .logo-link {
-    color: white;
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-
-  .logo-link:hover {
-    color: #007bff;
-  }
-
-  /* Modal Configurações */
-  .modal-config {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-
-  .modal-content {
-    background-color: #fff;
-    margin: 10% auto;
-    padding: 30px;
-    border-radius: 10px;
-    width: 500px;
-    position: relative;
-    animation: fadeIn 0.3s ease;
-  }
-
-  .modal-content h2 {
-    margin-top: 0;
-  }
-
-  .close-btn {
-    position: absolute;
-    right: 15px;
-    top: 10px;
-    font-size: 24px;
-    color: #aaa;
-    cursor: pointer;
-  }
-
-  .close-btn:hover {
-    color: #000;
-  }
-
-  /* Dropdown Animations */
-  @keyframes fadeSlideIn {
-    0% {
-      opacity: 0;
-      transform: translateY(-10px);
+  <style>
+    .header {
+      background: #1a202c;
+      /* Darker background */
+      color: #fff;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
-    100% {
+    .header-left h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .logo-link {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .logo-link img {
+      height: 40px; /* Ajuste a altura da logo conforme necessário */
+      width: auto;
+      vertical-align: middle;
+      border-radius: 5px; /* Mantém o raio de borda para a logo */
+    }
+
+    .header-center .nav-links {
+      display: flex;
+      gap: 25px;
+    }
+
+    .nav-link {
+      color: #e2e8f0;
+      text-decoration: none;
+      font-size: 16px;
+      padding: 8px 12px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .nav-link:hover {
+      background-color: #2d3748;
+      color: #fff;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      color: #cbd5e0;
+    }
+
+    .logout-btn,
+    .login-btn {
+      background: #e53e3e;
+      /* Red for logout */
+      color: #fff;
+      border: none;
+      padding: 8px 12px; /* Reduzido de 10px 15px para 8px 12px */
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px; /* Reduzido de 15px para 14px */
+      font-weight: 600;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px; /* Reduzido de 8px para 6px */
+    }
+
+    .login-btn {
+      background: #3182ce;
+      /* Blue for login */
+    }
+
+
+    .logout-btn:hover,
+    .login-btn:hover {
+      background-color: #c53030;
+      transform: translateY(-1px);
+    }
+
+    /* Dropdown Styles */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: #2d3748;
+      /* Darker dropdown background */
+      border-radius: 5px;
+      padding: 5px 0;
+      z-index: 100;
+      min-width: 150px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      flex-direction: column; /* Para os itens ficarem um abaixo do outro */
+    }
+
+    .dropdown:hover .dropdown-menu {
+      display: flex;
       opacity: 1;
       transform: translateY(0);
     }
-  }
 
-  .dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: rgb(17, 19, 20);
-    border-radius: 5px;
-    padding: 5px 0;
-    z-index: 100;
-    min-width: 130px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-  }
-
-  .dropdown:hover .dropdown-menu {
-    display: flex;
-    flex-direction: column;
-    opacity: 1;
-    transform: translateY(0);
-    animation: fadeSlideIn 0.3s ease forwards;
-  }
-
-  /* Modal Animation */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: scale(0.9);
+    .dropdown-item {
+      color: #e2e8f0;
+      padding: 10px 15px;
+      text-decoration: none;
+      display: block;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
-    to {
-      opacity: 1;
-      transform: scale(1);
+    .dropdown-item:hover {
+      background-color: #4a5568;
+      /* Lighter hover for dropdown items */
+      color: #fff;
     }
-  }
 
-  .modal-content {
-    background-color: #fff;
-    margin: 10% auto;
-    padding: 30px;
-    border-radius: 10px;
-    width: 500px;
-    position: relative;
-    animation: fadeIn 0.3s ease;
-  }
-</style>
 
-<script>
-  function abrirModalConfiguracoes() {
-    document.getElementById("modal-config").style.display = "block";
-  }
+    /* Icon styles */
+    .fas {
+      margin-right: 5px;
+    }
 
-  function fecharModalConfiguracoes() {
-    document.getElementById("modal-config").style.display = "none";
-  }
-</script>
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        padding: 15px;
+        gap: 15px;
+      }
+
+      .header-center .nav-links {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .header-right {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .nav-link,
+      .dropdown-item {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+      }
+
+      .dropdown-menu {
+        position: static; /* Remove absolute positioning on mobile */
+        box-shadow: none;
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</header>
