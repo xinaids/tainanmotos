@@ -96,6 +96,27 @@
                     <input type="text" id="valor" name="valor" readonly>
                 </div>
             </div>
+
+            <!-- Lista de Mão de Obra Adicionada -->
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label for="mao_obra_adicionada">Mão de Obra Adicionada</label>
+                    <ul id="mao_obra_adicionada" style="background:#f5f5f5;padding:10px;border-radius:8px;list-style-type:disc;">
+                        <li><em>Carregando...</em></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Lista de Peças Adicionadas -->
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label for="pecas_adicionadas">Peças Adicionadas</label>
+                    <ul id="pecas_adicionadas" style="background:#f5f5f5;padding:10px;border-radius:8px;list-style-type:disc;">
+                        <li><em>Carregando...</em></li>
+                    </ul>
+                </div>
+            </div>
+
         </form>
     </div>
 </div>
@@ -120,7 +141,7 @@
                             1: "Pendente",
                             2: "Em andamento",
                             3: "Concluído"
-                        }[data.situacao] ?? "-";
+                        } [data.situacao] ?? "-";
                         document.getElementById("fabricante_moto").value = data.moto.modelo.fabricante.nome;
                         document.getElementById("modelo_moto").value = data.moto.modelo.nome;
                         document.getElementById("placa_moto").value = data.moto.placa;
@@ -363,3 +384,81 @@
         outline: none;
     }
 </style>
+
+<script>
+    function carregarDetalhesServicoVisualizar(servicoId) {
+        fetch(`/servico/${servicoId}`)
+            .then(res => res.json())
+            .then(data => {
+                const listaPecas = document.getElementById("pecasAdicionadasVisualizar");
+                const listaMaos = document.getElementById("maosObraAdicionadasVisualizar");
+
+                listaPecas.innerHTML = '';
+                if (data.pecas && data.pecas.length > 0) {
+                    data.pecas.forEach(p => {
+                        const li = document.createElement("li");
+                        li.textContent = `${p.nome} - R$ ${parseFloat(p.preco).toFixed(2).replace('.', ',')}`;
+                        listaPecas.appendChild(li);
+                    });
+                } else {
+                    listaPecas.innerHTML = '<li><em>Nenhuma peça registrada.</em></li>';
+                }
+
+                listaMaos.innerHTML = '';
+                if (data.maodeobra && data.maodeobra.length > 0) {
+                    data.maodeobra.forEach(m => {
+                        const li = document.createElement("li");
+                        li.textContent = `${m.nome} - R$ ${parseFloat(m.preco).toFixed(2).replace('.', ',')}`;
+                        listaMaos.appendChild(li);
+                    });
+                } else {
+                    listaMaos.innerHTML = '<li><em>Nenhuma mão de obra registrada.</em></li>';
+                }
+            });
+    }
+
+    function carregarDetalhesServicoVisualizar(id) {
+        fetch(`/servico/${id}`)
+            .then(res => res.json())
+            .then(data => {
+                // Campos existentes
+                document.getElementById("data_abertura").value = data.data_abertura;
+                document.getElementById("situacao").value = data.situacao_label;
+                document.getElementById("fabricante_moto").value = data.fabricante;
+                document.getElementById("modelo_moto").value = data.modelo;
+                document.getElementById("placa_moto").value = data.placa;
+                document.getElementById("ano_moto").value = data.ano;
+                document.getElementById("quilometragem").value = data.quilometragem;
+                document.getElementById("descricao").value = data.descricao_manutencao || '';
+                document.getElementById("valor").value = `R$ ${parseFloat(data.valor_total).toFixed(2).replace('.', ',')}`;
+
+                // Mão de obra
+                const ulMaoObra = document.getElementById("mao_obra_adicionada");
+                ulMaoObra.innerHTML = '';
+                if (data.mao_obra.length === 0) {
+                    ulMaoObra.innerHTML = '<li><em>Nenhuma mão de obra registrada.</em></li>';
+                } else {
+                    data.mao_obra.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = `${item.nome} - R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}`;
+                        ulMaoObra.appendChild(li);
+                    });
+                }
+
+                // Peças
+                const ulPecas = document.getElementById("pecas_adicionadas");
+                ulPecas.innerHTML = '';
+                if (data.pecas.length === 0) {
+                    ulPecas.innerHTML = '<li><em>Nenhuma peça registrada.</em></li>';
+                } else {
+                    data.pecas.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = `${item.nome} - R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}`;
+                        ulPecas.appendChild(li);
+                    });
+                }
+
+                document.getElementById("modalDetalhes").style.display = "block";
+            });
+    }
+</script>
