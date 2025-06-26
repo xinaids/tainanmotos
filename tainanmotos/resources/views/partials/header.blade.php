@@ -78,7 +78,7 @@
 
   <style>
     .header {
-      background: #1a202c;
+      background:rgb(18, 5, 5);
       /* Darker background */
       color: #fff;
       padding: 15px 30px;
