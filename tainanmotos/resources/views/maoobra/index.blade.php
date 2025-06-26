@@ -80,10 +80,12 @@
 </div>
 
 <style>
-    body {
-        background-color: #f4f6f9;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f1f1f1;
+    margin: 0;
+    padding: 0;
+}
 
     .modelos-container {
         max-width: 900px;

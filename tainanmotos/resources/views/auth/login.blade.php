@@ -1,25 +1,44 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="login-container">
-    <div class="login-box">
-        <h2>Login</h2>
-        <form action="{{ route('login') }}" method="POST">
+<div class="min-h-screen bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full bg-white rounded-xl shadow-2xl p-8 transform transition-all duration-500 fade-in">
+        <h2 class="text-4xl font-extrabold text-gray-900 mb-8 text-center leading-tight">Login</h2>
+        <form action="{{ route('login') }}" method="POST" class="space-y-6">
             @csrf
             <div class="input-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email:</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    class="block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-300 placeholder-gray-400 text-gray-800"
+                    placeholder="seu.email@example.com"
+                >
             </div>
             <div class="input-group">
-                <label for="password">Senha:</label>
-                <input type="password" id="password" name="password" required>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha:</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                    class="block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-300 placeholder-gray-400 text-gray-800"
+                    placeholder="••••••••"
+                >
             </div>
-            <button type="submit" class="btn-login">Entrar</button>
+            <button
+                type="submit"
+                class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition duration-300 shadow-lg flex items-center justify-center gap-2"
+            >
+                <i class="fas fa-sign-in-alt"></i> Entrar
+            </button>
         </form>
 
-        <p class="signup-text">
+        <p class="mt-8 text-center text-gray-600 text-base">
             Ainda não tem uma conta?
-            <a href="{{ route('register') }}" class="signup-link">Cadastre-se aqui</a>
+            <a href="{{ route('register') }}" class="font-medium text-blue-600 hover:text-blue-800 transition duration-300">Cadastre-se aqui</a>
         </p>
     </div>
 </div>
@@ -43,94 +62,31 @@
 @endsection
 
 <style>
-/* Fundo da página */
-body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #6e7c87, #2f3c45);
-    margin: 0;
-    padding: 0;
-}
+    /*
+    Os estilos Tailwind são aplicados diretamente nas classes HTML.
+    Aqui ficam apenas estilos complementares ou específicos que não são puramente Tailwind.
+    */
+    body {
+        font-family: 'Inter', sans-serif; /* Usando a fonte Inter */
+    }
 
-/* Container principal do login */
-.login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    color: #fff;
-}
+    .fade-in {
+        animation: fadeIn 0.8s ease-out forwards;
+    }
 
-/* Caixa do login */
-.login-box {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-}
-
-/* Título do login */
-h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #333;
-}
-
-/* Estilo dos campos de input */
-.input-group {
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-/* Estilo do label */
-label {
-    font-size: 14px;
-    font-weight: bold;
-    color: #333;
-}
-
-/* Estilo do input */
-input {
-    width: 100%;
-    padding: 12px;
-    margin-top: 5px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-}
-
-/* Botão de login */
-.btn-login {
-    width: 100%;
-    padding: 12px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-}
-
-.btn-login:hover {
-    background-color: #0056b3;
-}
-
-/* Texto para cadastro */
-.signup-text {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #333;
-}
-
-.signup-link {
-    color: #007bff;
-    text-decoration: none;
-}
-
-.signup-link:hover {
-    text-decoration: underline;
-}
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 </style>
+
+{{-- Adicione o CDN do Tailwind CSS se não estiver usando PostCSS/Webpack --}}
+<script src="https://cdn.tailwindcss.com"></script>
+{{-- Script para a fonte Inter (se não estiver já globalmente) --}}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">

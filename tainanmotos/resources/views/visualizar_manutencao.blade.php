@@ -13,6 +13,7 @@
             <option value="modelo">Modelo</option>
             <option value="marca">Marca</option>
             <option value="nome">Nome do Cliente</option>
+            <option value="status">Status</option>
         </select>
     </div>
 
@@ -23,6 +24,7 @@
                 <th>Marca</th>
                 <th>Nome do Cliente</th>
                 <th>Data de Abertura</th>
+                <th>Status</th>
                 <th>Detalhes</th>
             </tr>
         </thead>
@@ -33,6 +35,22 @@
                 <td>{{ $servico->moto->modelo->fabricante->nome ?? '-' }}</td>
                 <td>{{ $servico->moto->usuario->nome ?? '-' }}</td>
                 <td>{{ \Carbon\Carbon::parse($servico->data_abertura)->format('d/m/Y') }}</td>
+                {{-- Célula para o Status, usando diretivas Blade para o switch --}}
+                <td>
+                    @switch($servico->situacao)
+                        @case(1)
+                            Pendente
+                            @break
+                        @case(2)
+                            Em andamento
+                            @break
+                        @case(3)
+                            Concluído
+                            @break
+                        @default
+                            -
+                    @endswitch
+                </td>
                 <td>
                     <a href="#" class="btn-visualizar" data-id="{{ $servico->codigo }}">
                         <i class="fas fa-search"></i> Ver Detalhes
@@ -46,7 +64,6 @@
     <a href="{{ route('dashboard') }}" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar ao Painel</a>
 </div>
 
-<!-- Modal Detalhes -->
 <div id="modalDetalhes" class="modal-overlay" style="display: none;">
     <div class="modal-content">
         <span class="close-modal" onclick="fecharModal()">&times;</span>
@@ -152,7 +169,8 @@
                             1: "Pendente",
                             2: "Em andamento",
                             3: "Concluído"
-                        } [data.situacao] ?? "-";
+                        }[data.situacao] ?? "-"; // Mantido para 'situacao' dentro do modal
+
                         document.getElementById("fabricante_moto").value = data.moto.modelo.fabricante.nome ?? '-';
                         document.getElementById("modelo_moto").value = data.moto.modelo.nome ?? '-';
                         document.getElementById("placa_moto").value = data.moto.placa ?? '-';
@@ -214,12 +232,15 @@
 
         rows.forEach(row => {
             let cellContent = '';
+            // Ajuste os índices das colunas para corresponder à nova estrutura da tabela
             if (searchType === 'modelo') {
                 cellContent = row.children[0].textContent.toLowerCase();
             } else if (searchType === 'marca') {
                 cellContent = row.children[1].textContent.toLowerCase();
             } else if (searchType === 'nome') {
                 cellContent = row.children[2].textContent.toLowerCase();
+            } else if (searchType === 'status') { // Adicionado para buscar por status na tabela
+                cellContent = row.children[4].textContent.toLowerCase(); // Índice 4 para a nova coluna 'Status'
             }
 
             if (cellContent.includes(searchText)) {

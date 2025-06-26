@@ -20,9 +20,9 @@
             <select name="fabricante_id" id="fabricante_id" required>
                 <option value="">Selecione um fabricante</option>
                 @foreach ($fabricantes as $fabricante)
-                    <option value="{{ $fabricante->codigo }}" {{ $modelo->cod_fabricante == $fabricante->codigo ? 'selected' : '' }}>
-                        {{ $fabricante->nome }}
-                    </option>
+                <option value="{{ $fabricante->codigo }}" {{ $modelo->cod_fabricante == $fabricante->codigo ? 'selected' : '' }}>
+                    {{ $fabricante->nome }}
+                </option>
                 @endforeach
             </select>
         </div>
@@ -35,72 +35,79 @@
 </div>
 
 <style>
-.edit-modelo-container {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 30px;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f1f1f1;
+        margin: 0;
+        padding: 0;
+    }
 
-.edit-modelo-container h2 {
-    text-align: center;
-    margin-bottom: 25px;
-    color: #333;
-}
+    .edit-modelo-container {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 30px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
 
-.edit-form .form-group {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-}
+    .edit-modelo-container h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #333;
+    }
 
-.edit-form label {
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: #333;
-}
+    .edit-form .form-group {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+    }
 
-.edit-form input,
-.edit-form select {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 15px;
-}
+    .edit-form label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #333;
+    }
 
-.form-buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-}
+    .edit-form input,
+    .edit-form select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 15px;
+    }
 
-.btn-salvar {
-    padding: 10px 20px;
-    background-color: #28a745;
-    border: none;
-    color: white;
-    font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
-}
+    .form-buttons {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+    }
 
-.btn-salvar:hover {
-    background-color: #218838;
-}
+    .btn-salvar {
+        padding: 10px 20px;
+        background-color: #28a745;
+        border: none;
+        color: white;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+    }
 
-.btn-cancelar {
-    padding: 10px 20px;
-    background-color: #6c757d;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 600;
-}
+    .btn-salvar:hover {
+        background-color: #218838;
+    }
 
-.btn-cancelar:hover {
-    background-color: #5a6268;
-}
+    .btn-cancelar {
+        padding: 10px 20px;
+        background-color: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .btn-cancelar:hover {
+        background-color: #5a6268;
+    }
 </style>
 @endsection
