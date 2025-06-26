@@ -4,25 +4,43 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Servico;
+use App\Models\Servico; // Certifique-se de importar o modelo Servico
+use App\Models\Peca;    // Certifique-se de importar o modelo Peca
+use App\Models\MaoObra; // Certifique-se de importar o modelo MaoObra
+
 
 class ServicoController extends Controller
 {
-    // 🔍 Mostra os dados completos de um serviço
+    /**
+     * Mostra os dados completos de um serviço específico.
+     * Inclui as relações de moto, modelo, fabricante, usuário,
+     * mão de obra e peças com suas quantidades.
+     *
+     * @param  int  $id O código do serviço.
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show($id)
     {
         $servico = Servico::with([
             'moto.modelo.fabricante',
-            'moto.modelo',
             'moto.usuario',
-            'maosObra',
-            'pecas' // RELACIONAMENTO DEFINIDO NO MODEL
+            'maosObra', // Carrega a relação de mão de obra
+            'pecas' => function($query) {
+                $query->withPivot('quantidade'); // Carrega a relação de peças e o campo 'quantidade' da tabela pivot
+            }
         ])->findOrFail($id);
 
         return response()->json($servico);
     }
 
-    // 💾 Atualiza campos do serviço: situação, valor e histórico
+    /**
+     * Atualiza campos do serviço: situação, valor e histórico.
+     * Este método é diferente do `atualizarDescricao` em ManutencaoController.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function atualizar(Request $request, $id)
     {
         $servico = Servico::findOrFail($id);
@@ -36,71 +54,41 @@ class ServicoController extends Controller
         $servico->descricao_manutencao = $descricaoFinal;
 
         // Atualiza valor (tratando formato brasileiro R$)
-        $servico->valor = floatval(str_replace(['R$', ',', ' '], ['', '.', ''], $request->input('valor')));
-
-        // Data de fechamento (se fornecida)
-        $servico->data_fechamento = $request->input('data_fechamento') ?: null;
-
-        // Mapeia texto da situação para número
-        $mapSituacao = [
-            'Pendente' => 1,
-            'Em andamento' => 2,
-            'Concluído' => 3
-        ];
-        $servico->situacao = $mapSituacao[$request->input('situacao')] ?? 1;
-
-        $servico->save();
-
-        return redirect()->route('manutencao.gerenciar')->with('success', 'Serviço atualizado com sucesso!');
-    }
-
-    // 🛠 Atualiza histórico e salva lista de mão de obra e peças associadas
-    public function atualizarDescricao(Request $request, $id)
-    {
-        $servico = Servico::findOrFail($id);
-
-        // Atualiza a descrição
-        $servico->descricao_manutencao = $request->input('descricao_historico');
+        $servico->valor = floatval(str_replace(['R$', ',', ' '], ['', '.', ''], $request->input('valor_total')));
 
         // ===== 1. Salvar MÃO DE OBRA =====
         $listaMaoObra = $request->input('mao_obra_lista');
         $listaMaoObra = $listaMaoObra ? json_decode($listaMaoObra, true) : [];
 
-        DB::table('servico_maodeobra')->where('cod_servico', $servico->codigo)->delete();
+        // Detach todas as mãos de obra existentes para sincronizar
+        $servico->maosObra()->detach();
 
-        $valorMaoObra = 0;
         foreach ($listaMaoObra as $mao) {
-            DB::table('servico_maodeobra')->insert([
-                'cod_servico' => $servico->codigo,
-                'cod_maodeobra' => $mao['codigo'],
-                'quantidade' => 1
-            ]);
-            $valorMaoObra += floatval($mao['valor']);
+            // Verifica se a mão de obra existe antes de anexar
+            $maoObraExistente = MaoObra::find($mao['codigo']);
+            if ($maoObraExistente) {
+                $servico->maosObra()->attach($mao['codigo'], ['quantidade' => 1]);
+            }
         }
 
         // ===== 2. Salvar PEÇAS =====
         $listaPecas = $request->input('peca_lista');
         $listaPecas = $listaPecas ? json_decode($listaPecas, true) : [];
 
-        DB::table('servico_peca')->where('cod_servico', $servico->codigo)->delete();
+        // Detach todas as peças existentes para sincronizar
+        $servico->pecas()->detach();
 
-        $valorPecas = 0;
         foreach ($listaPecas as $peca) {
             $quantidade = $peca['quantidade'] ?? 1;
-
-            DB::table('servico_peca')->insert([
-                'cod_servico' => $servico->codigo,
-                'cod_peca' => $peca['codigo'],
-                'quantidade' => $quantidade
-            ]);
-
-            $valorPecas += floatval($peca['preco']) * $quantidade;
+            // Verifica se a peça existe antes de anexar
+            $pecaExistente = Peca::find($peca['codigo']);
+            if ($pecaExistente) {
+                $servico->pecas()->attach($peca['codigo'], ['quantidade' => $quantidade]);
+            }
         }
 
-        // ===== 3. Atualiza valor total =====
-        $servico->valor = $valorMaoObra + $valorPecas;
         $servico->save();
 
-        return redirect()->route('manutencao.gerenciar')->with('success', 'Manutenção atualizada com sucesso!');
+        return redirect()->back()->with('success', 'Serviço atualizado com sucesso!');
     }
 }

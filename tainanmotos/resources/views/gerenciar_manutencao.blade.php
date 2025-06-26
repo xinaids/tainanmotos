@@ -1,5 +1,3 @@
-
-
 @extends('layouts.app')
 
 @section('content')
@@ -9,7 +7,7 @@
     <h2>Gerenciar Manutenções</h2>
     <p>Acompanhe e administre as manutenções em aberto no sistema.</p>
 
-    {{-- ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­ BUSCA / FILTROS --}}
+    {{-- BUSCA / FILTROS --}}
     <div class="form-group search-container">
         <input type="text" id="search" name="search" placeholder="Buscar...">
         <select id="search-type" name="search-type" style="appearance:none;background-image:none;">
@@ -26,7 +24,7 @@
         </select>
     </div>
 
-    {{-- ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­ TABELA --}}
+    {{-- TABELA --}}
     <table class="manutencao-table">
         <thead>
             <tr>
@@ -59,7 +57,7 @@
     <a href="{{ route('dashboard') }}" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar ao Painel</a>
 </div>
 
-{{-- ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­ MODAL DETALHES --}}
+{{-- MODAL DETALHES --}}
 <div id="modalDetalhes" class="modal-overlay" style="display:none;">
     <div class="modal-content">
         <span class="close-modal" onclick="fecharModal()">&times;</span>
@@ -73,7 +71,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="data_abertura">Data Abertura</label>
-                    <input type="date" id="data_abertura" name="data_abertura">
+                    <input type="date" id="data_abertura" name="data_abertura" readonly>
                 </div>
                 <div class="form-group">
                     <label for="data_fechamento">Data Fechamento</label>
@@ -82,9 +80,9 @@
                 <div class="form-group">
                     <label for="situacao">Situação</label>
                     <select id="situacao" name="situacao">
-                        <option>Pendente</option>
-                        <option>Em andamento</option>
-                        <option>Concluído</option>
+                        <option value="1">Pendente</option>
+                        <option value="2">Em andamento</option>
+                        <option value="3">Concluído</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -96,11 +94,11 @@
 
             {{-- linha 2 --}}
             <div class="form-row">
-                <div class="form-group"><label>Fabricante</label><input id="fabricante_moto" name="fabricante_moto"></div>
-                <div class="form-group"><label>Modelo</label><input id="modelo_moto" name="modelo_moto"></div>
-                <div class="form-group"><label>Placa</label><input id="placa_moto" name="placa_moto"></div>
-                <div class="form-group"><label>Ano</label><input id="ano_moto" name="ano_moto"></div>
-                <div class="form-group"><label>Quilometragem</label><input id="quilometragem" name="quilometragem"></div>
+                <div class="form-group"><label>Fabricante</label><input id="fabricante_moto" name="fabricante_moto" readonly></div>
+                <div class="form-group"><label>Modelo</label><input id="modelo_moto" name="modelo_moto" readonly></div>
+                <div class="form-group"><label>Placa</label><input id="placa_moto" name="placa_moto" readonly></div>
+                <div class="form-group"><label>Ano</label><input id="ano_moto" name="ano_moto" readonly></div>
+                <div class="form-group"><label>Quilometragem</label><input id="quilometragem" name="quilometragem" readonly></div>
             </div>
 
             {{-- linha 3 - MÃO DE OBRA + PEÇAS --}}
@@ -158,13 +156,13 @@
 
 
             <div class="form-row" style="justify-content:flex-end;">
-                <button class="btn-enviar"><i class="fas fa-paper-plane"></i> Enviar Manutenção</button>
+                <button type="submit" class="btn-enviar"><i class="fas fa-paper-plane"></i> Enviar Manutenção</button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- ­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­­ MODAL HISTÓRICO --}}
+{{-- MODAL HISTÓRICO --}}
 <div id="modalHistorico" class="modal-overlay" style="display:none;">
     <div class="modal-content">
         <span class="close-modal" onclick="fecharModalHistorico()">&times;</span>
@@ -177,32 +175,40 @@
 
 
 <script>
+    let pecasDisponiveis = [];
+    let pecasAdicionadas = []; // Peças adicionadas NA SESSÃO ATUAL do modal (as que você vai enviar)
+
+    let maoDeObraDisponiveis = [];
+    let maoDeObraAdicionadas = []; // Mão de obra adicionadas NA SESSÃO ATUAL do modal
+
     function abrirModal(modelo, marca, dataAbertura) {
         document.getElementById("modalDetalhes").style.display = "flex";
+        // Estes campos são apenas para exibição no modal
         document.getElementById("modelo_moto").value = modelo;
         document.getElementById("fabricante_moto").value = marca;
         document.getElementById("data_abertura").value = dataAbertura;
-        document.getElementById("situacao").value = "Pendente";
+        document.getElementById("situacao").value = "1"; // Default para Pendente
+        // Limpar as listas de peças e mão de obra ao abrir um novo modal ou reabrir
+        document.getElementById("listaPecas").innerHTML = "";
+        document.getElementById("listaMaoObra").innerHTML = "";
+        document.getElementById("pecasRegistradas").innerHTML = "<li><em>Nenhuma peça registrada.</em></li>";
+        document.getElementById("maoObraRegistrada").innerHTML = "<li><em>Nenhuma mão de obra registrada.</em></li>";
+
+        pecasAdicionadas = [];
+        maoDeObraAdicionadas = [];
+        atualizarValorTotal();
     }
 
     function fecharModal() {
         document.getElementById("modalDetalhes").style.display = "none";
     }
 
-
     function fecharModalHistorico() {
         document.getElementById("modalHistorico").style.display = "none";
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Botões para histórico
-        const historicoBtns = document.querySelectorAll('.btn-historico');
-        historicoBtns.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                abrirModalHistorico();
-            });
-        });
+        carregarMaoDeObra(); // Carrega as opções de mão de obra ao carregar a página
 
         const visualizarBtns = document.querySelectorAll('.btn-visualizar');
         visualizarBtns.forEach(btn => {
@@ -210,90 +216,51 @@
                 e.preventDefault();
                 const idServico = this.getAttribute('data-id');
 
+                // Limpa as listas e arrays ao abrir para um novo serviço
+                document.getElementById("listaPecas").innerHTML = "";
+                document.getElementById("listaMaoObra").innerHTML = "";
+                pecasAdicionadas = [];
+                maoDeObraAdicionadas = [];
+
+
                 fetch(`/servico/${idServico}`)
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
-                        carregarPecasRegistradas(data); 
+                        // Preenche os campos do modal com os dados do serviço
                         document.getElementById("data_abertura").value = data.data_abertura;
                         document.getElementById("data_fechamento").value = data.data_fechamento ?? "";
                         document.getElementById("descricao_historico").value = data.descricao_manutencao ?? "";
-                        document.getElementById("situacao").value = {
-                            1: "Pendente",
-                            2: "Em andamento",
-                            3: "Concluído"
-                        } [data.situacao] ?? "Pendente";
+                        document.getElementById("situacao").value = data.situacao; // Usar o valor numérico da situação
 
                         document.getElementById("fabricante_moto").value = data.moto.modelo.fabricante.nome;
                         document.getElementById("modelo_moto").value = data.moto.modelo.nome;
-
                         document.getElementById("placa_moto").value = data.moto.placa;
                         document.getElementById("ano_moto").value = data.moto.ano;
                         document.getElementById("quilometragem").value = data.quilometragem;
-                        document.getElementById("descricao").value = "";
+                        document.getElementById("descricao").value = ""; // Limpa o campo de nova descrição
 
-                        carregarPecas(data.moto.modelo.codigo);
-
-                        // Atualiza a lista visual e a variável de controle
-                        const ulMaoObra = document.getElementById("maoObraRegistrada");
-                        const campoOculto = document.getElementById("mao_obra_lista");
-                        ulMaoObra.innerHTML = "";
-                        maoDeObraAdicionadas = [];
-
-                        if (data.maos_obra && data.maos_obra.length > 0) {
-                            let total = 0;
-
-                            data.maos_obra.forEach(m => {
-                                maoDeObraAdicionadas.push({
-                                    codigo: m.codigo,
-                                    nome: m.nome,
-                                    valor: parseFloat(m.valor)
-                                });
-
-                                const li = document.createElement("li");
-                                li.textContent = `${m.nome} - R$ ${parseFloat(m.valor).toFixed(2).replace(".", ",")}`;
-
-
-                                const btnRemover = document.createElement("button");
-                                btnRemover.textContent = "✖";
-                                btnRemover.style.marginLeft = "10px";
-                                btnRemover.style.background = "none";
-                                btnRemover.style.border = "none";
-                                btnRemover.style.color = "red";
-                                btnRemover.style.cursor = "pointer";
-
-                                btnRemover.onclick = () => {
-                                    // Remove visual
-                                    li.remove();
-                                    // Remove da variável
-                                    maoDeObraAdicionadas = maoDeObraAdicionadas.filter(mao => mao.codigo !== m.codigo);
-                                    // Atualiza o valor e campo oculto
-                                    const totalAtualizado = maoDeObraAdicionadas.reduce((soma, item) => soma + parseFloat(item.valor), 0);
-                                    document.getElementById("valor").value = "R$ " + totalAtualizado.toFixed(2).replace(".", ",");
-                                    campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
-                                };
-
-                                li.appendChild(btnRemover);
-                                ulMaoObra.appendChild(li);
-
-                                total += parseFloat(m.valor);
-                            });
-
-
-                            campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
-                            document.getElementById("valor").value = "R$ " + total.toFixed(2).replace(".", ",");
-                        } else {
-                            const li = document.createElement("li");
-                            li.innerHTML = "<em>Nenhuma mão de obra registrada.</em>";
-                            ulMaoObra.appendChild(li);
-                            campoOculto.value = "[]";
-                            document.getElementById("valor").value = "R$ 0,00";
+                        // Carrega as peças disponíveis para o modelo da moto
+                        if (data.moto.modelo.codigo) {
+                            carregarPecas(data.moto.modelo.codigo);
                         }
 
-                        // Atualiza a rota do formulário
+                        // Carrega e exibe as peças já registradas no serviço
+                        carregarPecasRegistradas(data);
+
+                        // Carrega e exibe as mão de obra já registradas no serviço
+                        carregarMaoObraRegistrada(data);
+
+                        // Atualiza a rota do formulário para o serviço específico
                         document.getElementById("formDetalhes").action = `/manutencao/${data.codigo}/descricao`;
 
                         // Exibe o modal
                         document.getElementById("modalDetalhes").style.display = "flex";
+                        atualizarValorTotal(); // Calcula o valor total inicial
                     })
                     .catch(error => {
                         console.error("Erro ao carregar detalhes do serviço:", error);
@@ -304,71 +271,42 @@
     });
 
 
-
-    historicoBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            abrirModalHistorico();
-        });
-    });
-
-
-
-    // Envia a lista atualizada ao submeter o formulário
-    function enviarFormulario() {
-        const maoObraLista = document.getElementById("mao_obra_lista").value;
-        console.log("Enviando lista:", maoObraLista); // para teste
-        return true; // permite envio normal
-    }
-
     function prepararEnvioDescricao() {
         const descricaoInput = document.getElementById("descricao");
         const historicoTextarea = document.getElementById("descricao_historico");
-        const pecaLista = document.getElementById("peca_lista");
-        const maoObraLista = document.getElementById("mao_obra_lista");
+        const pecaListaHidden = document.getElementById("peca_lista");
+        const maoObraListaHidden = document.getElementById("mao_obra_lista");
 
-        // Atualiza os campos ocultos com os JSONs corretos
-        pecaLista.value = JSON.stringify(pecasAdicionadas);
-        maoObraLista.value = JSON.stringify(maoDeObraAdicionadas);
+        // Atualiza os campos ocultos com os JSONs corretos das peças e mão de obra a serem adicionadas/removidas
+        pecaListaHidden.value = JSON.stringify(pecasAdicionadas);
+        maoObraListaHidden.value = JSON.stringify(maoDeObraAdicionadas);
 
-        console.log("🔧 JSON enviado - Peças:", pecaLista.value);
-        console.log("🔧 JSON enviado - Mão de obra:", maoObraLista.value);
+        // Lógica para adicionar nova descrição ao histórico
+        const novaDescricao = descricaoInput.value.trim();
+        if (novaDescricao) {
+            const dataAtual = new Date();
+            const dataFormatada = dataAtual.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
 
-        // Gera o histórico de descrição
-const novaDescricao = descricaoInput.value.trim();
-if (!novaDescricao) return false;
+            const novaEntrada = `[${dataFormatada}] ${novaDescricao}`;
+            const historicoAtual = historicoTextarea.value.trim();
+            const novoHistorico = historicoAtual ? `${historicoAtual}\n${novaEntrada}` : novaEntrada;
 
-const campoHistoricoInput = document.querySelector("input[name='descricao_historico']");
-if (campoHistoricoInput && historicoTextarea) {
-    campoHistoricoInput.value = historicoTextarea.value;
-}
-return true;
+            historicoTextarea.value = novoHistorico; // Atualiza o textarea visível
+            // Atualiza o input hidden para ser enviado ao servidor
+            document.getElementById("descricao_historico_hidden").value = novoHistorico;
+        } else {
+            // Se não houver nova descrição, apenas garante que o histórico existente seja enviado
+            document.getElementById("descricao_historico_hidden").value = historicoTextarea.value;
+        }
 
-
-        const dataAtual = new Date();
-        const dataFormatada = dataAtual.toLocaleString('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        });
-
-        const novaEntrada = `${dataFormatada} - ${novaDescricao}`;
-        const historicoAtual = historicoTextarea.value.trim();
-        const novoHistorico = historicoAtual ? `${historicoAtual}\n${novaEntrada}` : novaEntrada;
-
-        historicoTextarea.value = novoHistorico;
-
-        // Cria input hidden com histórico final
-        const campoHistorico = document.createElement("input");
-        campoHistorico.type = "hidden";
-        campoHistorico.name = "descricao_historico";
-        campoHistorico.value = novoHistorico;
-        document.getElementById("formDetalhes").appendChild(campoHistorico);
-
-        return true; // Prossegue com envio
+        return true; // Prossegue com o envio do formulário
     }
 
 
@@ -385,34 +323,50 @@ return true;
         });
     });
 
-    let pecasDisponiveis = [];
-    var pecasAdicionadas = [];
-
+    // Função para carregar peças disponíveis para um dado modelo
     function carregarPecas(codModelo) {
         const select = document.getElementById("peca");
         fetch(`/api/pecas/${codModelo}`)
             .then(res => res.json())
             .then(data => {
-                pecasDisponiveis = data;
-                select.innerHTML = '';
-                data.forEach(item => {
+                pecasDisponiveis = data; // Armazena as peças disponíveis
+                select.innerHTML = ''; // Limpa as opções existentes
+                if (data.length === 0) {
                     const option = document.createElement('option');
-                    option.value = item.codigo;
-                    option.textContent = `${item.nome} - R$ ${parseFloat(item.preco).toFixed(2).replace(".", ",")}`;
-                    option.dataset.nome = item.nome;
-                    option.dataset.preco = item.preco;
+                    option.value = '';
+                    option.textContent = 'Nenhuma peça disponível para este modelo';
                     select.appendChild(option);
-                });
+                    select.disabled = true;
+                    document.getElementById('btnAdicionarPeca').disabled = true;
+                } else {
+                    select.disabled = false;
+                    document.getElementById('btnAdicionarPeca').disabled = false;
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.codigo;
+                        option.textContent = `${item.nome} - R$ ${parseFloat(item.preco).toFixed(2).replace(".", ",")}`;
+                        option.dataset.nome = item.nome;
+                        option.dataset.preco = item.preco;
+                        select.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Erro ao carregar peças disponíveis:", error);
+                select.innerHTML = '<option value="">Erro ao carregar peças</option>';
+                select.disabled = true;
+                document.getElementById('btnAdicionarPeca').disabled = true;
             });
     }
 
+    // Adiciona peça à lista de peças "a atribuir" (listaPecas)
     document.getElementById('btnAdicionarPeca').addEventListener('click', () => {
         const select = document.getElementById('peca');
         const codigo = parseInt(select.value, 10);
         if (!codigo) return;
 
-        const peca = pecasDisponiveis.find(p => p.codigo === codigo);
-        if (!peca) {
+        const pecaSelecionada = pecasDisponiveis.find(p => p.codigo === codigo);
+        if (!pecaSelecionada) {
             alert('Peça inválida.');
             return;
         }
@@ -422,25 +376,23 @@ return true;
             existente.quantidade += 1;
         } else {
             pecasAdicionadas.push({
-                codigo: peca.codigo,
-                nome: peca.nome,
-                preco: parseFloat(peca.preco),
+                codigo: pecaSelecionada.codigo,
+                nome: pecaSelecionada.nome,
+                preco: parseFloat(pecaSelecionada.preco),
                 quantidade: 1
             });
         }
-
-        atualizarListaPecas();
+        atualizarListaPecasParaAtribuir();
     });
 
 
-    function atualizarListaPecas() {
+    function atualizarListaPecasParaAtribuir() {
         const ul = document.getElementById("listaPecas");
-        ul.innerHTML = "";
+        ul.innerHTML = ""; // Limpa a lista antes de redesenhar
 
         pecasAdicionadas.forEach((peca, index) => {
             const li = document.createElement("li");
             li.textContent = `${peca.nome} - R$ ${(peca.preco * peca.quantidade).toFixed(2).replace('.', ',')} (x${peca.quantidade})`;
-
 
             const btnRemover = document.createElement("button");
             btnRemover.textContent = "✖";
@@ -451,87 +403,25 @@ return true;
                 } else {
                     pecasAdicionadas.splice(index, 1);
                 }
-                atualizarListaPecas();
+                atualizarListaPecasParaAtribuir(); // Atualiza a lista e o total
             };
 
             li.appendChild(btnRemover);
             ul.appendChild(li);
         });
 
-        atualizarValorTotal();
+        atualizarValorTotal(); // Recalcula o valor total
         document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
-        li.textContent = `${peca.nome} - R$ ${(peca.preco * peca.quantidade).toFixed(2).replace('.', ',')} (x${peca.quantidade})`;
-
-        const btnRemover = document.createElement("button");
-        btnRemover.textContent = "✖";
-        btnRemover.style.cssText = "margin-left:10px;background:none;border:none;color:red;cursor:pointer";
-        btnRemover.onclick = () => {
-            pecasAdicionadas = pecasAdicionadas.filter(p => p.codigo !== peca.codigo);
-            atualizarListaPecas();
-        };
-
-        li.appendChild(btnRemover);
-        ul.appendChild(li);
-    };
-
-    atualizarValorTotal();
-    document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
+    }
 
 
     function atualizarValorTotal() {
         const totalMao = maoDeObraAdicionadas.reduce((soma, item) => soma + parseFloat(item.valor), 0);
-        const totalPeca = pecasAdicionadas.reduce((soma, item) => soma + parseFloat(item.preco) * item.quantidade, 0);
+        const totalPeca = pecasAdicionadas.reduce((soma, item) => soma + (parseFloat(item.preco) * item.quantidade), 0);
         const totalGeral = totalMao + totalPeca;
 
         document.getElementById("valor").value = "R$ " + totalGeral.toFixed(2).replace(".", ",");
     }
-
-    document.getElementById('btnAdicionarPeca').addEventListener('click', () => {
-        const select = document.getElementById('peca');
-        const codigo = parseInt(select.value, 10);
-        if (!codigo) return;
-
-        const peca = pecasDisponiveis.find(p => p.codigo === codigo);
-        if (!peca || pecasAdicionadas.some(p => p.codigo === codigo)) {
-            alert('Peça já adicionada ou inválida.');
-            return;
-        }
-
-        pecasAdicionadas.push(peca);
-
-        const li = document.createElement('li');
-        li.textContent = `${peca.nome} - R$ ${(+peca.preco).toFixed(2).replace('.', ',')}`;
-
-        const btnX = document.createElement('button');
-        btnX.textContent = '✖';
-        btnX.style.cssText = 'margin-left:10px;background:none;border:none;color:red;cursor:pointer';
-        btnX.onclick = () => {
-            li.remove();
-            pecasAdicionadas = pecasAdicionadas.filter(p => p.codigo !== peca.codigo);
-            atualizarValorTotal();
-            document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
-        };
-
-        li.appendChild(btnX);
-        document.getElementById("listaPecas").appendChild(li);
-
-        atualizarValorTotal();
-        document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
-    });
-</script>
-
-<script>
-    let maoDeObraDisponiveis = [];
-    let maoDeObraAdicionadas = [];
-
-    function atualizarValorTotal() {
-        const totalMao = maoDeObraAdicionadas.reduce((soma, item) => soma + parseFloat(item.valor), 0);
-        const totalPeca = pecasAdicionadas.reduce((soma, item) => soma + parseFloat(item.preco), 0);
-        const totalGeral = totalMao + totalPeca;
-
-        document.getElementById("valor").value = "R$ " + totalGeral.toFixed(2).replace(".", ",");
-    }
-
 
     function carregarMaoDeObra() {
         const select = document.getElementById("mao_obra");
@@ -539,7 +429,7 @@ return true;
             .then(res => res.json())
             .then(data => {
                 maoDeObraDisponiveis = data;
-                select.innerHTML = ''; // limpa o select
+                select.innerHTML = '';
                 data.forEach(item => {
                     const option = document.createElement('option');
                     option.value = item.codigo;
@@ -551,135 +441,110 @@ return true;
             });
     }
 
-
-
-
-    document.addEventListener('DOMContentLoaded', () => {
-        /* popula o <select> com as MOs cadastradas */
-
-        carregarMaoDeObra();
-
-        /* ------------ BOTÃO “ADICIONAR” --------------- */
-        const historicoBtns = document.querySelectorAll('.btn-historico');
-        const btnAdicionar = document.getElementById('btnAdicionarMaoObra');
+    // Adiciona mão de obra à lista de mão de obra "a atribuir" (listaMaoObra)
+    document.getElementById('btnAdicionarMaoObra').addEventListener('click', () => {
         const select = document.getElementById('mao_obra');
-        const lista = document.getElementById('listaMaoObra');
-        const campoOculto = document.getElementById('mao_obra_lista');
+        const codigo = parseInt(select.value, 10);
+        if (!codigo) return;
 
-        btnAdicionar.addEventListener('click', () => {
-            const codigo = parseInt(select.value, 10);
-            if (!codigo) return; // nada escolhido
+        const maoSelecionada = maoDeObraDisponiveis.find(m => m.codigo === codigo);
+        if (!maoSelecionada) return;
 
-            const mao = maoDeObraDisponiveis.find(m => m.codigo === codigo);
-            if (!mao) return;
+        if (maoDeObraAdicionadas.some(m => m.codigo === codigo)) {
+            alert('Essa mão de obra já foi adicionada.');
+            return;
+        }
 
-            if (maoDeObraAdicionadas.some(m => m.codigo === codigo)) { // evita duplicidade
-                alert('Essa mão de obra já foi adicionada.');
-                return;
-            }
+        maoDeObraAdicionadas.push({
+            codigo: maoSelecionada.codigo,
+            nome: maoSelecionada.nome,
+            valor: parseFloat(maoSelecionada.valor)
+        });
 
-            maoDeObraAdicionadas.push(mao);
+        atualizarListaMaoDeObraParaAtribuir();
+    });
 
-            /* item visual na lista */
+    function atualizarListaMaoDeObraParaAtribuir() {
+        const ul = document.getElementById("listaMaoObra");
+        ul.innerHTML = "";
+
+        maoDeObraAdicionadas.forEach((mao, index) => {
             const li = document.createElement('li');
-            li.textContent = `${mao.nome} - R$ ${(+mao.valor).toFixed(2).replace('.', ',')}`;
+            li.textContent = `${mao.nome} - R$ ${mao.valor.toFixed(2).replace('.', ',')}`;
 
             const btnX = document.createElement('button');
             btnX.textContent = '✖';
-            btnX.style.cssText =
-                'margin-left:10px;background:none;border:none;color:red;cursor:pointer';
+            btnX.style.cssText = 'margin-left:10px;background:none;border:none;color:red;cursor:pointer';
             btnX.onclick = () => {
-                li.remove();
-                maoDeObraAdicionadas =
-                    maoDeObraAdicionadas.filter(m => m.codigo !== mao.codigo);
+                maoDeObraAdicionadas.splice(index, 1);
+                atualizarListaMaoDeObraParaAtribuir();
                 atualizarValorTotal();
-                campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
             };
 
             li.appendChild(btnX);
-            lista.appendChild(li);
-
-            atualizarValorTotal();
-            campoOculto.value = JSON.stringify(maoDeObraAdicionadas);
+            ul.appendChild(li);
         });
-        /* ---------------------------------------------- */
+        atualizarValorTotal();
+        document.getElementById("mao_obra_lista").value = JSON.stringify(maoDeObraAdicionadas);
+    }
 
-        /* ------------ ABRIR MODAL DETALHES ------------ */
-        const visualizarBtns = document.querySelectorAll('.btn-visualizar');
-        visualizarBtns.forEach(btn => {
-            btn.addEventListener('click', e => {
-                e.preventDefault();
-                const idServico = btn.dataset.id;
 
-                fetch(`/servico/${idServico}`)
-                    .then(r => r.json())
-                    .then(data => {
-                        carregarPecasRegistradas(data); // 🔧 INSERIDO
-                        /* suas atribuições originais … */
-                        /* ... (não alterei nada aqui) ... */
-                    })
-                    .catch(() => alert('Erro ao carregar dados da manutenção.'));
+    function carregarMaoObraRegistrada(data) {
+        const ulMaoObra = document.getElementById("maoObraRegistrada");
+        ulMaoObra.innerHTML = "";
+        maoDeObraAdicionadas = []; // Limpa a lista antes de popular
+
+        if (data.maos_obra && data.maos_obra.length > 0) {
+            data.maos_obra.forEach(m => {
+                // Adiciona as mãos de obra registradas ao array maoDeObraAdicionadas
+                maoDeObraAdicionadas.push({
+                    codigo: m.codigo,
+                    nome: m.nome,
+                    valor: parseFloat(m.valor)
+                });
+
+                const li = document.createElement("li");
+                li.textContent = `${m.nome} - R$ ${parseFloat(m.valor).toFixed(2).replace(".", ",")}`;
+
+                const btnRemover = document.createElement("button");
+                btnRemover.textContent = "✖";
+                btnRemover.style.marginLeft = "10px";
+                btnRemover.style.background = "none";
+                btnRemover.style.border = "none";
+                btnRemover.style.color = "red";
+                btnRemover.style.cursor = "pointer";
+
+                btnRemover.onclick = () => {
+                    maoDeObraAdicionadas = maoDeObraAdicionadas.filter(mao => mao.codigo !== m.codigo);
+                    carregarMaoObraRegistrada({ maos_obra: maoDeObraAdicionadas }); // Recarrega a lista visual
+                };
+
+                li.appendChild(btnRemover);
+                ulMaoObra.appendChild(li);
             });
-        });
-    });
-</script>
-
-<script>
-    function mapearSituacao(situacao) {
-        switch (situacao) {
-            case 1:
-                return 'Pendente';
-            case 2:
-                return 'Em andamento';
-            case 3:
-                return 'Concluído';
-            default:
-                return 'Pendente';
+            document.getElementById("mao_obra_lista").value = JSON.stringify(maoDeObraAdicionadas);
+        } else {
+            const li = document.createElement("li");
+            li.innerHTML = "<em>Nenhuma mão de obra registrada.</em>";
+            ulMaoObra.appendChild(li);
+            document.getElementById("mao_obra_lista").value = "[]";
         }
+        atualizarValorTotal();
     }
 
-    function preencherModalComDados(servico) {
-        document.querySelector('#descricao_historico').value = servico.descricao_manutencao || '';
-        document.querySelector('#situacao').value = mapearSituacao(servico.situacao);
-        document.querySelector('#data_fechamento').value = servico.data_fechamento || '';
-
-        let total = 0;
-        const lista = [];
-
-        const listaElement = document.getElementById('mao_obra_adicionada');
-        listaElement.innerHTML = '';
-
-        servico.maos_obra.forEach(mao => {
-            const item = {
-                codigo: mao.codigo,
-                nome: mao.nome,
-                valor: parseFloat(mao.valor)
-            };
-
-            lista.push(item);
-            total += item.valor;
-
-            const li = document.createElement('li');
-            li.textContent = `${item.nome} - R$ ${item.valor.toFixed(2)}`;
-            listaElement.appendChild(li);
-        });
-
-        document.querySelector('#valor_total').value = `R$ ${total.toFixed(2)}`;
-        document.querySelector('#mao_obra_lista').value = JSON.stringify(lista);
-    }
 
     function carregarPecasRegistradas(data) {
         const ulPecas = document.getElementById("pecasRegistradas");
-        ulPecas.innerHTML = "";
-        pecasAdicionadas = [];
+        ulPecas.innerHTML = ""; // Limpa a lista antes de popular
+        pecasAdicionadas = []; // Limpa a lista de peças a serem enviadas
 
         if (data.pecas && data.pecas.length > 0) {
-            data.pecas.forEach((p, index) => {
+            data.pecas.forEach((p) => {
                 const item = {
                     codigo: p.codigo,
                     nome: p.nome,
                     preco: parseFloat(p.preco),
-                    quantidade: p.pivot?.quantidade || 1
+                    quantidade: p.pivot?.quantidade || 1 // Certifica-se de pegar a quantidade do pivot
                 };
                 pecasAdicionadas.push(item);
 
@@ -690,29 +555,27 @@ return true;
                 btnRemover.textContent = "✖";
                 btnRemover.style.cssText = "margin-left:10px;background:none;border:none;color:red;cursor:pointer";
                 btnRemover.onclick = () => {
-                    if (item.quantidade > 1) {
-                        item.quantidade -= 1;
-                    } else {
-                        pecasAdicionadas.splice(index, 1);
+                    // Encontra o índice da peça para remoção
+                    const indexToRemove = pecasAdicionadas.findIndex(pa => pa.codigo === item.codigo);
+                    if (indexToRemove > -1) {
+                        if (pecasAdicionadas[indexToRemove].quantidade > 1) {
+                            pecasAdicionadas[indexToRemove].quantidade -= 1;
+                        } else {
+                            pecasAdicionadas.splice(indexToRemove, 1);
+                        }
                     }
-                    atualizarValorTotal();
-                    document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
-                    carregarPecasRegistradas({
-                        pecas: pecasAdicionadas.map(p => ({
-                            codigo: p.codigo,
-                            nome: p.nome,
-                            preco: p.preco,
-                            pivot: {
-                                quantidade: p.quantidade
-                            }
-                        }))
-                    });
+                    // Recarrega a exibição das peças registradas para refletir a mudança
+                    carregarPecasRegistradas({ pecas: pecasAdicionadas.map(p => ({
+                        codigo: p.codigo,
+                        nome: p.nome,
+                        preco: p.preco,
+                        pivot: { quantidade: p.quantidade }
+                    }))});
                 };
 
                 li.appendChild(btnRemover);
                 ulPecas.appendChild(li);
             });
-
             document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
         } else {
             const li = document.createElement("li");
@@ -720,13 +583,9 @@ return true;
             ulPecas.appendChild(li);
             document.getElementById("peca_lista").value = "[]";
         }
-
         atualizarValorTotal();
     }
 </script>
-
-
-@endsection
 
 
 <style>

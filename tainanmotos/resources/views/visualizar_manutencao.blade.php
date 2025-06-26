@@ -61,6 +61,10 @@
                     <label for="situacao">Situação</label>
                     <input type="text" id="situacao" name="situacao" readonly>
                 </div>
+                <div class="form-group">
+                    <label for="valor">Valor Total</label>
+                    <input type="text" id="valor" name="valor" readonly>
+                </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -86,87 +90,153 @@
             </div>
             <div class="form-row">
                 <div class="form-group" style="flex: 1;">
-                    <label for="descricao">Descrição</label>
-                    <textarea id="descricao" name="descricao" rows="4" readonly></textarea>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="valor">Valor Total</label>
-                    <input type="text" id="valor" name="valor" readonly>
+                    <label for="descricao">Descrição da Manutenção</label>
+                    <textarea id="descricao" name="descricao" rows="6" readonly style="background:#f5f5f5;"></textarea>
                 </div>
             </div>
 
-            <!-- Lista de Mão de Obra Adicionada -->
             <div class="form-row">
                 <div class="form-group" style="flex: 1;">
-                    <label for="mao_obra_adicionada">Mão de Obra Adicionada</label>
+                    <label for="mao_obra_adicionada">Mão de Obra Registrada</label>
                     <ul id="mao_obra_adicionada" style="background:#f5f5f5;padding:10px;border-radius:8px;list-style-type:disc;">
                         <li><em>Carregando...</em></li>
                     </ul>
                 </div>
             </div>
 
-            <!-- Lista de Peças Adicionadas -->
             <div class="form-row">
                 <div class="form-group" style="flex: 1;">
-                    <label for="pecas_adicionadas">Peças Adicionadas</label>
+                    <label for="pecas_adicionadas">Peças Registradas</label>
                     <ul id="pecas_adicionadas" style="background:#f5f5f5;padding:10px;border-radius:8px;list-style-type:disc;">
                         <li><em>Carregando...</em></li>
                     </ul>
                 </div>
             </div>
 
+            <div class="form-row" style="justify-content:flex-end;">
+                <button type="button" class="btn-voltar" onclick="fecharModal()">Fechar</button>
+            </div>
         </form>
     </div>
 </div>
 
 <script>
+    // Função para fechar o modal
     function fecharModal() {
         document.getElementById("modalDetalhes").style.display = "none";
     }
 
+    // Adiciona o event listener para os botões "Ver Detalhes"
     document.addEventListener('DOMContentLoaded', () => {
         const visualizarBtns = document.querySelectorAll('.btn-visualizar');
         visualizarBtns.forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
-                const idServico = this.dataset.id;
+                const idServico = this.dataset.id; // Pega o ID do serviço do atributo data-id
+
+                // Define o conteúdo inicial para "Carregando..."
+                document.getElementById("mao_obra_adicionada").innerHTML = '<li><em>Carregando...</em></li>';
+                document.getElementById("pecas_adicionadas").innerHTML = '<li><em>Carregando...</em></li>';
 
                 fetch(`/servico/${idServico}`)
-                    .then(res => res.json())
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error('Network response was not ok ' + res.statusText);
+                        }
+                        return res.json();
+                    })
                     .then(data => {
+                        // Preenche os campos de texto do modal
                         document.getElementById("data_abertura").value = data.data_abertura;
                         document.getElementById("situacao").value = {
                             1: "Pendente",
                             2: "Em andamento",
                             3: "Concluído"
                         } [data.situacao] ?? "-";
-                        document.getElementById("fabricante_moto").value = data.moto.modelo.fabricante.nome;
-                        document.getElementById("modelo_moto").value = data.moto.modelo.nome;
-                        document.getElementById("placa_moto").value = data.moto.placa;
-                        document.getElementById("ano_moto").value = data.moto.ano;
-                        document.getElementById("quilometragem").value = data.quilometragem;
-                        document.getElementById("descricao").value = data.descricao_manutencao ?? '';
-                        document.getElementById("valor").value = "R$ " + parseFloat(data.valor).toFixed(2).replace(".", ",");
+                        document.getElementById("fabricante_moto").value = data.moto.modelo.fabricante.nome ?? '-';
+                        document.getElementById("modelo_moto").value = data.moto.modelo.nome ?? '-';
+                        document.getElementById("placa_moto").value = data.moto.placa ?? '-';
+                        document.getElementById("ano_moto").value = data.moto.ano ?? '-';
+                        document.getElementById("quilometragem").value = data.quilometragem ?? '-';
+                        document.getElementById("descricao").value = data.descricao_manutencao ?? data.descricao ?? ''; // Prioriza descricao_manutencao, senão descricao
+                        document.getElementById("valor").value = `R$ ${parseFloat(data.valor).toFixed(2).replace('.', ',')}`;
 
+                        // Preenche a lista de Mão de Obra
+                        const ulMaoObra = document.getElementById("mao_obra_adicionada");
+                        ulMaoObra.innerHTML = ''; // Limpa o "Carregando..."
+                        if (data.maos_obra && data.maos_obra.length > 0) {
+                            data.maos_obra.forEach(item => {
+                                const li = document.createElement('li');
+                                li.textContent = `${item.nome} - R$ ${parseFloat(item.valor).toFixed(2).replace('.', ',')}`;
+                                ulMaoObra.appendChild(li);
+                            });
+                        } else {
+                            ulMaoObra.innerHTML = '<li><em>Nenhuma mão de obra registrada.</em></li>';
+                        }
+
+                        // Preenche a lista de Peças
+                        const ulPecas = document.getElementById("pecas_adicionadas");
+                        ulPecas.innerHTML = ''; // Limpa o "Carregando..."
+                        if (data.pecas && data.pecas.length > 0) {
+                            data.pecas.forEach(item => {
+                                const li = document.createElement('li');
+                                // Acessa a quantidade através do pivot se existir, senão assume 1
+                                const quantidade = item.pivot ? (item.pivot.quantidade || 1) : 1;
+                                li.textContent = `${item.nome} - R$ ${(parseFloat(item.preco) * quantidade).toFixed(2).replace('.', ',')} (x${quantidade})`;
+                                ulPecas.appendChild(li);
+                            });
+                        } else {
+                            ulPecas.innerHTML = '<li><em>Nenhuma peça registrada.</em></li>';
+                        }
+
+                        // Exibe o modal após preencher todos os dados
                         document.getElementById("modalDetalhes").style.display = "flex";
                     })
                     .catch(err => {
-                        alert("Erro ao buscar detalhes da manutenção.");
-                        console.error(err);
+                        console.error("Erro ao buscar detalhes da manutenção:", err);
+                        alert("Não foi possível carregar os detalhes da manutenção.");
+                        // Em caso de erro, define as mensagens de erro nas listas
+                        document.getElementById("mao_obra_adicionada").innerHTML = '<li><em>Erro ao carregar mão de obra.</em></li>';
+                        document.getElementById("pecas_adicionadas").innerHTML = '<li><em>Erro ao carregar peças.</em></li>';
                     });
             });
         });
     });
+
+    // Funções de filtro de busca (mantidas, mas não relacionadas ao problema de carregamento do modal)
+    document.getElementById('search').addEventListener('keyup', filterTable);
+    document.getElementById('search-type').addEventListener('change', filterTable);
+
+    function filterTable() {
+        const searchText = document.getElementById('search').value.toLowerCase();
+        const searchType = document.getElementById('search-type').value;
+        const rows = document.querySelectorAll('.manutencao-table tbody tr');
+
+        rows.forEach(row => {
+            let cellContent = '';
+            if (searchType === 'modelo') {
+                cellContent = row.children[0].textContent.toLowerCase();
+            } else if (searchType === 'marca') {
+                cellContent = row.children[1].textContent.toLowerCase();
+            } else if (searchType === 'nome') {
+                cellContent = row.children[2].textContent.toLowerCase();
+            }
+
+            if (cellContent.includes(searchText)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
 </script>
 
 <style>
+    /* Estilos CSS (mantidos os mesmos do seu arquivo original) */
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f4f6f9;
-        margin: 0;
-        padding: 0;
+        background: #f4f6f9;
+        margin: 0
     }
 
     .gerenciar-container {
@@ -175,145 +245,153 @@
         padding: 20px;
         background: #fff;
         border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, .1)
     }
 
-    .gerenciar-container h2 {
+    h2 {
         font-size: 26px;
-        margin-bottom: 5px;
-    }
-
-    .gerenciar-container p {
-        font-size: 15px;
-        color: #555;
+        margin: 0 0 5px
     }
 
     .fade-in {
-        animation: fadeIn 0.6s ease-in-out;
+        animation: fadeIn .6s ease-in-out
     }
 
     @keyframes fadeIn {
         from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(20px)
         }
 
         to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0)
         }
     }
 
+    /* ---------- FILTRO ---------- */
     .search-container {
         margin: 20px 0;
         display: flex;
         gap: 10px;
+        flex-wrap: wrap
     }
 
     .search-container input,
     .search-container select {
         padding: 10px;
         font-size: 14px;
-        border-radius: 6px;
         border: 1px solid #ccc;
-        transition: all 0.3s ease;
+        border-radius: 6px;
+        transition: .3s
     }
 
     .search-container input:focus,
     .search-container select:focus {
-        outline: none;
         border-color: #1976d2;
-        box-shadow: 0 0 5px rgba(25, 118, 210, 0.3);
+        box-shadow: 0 0 5px rgba(25, 118, 210, .3);
+        outline: none
     }
 
+    /* ---------- TABELA ---------- */
     .manutencao-table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 15px;
-        background-color: white;
+        background: #fff;
         border-radius: 10px;
-        overflow: hidden;
+        overflow: hidden
     }
 
     .manutencao-table th,
     .manutencao-table td {
         padding: 12px 15px;
-        border-bottom: 1px solid #eee;
-        text-align: left;
         font-size: 14px;
+        border-bottom: 1px solid #eee;
+        text-align: left
     }
 
     .manutencao-table th {
-        background-color: #f0f2f5;
-        font-weight: bold;
+        background: #f0f2f5;
+        font-weight: bold
     }
 
     .manutencao-table tr:hover {
-        background-color: #f9f9f9;
+        background: #f9f9f9
     }
 
+    /* ---------- BOTÕES ---------- */
     .btn-visualizar,
-    .btn-voltar {
+    .btn-voltar,
+    .btn-concluir {
         padding: 8px 14px;
         border-radius: 6px;
         font-weight: 600;
         font-size: 13px;
         display: inline-flex;
         align-items: center;
+        gap: 5px;
         text-decoration: none;
-        transition: background-color 0.3s ease, transform 0.2s ease;
+        transition: .3s
     }
 
     .btn-visualizar {
-        background-color: #ffe633;
-        color: #333;
-        border: none;
+        background: #ffe633;
+        color: #333
     }
 
     .btn-visualizar:hover {
-        background-color: #ffdd00;
-        transform: translateY(-2px);
+        background: #ffdd00;
+        transform: translateY(-2px)
+    }
+
+    .btn-concluir {
+        background: #4caf50;
+        color: #fff
+    }
+
+    .btn-concluir:hover {
+        background: #43a047;
+        transform: translateY(-2px)
     }
 
     .btn-voltar {
         margin-top: 20px;
-        background-color: #2196f3;
-        color: white;
-        border: none;
+        background: #2196f3;
+        color: #fff
     }
 
     .btn-voltar:hover {
-        background-color: #1976d2;
-        transform: translateY(-2px);
+        background: #1976d2;
+        transform: translateY(-2px)
     }
 
-    .btn-visualizar i,
-    .btn-voltar i {
-        margin-right: 5px;
-    }
-
+    /* ---------- MODAL OVERLAY ---------- */
     .modal-overlay {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
+        inset: 0;
         display: flex;
         justify-content: center;
         align-items: center;
+        background: rgba(0, 0, 0, .5);
+        z-index: 999
     }
 
-    .modal-content {
+    /* ---------- MODAL CONTENT ---------- */
+    .modal-overlay .modal-content {
+        width: 90vw !important;
+        /* ocupa 90% da viewport */
+        max-width: 1000px !important;
+        /* limite para monitores grandes */
+        max-height: 90vh;
+        /* evita estourar a altura */
+        overflow-y: auto;
         background: #fff;
         padding: 30px;
         border-radius: 12px;
-        width: 90%;
-        max-width: 900px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         position: relative;
-        animation: fadeIn 0.3s ease-in-out;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, .2);
+        animation: fadeIn .3s;
     }
 
     .close-modal {
@@ -322,143 +400,90 @@
         right: 15px;
         font-size: 24px;
         cursor: pointer;
-        color: #555;
+        color: #555
     }
 
+    /* ---------- FORM NO MODAL ---------- */
     .modal-form .form-row {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px
     }
 
     .modal-form .form-group {
-        flex: 1;
-        min-width: 150px;
+        display: flex;
+        flex-direction: column;
+        width: 100%
     }
 
     .modal-form label {
-        font-weight: bold;
-        display: block;
+        font-weight: 600;
         margin-bottom: 5px;
-        color: #333;
+        color: #333
     }
 
     .modal-form input,
     .modal-form textarea,
     .modal-form select {
         width: 100%;
-        padding: 10px;
-        border-radius: 8px;
+        padding: 12px;
+        font-size: 15px;
         border: 1px solid #ccc;
-        font-size: 14px;
-        box-sizing: border-box;
-        background-color: white;
+        border-radius: 8px;
+        background: #fff;
+        transition: border-color .3s
     }
 
-    /* REMOÇÃO DAS SETAS E DROPDOWN NATIVO */
-    .modal-form input[type="date"],
-    .modal-form input[type="number"],
-    .modal-form select {
-        appearance: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        background-image: none !important;
-    }
-
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-
-    input[type=number] {
-        -moz-appearance: textfield;
-    }
-
-    .modal-form select:focus,
+    .modal-form input:focus,
     .modal-form textarea:focus,
-    .modal-form input:focus {
+    .modal-form select:focus {
         border-color: #1976d2;
-        box-shadow: 0 0 5px rgba(25, 118, 210, 0.3);
-        outline: none;
+        box-shadow: 0 0 5px rgba(25, 118, 210, .3);
+        outline: none
+    }
+
+    /* ---------- BOTÕES NO MODAL ---------- */
+    .btn-plus {
+        padding: 10px 12px;
+        background: #1976d2;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: .3s
+    }
+
+    .btn-plus:hover {
+        background: #115293
+    }
+
+    .btn-enviar {
+        padding: 12px 20px;
+        background: #1976d2;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: .3s
+    }
+
+    .btn-enviar:hover {
+        background: #115293;
+        transform: translateY(-2px)
+    }
+
+    /* ---------- LISTAS DE MÃO DE OBRA E PEÇAS ---------- */
+    #mao_obra_adicionada li,
+    #pecas_adicionadas li {
+        padding: 5px 0;
+        border-bottom: 1px dashed #eee;
+    }
+    #mao_obra_adicionada li:last-child,
+    #pecas_adicionadas li:last-child {
+        border-bottom: none;
     }
 </style>
-
-<script>
-    function carregarDetalhesServicoVisualizar(servicoId) {
-        fetch(`/servico/${servicoId}`)
-            .then(res => res.json())
-            .then(data => {
-                const listaPecas = document.getElementById("pecasAdicionadasVisualizar");
-                const listaMaos = document.getElementById("maosObraAdicionadasVisualizar");
-
-                listaPecas.innerHTML = '';
-                if (data.pecas && data.pecas.length > 0) {
-                    data.pecas.forEach(p => {
-                        const li = document.createElement("li");
-                        li.textContent = `${p.nome} - R$ ${parseFloat(p.preco).toFixed(2).replace('.', ',')}`;
-                        listaPecas.appendChild(li);
-                    });
-                } else {
-                    listaPecas.innerHTML = '<li><em>Nenhuma peça registrada.</em></li>';
-                }
-
-                listaMaos.innerHTML = '';
-                if (data.maodeobra && data.maodeobra.length > 0) {
-                    data.maodeobra.forEach(m => {
-                        const li = document.createElement("li");
-                        li.textContent = `${m.nome} - R$ ${parseFloat(m.preco).toFixed(2).replace('.', ',')}`;
-                        listaMaos.appendChild(li);
-                    });
-                } else {
-                    listaMaos.innerHTML = '<li><em>Nenhuma mão de obra registrada.</em></li>';
-                }
-            });
-    }
-
-    function carregarDetalhesServicoVisualizar(id) {
-        fetch(`/servico/${id}`)
-            .then(res => res.json())
-            .then(data => {
-                // Campos existentes
-                document.getElementById("data_abertura").value = data.data_abertura;
-                document.getElementById("situacao").value = data.situacao_label;
-                document.getElementById("fabricante_moto").value = data.fabricante;
-                document.getElementById("modelo_moto").value = data.modelo;
-                document.getElementById("placa_moto").value = data.placa;
-                document.getElementById("ano_moto").value = data.ano;
-                document.getElementById("quilometragem").value = data.quilometragem;
-                document.getElementById("descricao").value = data.descricao_manutencao || '';
-                document.getElementById("valor").value = `R$ ${parseFloat(data.valor_total).toFixed(2).replace('.', ',')}`;
-
-                // Mão de obra
-                const ulMaoObra = document.getElementById("mao_obra_adicionada");
-                ulMaoObra.innerHTML = '';
-                if (data.mao_obra.length === 0) {
-                    ulMaoObra.innerHTML = '<li><em>Nenhuma mão de obra registrada.</em></li>';
-                } else {
-                    data.mao_obra.forEach(item => {
-                        const li = document.createElement('li');
-                        li.textContent = `${item.nome} - R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}`;
-                        ulMaoObra.appendChild(li);
-                    });
-                }
-
-                // Peças
-                const ulPecas = document.getElementById("pecas_adicionadas");
-                ulPecas.innerHTML = '';
-                if (data.pecas.length === 0) {
-                    ulPecas.innerHTML = '<li><em>Nenhuma peça registrada.</em></li>';
-                } else {
-                    data.pecas.forEach(item => {
-                        const li = document.createElement('li');
-                        li.textContent = `${item.nome} - R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}`;
-                        ulPecas.appendChild(li);
-                    });
-                }
-
-                document.getElementById("modalDetalhes").style.display = "block";
-            });
-    }
-</script>
