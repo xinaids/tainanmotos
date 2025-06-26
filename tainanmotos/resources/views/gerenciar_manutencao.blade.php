@@ -1,3 +1,5 @@
+
+
 @extends('layouts.app')
 
 @section('content')
@@ -64,6 +66,7 @@
         <h3>Detalhes da Manutenção</h3>
 
         <form id="formDetalhes" class="modal-form" method="POST" onsubmit="return prepararEnvioDescricao();">
+            <input type="hidden" name="descricao_historico" id="descricao_historico_hidden">
             @csrf
 
             {{-- linha 1 - agora com VALOR ao lado de Situação --}}
@@ -171,6 +174,8 @@
         </div>
     </div>
 </div>
+
+
 <script>
     function abrirModal(modelo, marca, dataAbertura) {
         document.getElementById("modalDetalhes").style.display = "flex";
@@ -184,29 +189,21 @@
         document.getElementById("modalDetalhes").style.display = "none";
     }
 
-    function abrirModalHistorico() {
-        document.getElementById("modalHistorico").style.display = "flex";
-
-        const historico = [
-            "15/05/2023 - Verificação de sistema de freio.",
-            "16/05/2023 - Troca de pastilhas realizada.",
-            "17/05/2023 - Cliente informado sobre conclusão."
-        ];
-
-        const lista = document.getElementById("listaHistorico");
-        lista.innerHTML = "";
-        historico.forEach(item => {
-            const li = document.createElement("li");
-            li.textContent = item;
-            lista.appendChild(li);
-        });
-    }
 
     function fecharModalHistorico() {
         document.getElementById("modalHistorico").style.display = "none";
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        // Botões para histórico
+        const historicoBtns = document.querySelectorAll('.btn-historico');
+        historicoBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                abrirModalHistorico();
+            });
+        });
+
         const visualizarBtns = document.querySelectorAll('.btn-visualizar');
         visualizarBtns.forEach(btn => {
             btn.addEventListener('click', function(e) {
@@ -216,7 +213,7 @@
                 fetch(`/servico/${idServico}`)
                     .then(response => response.json())
                     .then(data => {
-                        carregarPecasRegistradas(data); // 🔧 INSERIDO
+                        carregarPecasRegistradas(data); 
                         document.getElementById("data_abertura").value = data.data_abertura;
                         document.getElementById("data_fechamento").value = data.data_fechamento ?? "";
                         document.getElementById("descricao_historico").value = data.descricao_manutencao ?? "";
@@ -307,7 +304,7 @@
     });
 
 
-    const historicoBtns = document.querySelectorAll('.btn-historico');
+
     historicoBtns.forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
@@ -338,8 +335,15 @@
         console.log("🔧 JSON enviado - Mão de obra:", maoObraLista.value);
 
         // Gera o histórico de descrição
-        const novaDescricao = descricaoInput.value.trim();
-        if (!novaDescricao) return true;
+const novaDescricao = descricaoInput.value.trim();
+if (!novaDescricao) return false;
+
+const campoHistoricoInput = document.querySelector("input[name='descricao_historico']");
+if (campoHistoricoInput && historicoTextarea) {
+    campoHistoricoInput.value = historicoTextarea.value;
+}
+return true;
+
 
         const dataAtual = new Date();
         const dataFormatada = dataAtual.toLocaleString('pt-BR', {
@@ -382,7 +386,7 @@
     });
 
     let pecasDisponiveis = [];
-    let pecasAdicionadas = [];
+    var pecasAdicionadas = [];
 
     function carregarPecas(codModelo) {
         const select = document.getElementById("peca");
@@ -514,8 +518,6 @@
         atualizarValorTotal();
         document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
     });
-
-    
 </script>
 
 <script>
@@ -554,9 +556,11 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         /* popula o <select> com as MOs cadastradas */
+
         carregarMaoDeObra();
 
         /* ------------ BOTÃO “ADICIONAR” --------------- */
+        const historicoBtns = document.querySelectorAll('.btn-historico');
         const btnAdicionar = document.getElementById('btnAdicionarMaoObra');
         const select = document.getElementById('mao_obra');
         const lista = document.getElementById('listaMaoObra');
@@ -618,8 +622,6 @@
             });
         });
     });
-
-    
 </script>
 
 <script>
@@ -667,59 +669,60 @@
     }
 
     function carregarPecasRegistradas(data) {
-    const ulPecas = document.getElementById("pecasRegistradas");
-    ulPecas.innerHTML = "";
-    pecasAdicionadas = [];
+        const ulPecas = document.getElementById("pecasRegistradas");
+        ulPecas.innerHTML = "";
+        pecasAdicionadas = [];
 
-    if (data.pecas && data.pecas.length > 0) {
-        data.pecas.forEach((p, index) => {
-            const item = {
-                codigo: p.codigo,
-                nome: p.nome,
-                preco: parseFloat(p.preco),
-                quantidade: p.pivot?.quantidade || 1
-            };
-            pecasAdicionadas.push(item);
+        if (data.pecas && data.pecas.length > 0) {
+            data.pecas.forEach((p, index) => {
+                const item = {
+                    codigo: p.codigo,
+                    nome: p.nome,
+                    preco: parseFloat(p.preco),
+                    quantidade: p.pivot?.quantidade || 1
+                };
+                pecasAdicionadas.push(item);
 
+                const li = document.createElement("li");
+                li.textContent = `${item.nome} - R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")} (x${item.quantidade})`;
+
+                const btnRemover = document.createElement("button");
+                btnRemover.textContent = "✖";
+                btnRemover.style.cssText = "margin-left:10px;background:none;border:none;color:red;cursor:pointer";
+                btnRemover.onclick = () => {
+                    if (item.quantidade > 1) {
+                        item.quantidade -= 1;
+                    } else {
+                        pecasAdicionadas.splice(index, 1);
+                    }
+                    atualizarValorTotal();
+                    document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
+                    carregarPecasRegistradas({
+                        pecas: pecasAdicionadas.map(p => ({
+                            codigo: p.codigo,
+                            nome: p.nome,
+                            preco: p.preco,
+                            pivot: {
+                                quantidade: p.quantidade
+                            }
+                        }))
+                    });
+                };
+
+                li.appendChild(btnRemover);
+                ulPecas.appendChild(li);
+            });
+
+            document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
+        } else {
             const li = document.createElement("li");
-            li.textContent = `${item.nome} - R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")} (x${item.quantidade})`;
-
-            const btnRemover = document.createElement("button");
-            btnRemover.textContent = "✖";
-            btnRemover.style.cssText = "margin-left:10px;background:none;border:none;color:red;cursor:pointer";
-            btnRemover.onclick = () => {
-                if (item.quantidade > 1) {
-                    item.quantidade -= 1;
-                } else {
-                    pecasAdicionadas.splice(index, 1);
-                }
-                atualizarValorTotal();
-                document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
-                carregarPecasRegistradas({
-                    pecas: pecasAdicionadas.map(p => ({
-                        codigo: p.codigo,
-                        nome: p.nome,
-                        preco: p.preco,
-                        pivot: { quantidade: p.quantidade }
-                    }))
-                });
-            };
-
-            li.appendChild(btnRemover);
+            li.innerHTML = "<em>Nenhuma peça registrada.</em>";
             ulPecas.appendChild(li);
-        });
+            document.getElementById("peca_lista").value = "[]";
+        }
 
-        document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
-    } else {
-        const li = document.createElement("li");
-        li.innerHTML = "<em>Nenhuma peça registrada.</em>";
-        ulPecas.appendChild(li);
-        document.getElementById("peca_lista").value = "[]";
+        atualizarValorTotal();
     }
-
-    atualizarValorTotal();
-}
-
 </script>
 
 
