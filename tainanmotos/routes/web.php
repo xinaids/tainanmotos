@@ -28,7 +28,7 @@ use App\Models\Moto; // Importado para a rota da placa
 */
 
 // Redireciona a rota raiz ('/') para a página de login
-Route::get('/', fn() => redirect('/login'));
+Route::get('/', fn() => redirect('/auth/login'));
 
 // ==================== Autenticação ====================
 Route::prefix('auth')->group(function () {

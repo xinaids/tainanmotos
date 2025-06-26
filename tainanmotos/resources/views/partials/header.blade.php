@@ -85,7 +85,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 4px rgba(45, 17, 17, 0.2);
     }
 
     .header-left h1 {
@@ -125,7 +125,7 @@
     }
 
     .nav-link:hover {
-      background-color: #2d3748;
+      background-color:rgb(34, 9, 9);
       color: #fff;
     }
 
@@ -149,20 +149,20 @@
       /* Red for logout */
       color: #fff;
       border: none;
-      padding: 8px 12px; /* Reduzido de 10px 15px para 8px 12px */
+      padding: 8px 12px; 
       border-radius: 5px;
       cursor: pointer;
-      font-size: 14px; /* Reduzido de 15px para 14px */
+      font-size: 14px; 
       font-weight: 600;
       transition: background-color 0.3s ease, transform 0.2s ease;
       display: flex;
       align-items: center;
-      gap: 6px; /* Reduzido de 8px para 6px */
+      gap: 6px; 
     }
 
     .login-btn {
       background: #3182ce;
-      /* Blue for login */
+   
     }
 
 
@@ -183,13 +183,13 @@
       position: absolute;
       top: 100%;
       left: 0;
-      background-color: #2d3748;
+      background-color:rgb(73, 36, 36);
       /* Darker dropdown background */
       border-radius: 5px;
       padding: 5px 0;
       z-index: 100;
       min-width: 150px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 6px rgba(51, 19, 19, 0.3);
       opacity: 0;
       transform: translateY(-10px);
       transition: opacity 0.3s ease, transform 0.3s ease;
