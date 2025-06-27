@@ -29,13 +29,18 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($servicos as $servico)
-            <tr data-id="{{ $servico->codigo }}">
+            @forelse ($servicos as $servico)
+            <tr
+                data-id="{{ $servico->codigo }}"
+                data-modelo="{{ $servico->moto->modelo->nome ?? '' }}"
+                data-marca="{{ $servico->moto->modelo->fabricante->nome ?? '' }}"
+                data-nome-cliente="{{ $servico->moto->usuario->nome ?? '' }}"
+                data-status="{{ match($servico->situacao){1=>'pendente',2=>'em andamento',3=>'concluído',default=>''} }}"
+            >
                 <td>{{ $servico->moto->modelo->nome ?? '-' }}</td>
                 <td>{{ $servico->moto->modelo->fabricante->nome ?? '-' }}</td>
                 <td>{{ $servico->moto->usuario->nome ?? '-' }}</td>
                 <td>{{ \Carbon\Carbon::parse($servico->data_abertura)->format('d/m/Y') }}</td>
-                {{-- Célula para o Status, usando diretivas Blade para o switch --}}
                 <td>
                     @switch($servico->situacao)
                         @case(1)
@@ -57,13 +62,18 @@
                     </a>
                 </td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+                <td colspan="6" style="text-align: center;">Nenhuma manutenção encontrada.</td>
+            </tr>
+            @endforelse
         </tbody>
     </table>
 
     <a href="{{ route('dashboard') }}" class="btn-voltar"><i class="fas fa-arrow-left"></i> Voltar ao Painel</a>
 </div>
 
+<!-- Modal Detalhes -->
 <div id="modalDetalhes" class="modal-overlay" style="display: none;">
     <div class="modal-content">
         <span class="close-modal" onclick="fecharModal()">&times;</span>
@@ -71,76 +81,96 @@
         <form class="modal-form">
             <div class="form-row">
                 <div class="form-group">
-                    <label for="data_abertura">Data Abertura</label>
-                    <input type="date" id="data_abertura" name="data_abertura" readonly>
+                    <label for="modal_data_abertura">Data Abertura</label>
+                    <input type="date" id="modal_data_abertura" name="data_abertura" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="situacao">Situação</label>
-                    <input type="text" id="situacao" name="situacao" readonly>
+                    <label for="modal_situacao">Situação</label>
+                    <input type="text" id="modal_situacao" name="situacao" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="valor">Valor Total</label>
-                    <input type="text" id="valor" name="valor" readonly>
+                    <label for="modal_valor">Valor Total</label>
+                    <input type="text" id="modal_valor" name="valor" readonly>
                 </div>
             </div>
+
             <div class="form-row">
                 <div class="form-group">
-                    <label for="fabricante_moto">Fabricante</label>
-                    <input type="text" id="fabricante_moto" name="fabricante_moto" readonly>
+                    <label for="modal_fabricante_moto">Fabricante</label>
+                    <input id="modal_fabricante_moto" name="fabricante_moto" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="modelo_moto">Modelo</label>
-                    <input type="text" id="modelo_moto" name="modelo_moto" readonly>
+                    <label for="modal_modelo_moto">Modelo</label>
+                    <input id="modal_modelo_moto" name="modelo_moto" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="placa_moto">Placa</label>
-                    <input type="text" id="placa_moto" name="placa_moto" readonly>
+                    <label for="modal_placa_moto">Placa</label>
+                    <input id="modal_placa_moto" name="placa_moto" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="ano_moto">Ano</label>
-                    <input type="text" id="ano_moto" name="ano_moto" readonly>
+                    <label for="modal_ano_moto">Ano</label>
+                    <input id="modal_ano_moto" name="ano_moto" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="quilometragem">Quilometragem</label>
-                    <input type="text" id="quilometragem" name="quilometragem" readonly>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group" style="flex: 1;">
-                    <label for="descricao">Descrição da Manutenção</label>
-                    <textarea id="descricao" name="descricao" rows="6" readonly style="background:#f5f5f5;"></textarea>
+                    <label for="modal_quilometragem">Quilometragem</label>
+                    <input id="modal_quilometragem" name="quilometragem" readonly>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group" style="flex: 1;">
-                    <label for="mao_obra_adicionada">Mão de Obra Registrada</label>
-                    <ul id="mao_obra_adicionada" style="background:#f5f5f5;padding:10px;border-radius:8px;list-style-type:disc;">
+                    <label for="modal_descricao">Descrição da Manutenção</label>
+                    <textarea id="modal_descricao" name="descricao" rows="6" readonly style="background:#f5f5f5;"></textarea>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label for="modal_mao_obra_adicionada">Mão de Obra Registrada</label>
+                    <ul id="modal_mao_obra_adicionada" style="background:#f5f5f5;padding:10px;border-radius:8px;list-style-type:disc;">
                         <li><em>Carregando...</em></li>
                     </ul>
                 </div>
-            </div>
-
-            <div class="form-row">
                 <div class="form-group" style="flex: 1;">
-                    <label for="pecas_adicionadas">Peças Registradas</label>
-                    <ul id="pecas_adicionadas" style="background:#f5f5f5;padding:10px;border-radius:8px;list-style-type:disc;">
+                    <label for="modal_pecas_adicionadas">Peças Registradas</label>
+                    <ul id="modal_pecas_adicionadas" style="background:#f5f5f5;padding:10px;border-radius:8px;list-style-type:disc;">
                         <li><em>Carregando...</em></li>
                     </ul>
                 </div>
             </div>
 
             <div class="form-row" style="justify-content:flex-end;">
+                <button type="button" class="btn-visualizar" onclick="gerarPdfManutencao()" style="background:#1976d2; color: white;">
+                    <i class="fas fa-file-pdf"></i> Gerar PDF
+                </button>
                 <button type="button" class="btn-voltar" onclick="fecharModal()">Fechar</button>
             </div>
         </form>
     </div>
 </div>
 
+@section('scripts')
+{{-- SweetAlert2 para alertas --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{{-- jsPDF para geração de PDF --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+{{-- jsPDF AutoTable para tabelas (opcional, mas recomendado para listas) --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+
 <script>
+    // Referência global para os dados da manutenção atualmente aberta no modal
+    let currentMaintenanceData = null;
+
     // Função para fechar o modal
     function fecharModal() {
         document.getElementById("modalDetalhes").style.display = "none";
+        currentMaintenanceData = null; // Limpa os dados ao fechar
+    }
+
+    // Função para mostrar o modal
+    function mostrarModal() {
+        document.getElementById("modalDetalhes").style.display = "flex";
     }
 
     // Adiciona o event listener para os botões "Ver Detalhes"
@@ -149,11 +179,11 @@
         visualizarBtns.forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
-                const idServico = this.dataset.id; // Pega o ID do serviço do atributo data-id
+                const idServico = this.dataset.id;
 
                 // Define o conteúdo inicial para "Carregando..."
-                document.getElementById("mao_obra_adicionada").innerHTML = '<li><em>Carregando...</em></li>';
-                document.getElementById("pecas_adicionadas").innerHTML = '<li><em>Carregando...</em></li>';
+                document.getElementById("modal_mao_obra_adicionada").innerHTML = '<li><em>Carregando...</em></li>';
+                document.getElementById("modal_pecas_adicionadas").innerHTML = '<li><em>Carregando...</em></li>';
 
                 fetch(`/servico/${idServico}`)
                     .then(res => {
@@ -163,24 +193,25 @@
                         return res.json();
                     })
                     .then(data => {
+                        currentMaintenanceData = data; // Armazena os dados para uso futuro (ex: PDF)
+
                         // Preenche os campos de texto do modal
-                        document.getElementById("data_abertura").value = data.data_abertura;
-                        document.getElementById("situacao").value = {
+                        document.getElementById("modal_data_abertura").value = data.data_abertura;
+                        document.getElementById("modal_situacao").value = {
                             1: "Pendente",
                             2: "Em andamento",
                             3: "Concluído"
-                        }[data.situacao] ?? "-"; // Mantido para 'situacao' dentro do modal
-
-                        document.getElementById("fabricante_moto").value = data.moto.modelo.fabricante.nome ?? '-';
-                        document.getElementById("modelo_moto").value = data.moto.modelo.nome ?? '-';
-                        document.getElementById("placa_moto").value = data.moto.placa ?? '-';
-                        document.getElementById("ano_moto").value = data.moto.ano ?? '-';
-                        document.getElementById("quilometragem").value = data.quilometragem ?? '-';
-                        document.getElementById("descricao").value = data.descricao_manutencao ?? data.descricao ?? ''; // Prioriza descricao_manutencao, senão descricao
-                        document.getElementById("valor").value = `R$ ${parseFloat(data.valor).toFixed(2).replace('.', ',')}`;
+                        } [data.situacao] ?? "-";
+                        document.getElementById("modal_fabricante_moto").value = data.moto.modelo.fabricante.nome ?? '-';
+                        document.getElementById("modal_modelo_moto").value = data.moto.modelo.nome ?? '-';
+                        document.getElementById("modal_placa_moto").value = data.moto.placa ?? '-';
+                        document.getElementById("modal_ano_moto").value = data.moto.ano ?? '-';
+                        document.getElementById("modal_quilometragem").value = data.quilometragem ?? '-';
+                        document.getElementById("modal_descricao").value = data.descricao_manutencao ?? data.descricao ?? '';
+                        document.getElementById("modal_valor").value = `R$ ${parseFloat(data.valor).toFixed(2).replace('.', ',')}`;
 
                         // Preenche a lista de Mão de Obra
-                        const ulMaoObra = document.getElementById("mao_obra_adicionada");
+                        const ulMaoObra = document.getElementById("modal_mao_obra_adicionada");
                         ulMaoObra.innerHTML = ''; // Limpa o "Carregando..."
                         if (data.maos_obra && data.maos_obra.length > 0) {
                             data.maos_obra.forEach(item => {
@@ -193,12 +224,11 @@
                         }
 
                         // Preenche a lista de Peças
-                        const ulPecas = document.getElementById("pecas_adicionadas");
+                        const ulPecas = document.getElementById("modal_pecas_adicionadas");
                         ulPecas.innerHTML = ''; // Limpa o "Carregando..."
                         if (data.pecas && data.pecas.length > 0) {
                             data.pecas.forEach(item => {
                                 const li = document.createElement('li');
-                                // Acessa a quantidade através do pivot se existir, senão assume 1
                                 const quantidade = item.pivot ? (item.pivot.quantidade || 1) : 1;
                                 li.textContent = `${item.nome} - R$ ${(parseFloat(item.preco) * quantidade).toFixed(2).replace('.', ',')} (x${quantidade})`;
                                 ulPecas.appendChild(li);
@@ -208,20 +238,145 @@
                         }
 
                         // Exibe o modal após preencher todos os dados
-                        document.getElementById("modalDetalhes").style.display = "flex";
+                        mostrarModal();
                     })
                     .catch(err => {
                         console.error("Erro ao buscar detalhes da manutenção:", err);
-                        alert("Não foi possível carregar os detalhes da manutenção.");
-                        // Em caso de erro, define as mensagens de erro nas listas
-                        document.getElementById("mao_obra_adicionada").innerHTML = '<li><em>Erro ao carregar mão de obra.</em></li>';
-                        document.getElementById("pecas_adicionadas").innerHTML = '<li><em>Erro ao carregar peças.</em></li>';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro!',
+                            text: 'Não foi possível carregar os detalhes da manutenção.',
+                            confirmButtonText: 'OK'
+                        });
+                        document.getElementById("modal_mao_obra_adicionada").innerHTML = '<li><em>Erro ao carregar mão de obra.</em></li>';
+                        document.getElementById("modal_pecas_adicionadas").innerHTML = '<li><em>Erro ao carregar peças.</em></li>';
                     });
             });
         });
     });
 
-    // Funções de filtro de busca (mantidas, mas não relacionadas ao problema de carregamento do modal)
+    // Função para gerar o PDF
+    function gerarPdfManutencao() {
+        if (!currentMaintenanceData) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Nenhum dado!',
+                text: 'Por favor, selecione uma manutenção para visualizar os detalhes antes de gerar o PDF.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        let y = 20;
+        const margin = 10;
+        const lineHeight = 7;
+        const titleLineHeight = 10;
+        const subtitleLineHeight = 8;
+
+        doc.setFontSize(22);
+        doc.text("Detalhes da Manutenção", doc.internal.pageSize.width / 2, y, { align: 'center' });
+        y += titleLineHeight;
+
+        doc.setFontSize(12);
+        doc.text(`ID do Serviço: ${currentMaintenanceData.codigo}`, margin, y);
+        y += lineHeight;
+        doc.text(`Data de Abertura: ${currentMaintenanceData.data_abertura ? new Date(currentMaintenanceData.data_abertura).toLocaleDateString('pt-BR') : '-'}`, margin, y);
+        y += lineHeight;
+        doc.text(`Situação: ${({1: "Pendente", 2: "Em andamento", 3: "Concluído"})[currentMaintenanceData.situacao] ?? '-'}`, margin, y);
+        y += lineHeight;
+        doc.text(`Valor Total: ${parseFloat(currentMaintenanceData.valor).toFixed(2).replace('.', ',')}`, margin, y);
+        y += titleLineHeight; // Espaço extra
+
+        doc.setFontSize(16);
+        doc.text("Dados da Moto:", margin, y);
+        y += subtitleLineHeight;
+        doc.setFontSize(12);
+        doc.text(`Fabricante: ${currentMaintenanceData.moto.modelo.fabricante.nome ?? '-'}`, margin, y);
+        y += lineHeight;
+        doc.text(`Modelo: ${currentMaintenanceData.moto.modelo.nome ?? '-'}`, margin, y);
+        y += lineHeight;
+        doc.text(`Placa: ${currentMaintenanceData.moto.placa ?? '-'}`, margin, y);
+        y += lineHeight;
+        doc.text(`Ano: ${currentMaintenanceData.moto.ano ?? '-'}`, margin, y);
+        y += lineHeight;
+        doc.text(`Quilometragem: ${currentMaintenanceData.quilometragem ?? '-'} km`, margin, y);
+        y += titleLineHeight; // Espaço extra
+
+        doc.setFontSize(16);
+        doc.text("Descrição da Manutenção:", margin, y);
+        y += subtitleLineHeight;
+        doc.setFontSize(12);
+        const descriptionLines = doc.splitTextToSize(currentMaintenanceData.descricao_manutencao ?? currentMaintenanceData.descricao ?? 'Nenhuma descrição.', doc.internal.pageSize.width - 2 * margin);
+        doc.text(descriptionLines, margin, y);
+        y += (descriptionLines.length * lineHeight) + titleLineHeight; // Espaço extra
+
+        // Adicionar Mão de Obra
+        if (currentMaintenanceData.maos_obra && currentMaintenanceData.maos_obra.length > 0) {
+            doc.setFontSize(16);
+            doc.text("Mão de Obra Registrada:", margin, y);
+            y += subtitleLineHeight;
+            const maoObraData = currentMaintenanceData.maos_obra.map(item => [
+                item.nome,
+                `R$ ${parseFloat(item.valor).toFixed(2).replace('.', ',')}`
+            ]);
+            doc.autoTable({
+                startY: y,
+                head: [['Nome', 'Valor']],
+                body: maoObraData,
+                margin: { left: margin, right: margin },
+                styles: { fontSize: 10, cellPadding: 2, overflow: 'linebreak' },
+                headStyles: { fillColor: [25, 118, 210], textColor: [255, 255, 255] }, // Azul do tema
+                didDrawPage: function (data) {
+                    y = data.cursor.y + lineHeight; // Atualiza a posição Y após a tabela
+                }
+            });
+            y = doc.autoTable.previous.finalY + titleLineHeight;
+        } else {
+            doc.setFontSize(16);
+            doc.text("Mão de Obra Registrada:", margin, y);
+            y += subtitleLineHeight;
+            doc.setFontSize(12);
+            doc.text("Nenhuma mão de obra registrada.", margin, y);
+            y += titleLineHeight;
+        }
+
+
+        // Adicionar Peças
+        if (currentMaintenanceData.pecas && currentMaintenanceData.pecas.length > 0) {
+            doc.setFontSize(16);
+            doc.text("Peças Registradas:", margin, y);
+            y += subtitleLineHeight;
+            const pecasData = currentMaintenanceData.pecas.map(item => [
+                item.nome,
+                `R$ ${parseFloat(item.preco).toFixed(2).replace('.', ',')}`,
+                item.pivot?.quantidade || 1,
+                `R$ ${(parseFloat(item.preco) * (item.pivot?.quantidade || 1)).toFixed(2).replace('.', ',')}`
+            ]);
+            doc.autoTable({
+                startY: y,
+                head: [['Nome', 'Preço Unit.', 'Quant.', 'Total Item']],
+                body: pecasData,
+                margin: { left: margin, right: margin },
+                styles: { fontSize: 10, cellPadding: 2, overflow: 'linebreak' },
+                headStyles: { fillColor: [25, 118, 210], textColor: [255, 255, 255] }, // Azul do tema
+            });
+        } else {
+            doc.setFontSize(16);
+            doc.text("Peças Registradas:", margin, y);
+            y += subtitleLineHeight;
+            doc.setFontSize(12);
+            doc.text("Nenhuma peça registrada.", margin, y);
+        }
+
+        // Salva o PDF
+        doc.save(`manutencao_${currentMaintenanceData.codigo}.pdf`);
+    }
+
+
+    // Funções de filtro de busca (mantidas)
     document.getElementById('search').addEventListener('keyup', filterTable);
     document.getElementById('search-type').addEventListener('change', filterTable);
 
@@ -232,15 +387,14 @@
 
         rows.forEach(row => {
             let cellContent = '';
-            // Ajuste os índices das colunas para corresponder à nova estrutura da tabela
             if (searchType === 'modelo') {
-                cellContent = row.children[0].textContent.toLowerCase();
+                cellContent = row.getAttribute('data-modelo').toLowerCase();
             } else if (searchType === 'marca') {
-                cellContent = row.children[1].textContent.toLowerCase();
+                cellContent = row.getAttribute('data-marca').toLowerCase();
             } else if (searchType === 'nome') {
-                cellContent = row.children[2].textContent.toLowerCase();
-            } else if (searchType === 'status') { // Adicionado para buscar por status na tabela
-                cellContent = row.children[4].textContent.toLowerCase(); // Índice 4 para a nova coluna 'Status'
+                cellContent = row.getAttribute('data-nome-cliente').toLowerCase();
+            } else if (searchType === 'status') {
+                cellContent = row.getAttribute('data-status').toLowerCase();
             }
 
             if (cellContent.includes(searchText)) {

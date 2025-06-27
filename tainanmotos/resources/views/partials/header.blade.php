@@ -37,6 +37,7 @@
           <a href="/cadastrar-modelo" class="dropdown-item">Modelo</a>
           <a href="/cadastrar-peca" class="dropdown-item">Peça</a>
           <a href="/cadastrar-mao-de-obra" class="dropdown-item">Mão de Obra</a>
+          <a href="/usuario" class="dropdown-item">Usuário</a>
         </div>
       </div>
 
