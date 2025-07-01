@@ -11,6 +11,7 @@ use App\Http\Controllers\ManutencaoController;
 use App\Http\Controllers\MotoController;
 use App\Http\Controllers\ServicoController;
 use App\Http\Controllers\EstatisticaController;
+use App\Http\Controllers\UserController; // Importado o UserController
 use App\Models\Modelo;
 use App\Models\Fabricante;
 use App\Models\Moto; // Importado para a rota da placa
@@ -147,6 +148,16 @@ Route::get('/api/mao-de-obra', [MaoObraController::class, 'listar'])->name('maoo
 Route::get('/motos', [MotoController::class, 'index'])->name('motos.index');
 // Rota alternativa, mantida por compatibilidade
 Route::get('/motos', [MotoController::class, 'index'])->name('moto.index');
+
+// --- Usuários ---
+// Exibe a lista de usuários
+Route::get('/usuarios', [UserController::class, 'index'])->name('usuarios.index');
+// Exibe o formulário para editar um usuário existente
+Route::get('/usuarios/{id}/edit', [UserController::class, 'edit'])->name('usuarios.edit');
+// Processa a atualização de um usuário
+Route::put('/usuarios/{id}', [UserController::class, 'update'])->name('usuarios.update');
+// Deleta um usuário
+Route::delete('/usuarios/{id}', [UserController::class, 'destroy'])->name('usuarios.destroy');
 
 
 // ==================== Estatísticas ====================
