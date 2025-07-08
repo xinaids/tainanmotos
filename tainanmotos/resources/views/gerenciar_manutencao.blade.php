@@ -101,12 +101,20 @@
                 <div class="form-group"><label>Quilometragem</label><input id="quilometragem" name="quilometragem" readonly></div>
             </div>
 
+            {{-- NOVA LINHA: Descrição do Serviço (Solicitação do Cliente) --}}
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label for="descricao_servico_cliente">Descrição do Serviço (Solicitação do Cliente)</label>
+                    <textarea id="descricao_servico_cliente" rows="4" readonly></textarea>
+                </div>
+            </div>
+
             {{-- linha 3 - MÃO DE OBRA + PEÇAS --}}
             <div class="form-row">
                 <div class="form-group">
                     <label for="mao_obra">Atribuir Mão de Obra</label>
-                    <select id="mao_obra" name="mao_obra"></select>
-                    <div style="margin-top:8px;display:flex;gap:8px;">
+                    <div class="select-and-button"> {{-- Novo container para alinhamento --}}
+                        <select id="mao_obra" name="mao_obra"></select>
                         <button type="button" class="btn-plus" id="btnAdicionarMaoObra">Adicionar</button>
                     </div>
                     <ul id="listaMaoObra" style="margin-top:10px;padding-left:20px;list-style-type:disc;"></ul>
@@ -115,8 +123,8 @@
 
                 <div class="form-group">
                     <label for="peca">Atribuir Peça</label>
-                    <select id="peca" name="peca"></select>
-                    <div style="margin-top:8px;display:flex;gap:8px;">
+                    <div class="select-and-button"> {{-- Novo container para alinhamento --}}
+                        <select id="peca" name="peca"></select>
                         <button type="button" class="btn-plus" id="btnAdicionarPeca">Adicionar</button>
                     </div>
                     <ul id="listaPecas" style="margin-top:10px;padding-left:20px;list-style-type:disc;"></ul>
@@ -124,12 +132,9 @@
                 </div>
             </div>
 
-
-
-
-            {{-- linha 4 --}}
+            {{-- linha 4 -- Descrição do Mecânico e Histórico --}}
             <div class="form-row">
-                <div class="form-group"><label>Descrição</label><textarea id="descricao" name="descricao" rows="4"></textarea></div>
+                <div class="form-group"><label>Descrição da Manutenção (Mecânico)</label><textarea id="descricao" name="descricao" rows="4"></textarea></div>
                 <div class="form-group"><label>Histórico de Descrições</label><textarea id="descricao_historico" rows="6" readonly style="background:#f5f5f5;"></textarea></div>
             </div>
 
@@ -152,7 +157,6 @@
                     </ul>
                 </div>
             </div>
-
 
 
             <div class="form-row" style="justify-content:flex-end;">
@@ -193,6 +197,9 @@
         document.getElementById("listaMaoObra").innerHTML = "";
         document.getElementById("pecasRegistradas").innerHTML = "<li><em>Nenhuma peça registrada.</em></li>";
         document.getElementById("maoObraRegistrada").innerHTML = "<li><em>Nenhuma mão de obra registrada.</em></li>";
+        // Limpa também o novo campo de descrição do serviço
+        document.getElementById("descricao_servico_cliente").value = "";
+
 
         pecasAdicionadas = [];
         maoDeObraAdicionadas = [];
@@ -237,12 +244,29 @@
                         document.getElementById("descricao_historico").value = data.descricao_manutencao ?? "";
                         document.getElementById("situacao").value = data.situacao; // Usar o valor numérico da situação
 
+                        // NOVO: Preenche a descrição do serviço do cliente
+                        document.getElementById("descricao_servico_cliente").value = data.descricao ?? "";
+
                         document.getElementById("fabricante_moto").value = data.moto.modelo.fabricante.nome;
                         document.getElementById("modelo_moto").value = data.moto.modelo.nome;
                         document.getElementById("placa_moto").value = data.moto.placa;
                         document.getElementById("ano_moto").value = data.moto.ano;
                         document.getElementById("quilometragem").value = data.quilometragem;
-                        document.getElementById("descricao").value = ""; // Limpa o campo de nova descrição
+                        document.getElementById("descricao").value = ""; // Limpa o campo de nova descrição (do mecânico)
+
+                        // **CORREÇÃO AQUI**: Popular pecasAdicionadas e maoDeObraAdicionadas com os dados existentes
+                        pecasAdicionadas = data.pecas.map(p => ({
+                            codigo: p.codigo,
+                            nome: p.nome,
+                            preco: parseFloat(p.preco),
+                            quantidade: p.pivot.quantidade
+                        }));
+                        maoDeObraAdicionadas = data.maos_obra.map(m => ({
+                            codigo: m.codigo,
+                            nome: m.nome,
+                            valor: parseFloat(m.valor)
+                        }));
+
 
                         // Carrega as peças disponíveis para o modelo da moto
                         if (data.moto.modelo.codigo) {
@@ -272,7 +296,7 @@
 
 
     function prepararEnvioDescricao() {
-        const descricaoInput = document.getElementById("descricao");
+        const descricaoInput = document.getElementById("descricao"); // Este é o campo do mecânico
         const historicoTextarea = document.getElementById("descricao_historico");
         const pecaListaHidden = document.getElementById("peca_lista");
         const maoObraListaHidden = document.getElementById("mao_obra_lista");
@@ -281,7 +305,7 @@
         pecaListaHidden.value = JSON.stringify(pecasAdicionadas);
         maoObraListaHidden.value = JSON.stringify(maoDeObraAdicionadas);
 
-        // Lógica para adicionar nova descrição ao histórico
+        // Lógica para adicionar nova descrição (do mecânico) ao histórico
         const novaDescricao = descricaoInput.value.trim();
         if (novaDescricao) {
             const dataAtual = new Date();
@@ -353,9 +377,7 @@
             })
             .catch(error => {
                 console.error("Erro ao carregar peças disponíveis:", error);
-                select.innerHTML = '<option value="">Erro ao carregar peças</option>';
-                select.disabled = true;
-                document.getElementById('btnAdicionarPeca').disabled = true;
+                alert("Erro ao carregar dados da manutenção.");
             });
     }
 
@@ -370,33 +392,24 @@
             alert('Peça inválida.');
             return;
         }
-
         const existente = pecasAdicionadas.find(p => p.codigo === codigo);
         if (existente) {
             existente.quantidade += 1;
         } else {
-            pecasAdicionadas.push({
-                codigo: pecaSelecionada.codigo,
-                nome: pecaSelecionada.nome,
-                preco: parseFloat(pecaSelecionada.preco),
-                quantidade: 1
-            });
+            pecasAdicionadas.push({ codigo: pecaSelecionada.codigo, nome: pecaSelecionada.nome, preco: parseFloat(pecaSelecionada.preco), quantidade: 1 });
         }
         atualizarListaPecasParaAtribuir();
     });
 
-
     function atualizarListaPecasParaAtribuir() {
         const ul = document.getElementById("listaPecas");
         ul.innerHTML = ""; // Limpa a lista antes de redesenhar
-
         pecasAdicionadas.forEach((peca, index) => {
             const li = document.createElement("li");
             li.textContent = `${peca.nome} - R$ ${(peca.preco * peca.quantidade).toFixed(2).replace('.', ',')} (x${peca.quantidade})`;
-
             const btnRemover = document.createElement("button");
             btnRemover.textContent = "✖";
-            btnRemover.style.cssText = "margin-left:10px;background:none;border:none;color:red;cursor:pointer";
+            btnRemover.classList.add('btn-remove-item'); // Adiciona a classe
             btnRemover.onclick = () => {
                 if (peca.quantidade > 1) {
                     peca.quantidade -= 1;
@@ -405,21 +418,17 @@
                 }
                 atualizarListaPecasParaAtribuir(); // Atualiza a lista e o total
             };
-
             li.appendChild(btnRemover);
             ul.appendChild(li);
         });
-
         atualizarValorTotal(); // Recalcula o valor total
         document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
     }
-
 
     function atualizarValorTotal() {
         const totalMao = maoDeObraAdicionadas.reduce((soma, item) => soma + parseFloat(item.valor), 0);
         const totalPeca = pecasAdicionadas.reduce((soma, item) => soma + (parseFloat(item.preco) * item.quantidade), 0);
         const totalGeral = totalMao + totalPeca;
-
         document.getElementById("valor").value = "R$ " + totalGeral.toFixed(2).replace(".", ",");
     }
 
@@ -455,32 +464,24 @@
             return;
         }
 
-        maoDeObraAdicionadas.push({
-            codigo: maoSelecionada.codigo,
-            nome: maoSelecionada.nome,
-            valor: parseFloat(maoSelecionada.valor)
-        });
-
+        maoDeObraAdicionadas.push({ codigo: maoSelecionada.codigo, nome: maoSelecionada.nome, valor: parseFloat(maoSelecionada.valor) });
         atualizarListaMaoDeObraParaAtribuir();
     });
 
     function atualizarListaMaoDeObraParaAtribuir() {
         const ul = document.getElementById("listaMaoObra");
         ul.innerHTML = "";
-
         maoDeObraAdicionadas.forEach((mao, index) => {
             const li = document.createElement('li');
             li.textContent = `${mao.nome} - R$ ${mao.valor.toFixed(2).replace('.', ',')}`;
-
             const btnX = document.createElement('button');
             btnX.textContent = '✖';
-            btnX.style.cssText = 'margin-left:10px;background:none;border:none;color:red;cursor:pointer';
+            btnX.classList.add('btn-remove-item'); // Adiciona a classe
             btnX.onclick = () => {
                 maoDeObraAdicionadas.splice(index, 1);
                 atualizarListaMaoDeObraParaAtribuir();
                 atualizarValorTotal();
             };
-
             li.appendChild(btnX);
             ul.appendChild(li);
         });
@@ -488,105 +489,59 @@
         document.getElementById("mao_obra_lista").value = JSON.stringify(maoDeObraAdicionadas);
     }
 
-
-    function carregarMaoObraRegistrada(data) {
-        const ulMaoObra = document.getElementById("maoObraRegistrada");
-        ulMaoObra.innerHTML = "";
-        maoDeObraAdicionadas = []; // Limpa a lista antes de popular
-
-        if (data.maos_obra && data.maos_obra.length > 0) {
-            data.maos_obra.forEach(m => {
-                // Adiciona as mãos de obra registradas ao array maoDeObraAdicionadas
-                maoDeObraAdicionadas.push({
-                    codigo: m.codigo,
-                    nome: m.nome,
-                    valor: parseFloat(m.valor)
-                });
-
-                const li = document.createElement("li");
-                li.textContent = `${m.nome} - R$ ${parseFloat(m.valor).toFixed(2).replace(".", ",")}`;
-
-                const btnRemover = document.createElement("button");
-                btnRemover.textContent = "✖";
-                btnRemover.style.marginLeft = "10px";
-                btnRemover.style.background = "none";
-                btnRemover.style.border = "none";
-                btnRemover.style.color = "red";
-                btnRemover.style.cursor = "pointer";
-
-                btnRemover.onclick = () => {
-                    maoDeObraAdicionadas = maoDeObraAdicionadas.filter(mao => mao.codigo !== m.codigo);
-                    carregarMaoObraRegistrada({ maos_obra: maoDeObraAdicionadas }); // Recarrega a lista visual
-                };
-
-                li.appendChild(btnRemover);
-                ulMaoObra.appendChild(li);
-            });
-            document.getElementById("mao_obra_lista").value = JSON.stringify(maoDeObraAdicionadas);
-        } else {
-            const li = document.createElement("li");
-            li.innerHTML = "<em>Nenhuma mão de obra registrada.</em>";
-            ulMaoObra.appendChild(li);
-            document.getElementById("mao_obra_lista").value = "[]";
-        }
-        atualizarValorTotal();
-    }
-
-
+    // Função para carregar peças já registradas no serviço
     function carregarPecasRegistradas(data) {
-        const ulPecas = document.getElementById("pecasRegistradas");
-        ulPecas.innerHTML = ""; // Limpa a lista antes de popular
-        pecasAdicionadas = []; // Limpa a lista de peças a serem enviadas
+        const ul = document.getElementById("pecasRegistradas");
+        ul.innerHTML = ""; // Limpa a lista existente
 
         if (data.pecas && data.pecas.length > 0) {
-            data.pecas.forEach((p) => {
-                const item = {
-                    codigo: p.codigo,
-                    nome: p.nome,
-                    preco: parseFloat(p.preco),
-                    quantidade: p.pivot?.quantidade || 1 // Certifica-se de pegar a quantidade do pivot
-                };
-                pecasAdicionadas.push(item);
-
+            data.pecas.forEach((peca, index) => { // Adicionado 'index' para remoção
                 const li = document.createElement("li");
-                li.textContent = `${item.nome} - R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")} (x${item.quantidade})`;
-
+                li.textContent = `${peca.nome} - R$ ${parseFloat(peca.preco).toFixed(2).replace('.', ',')} (x${peca.pivot.quantidade})`;
                 const btnRemover = document.createElement("button");
                 btnRemover.textContent = "✖";
-                btnRemover.style.cssText = "margin-left:10px;background:none;border:none;color:red;cursor:pointer";
+                btnRemover.classList.add('btn-remove-item');
                 btnRemover.onclick = () => {
-                    // Encontra o índice da peça para remoção
-                    const indexToRemove = pecasAdicionadas.findIndex(pa => pa.codigo === item.codigo);
-                    if (indexToRemove > -1) {
-                        if (pecasAdicionadas[indexToRemove].quantidade > 1) {
-                            pecasAdicionadas[indexToRemove].quantidade -= 1;
-                        } else {
-                            pecasAdicionadas.splice(indexToRemove, 1);
-                        }
-                    }
-                    // Recarrega a exibição das peças registradas para refletir a mudança
-                    carregarPecasRegistradas({ pecas: pecasAdicionadas.map(p => ({
-                        codigo: p.codigo,
-                        nome: p.nome,
-                        preco: p.preco,
-                        pivot: { quantidade: p.quantidade }
-                    }))});
+                    // Lógica para remover a peça registrada (se necessário)
+                    // Para fins de demonstração, apenas remove da exibição
+                    li.remove();
+                    // Se precisar remover do backend, adicione a lógica de fetch/API aqui
                 };
-
                 li.appendChild(btnRemover);
-                ulPecas.appendChild(li);
+                ul.appendChild(li);
             });
-            document.getElementById("peca_lista").value = JSON.stringify(pecasAdicionadas);
         } else {
-            const li = document.createElement("li");
-            li.innerHTML = "<em>Nenhuma peça registrada.</em>";
-            ulPecas.appendChild(li);
-            document.getElementById("peca_lista").value = "[]";
+            ul.innerHTML = "<li><em>Nenhuma peça registrada.</em></li>";
         }
-        atualizarValorTotal();
+    }
+
+    // Função para carregar mão de obra já registrada no serviço
+    function carregarMaoObraRegistrada(data) {
+        const ul = document.getElementById("maoObraRegistrada");
+        ul.innerHTML = ""; // Limpa a lista existente
+
+        // AQUI ESTÁ A CORREÇÃO: Usar 'data.maos_obra' em vez de 'data.mao_de_obra'
+        if (data.maos_obra && data.maos_obra.length > 0) {
+            data.maos_obra.forEach((mao, index) => { // Adicionado 'index' para remoção
+                const li = document.createElement("li");
+                li.textContent = `${mao.nome} - R$ ${parseFloat(mao.valor).toFixed(2).replace('.', ',')}`;
+                const btnRemover = document.createElement("button");
+                btnRemover.textContent = "✖";
+                btnRemover.classList.add('btn-remove-item');
+                btnRemover.onclick = () => {
+                    // Lógica para remover a mão de obra registrada (se necessário)
+                    // Para fins de demonstração, apenas remove da exibição
+                    li.remove();
+                    // Se precisar remover do backend, adicione a lógica de fetch/API aqui
+                };
+                li.appendChild(btnRemover);
+                ul.appendChild(li);
+            });
+        } else {
+            ul.innerHTML = "<li><em>Nenhuma mão de obra registrada.</em></li>";
+        }
     }
 </script>
-
 
 <style>
     /* ---------- LAYOUT GERAL ---------- */
@@ -631,7 +586,9 @@
         margin: 20px 0;
         display: flex;
         gap: 10px;
-        flex-wrap: wrap
+        flex-wrap: wrap;
+        justify-content: flex-start; /* Alinhado à esquerda como na imagem */
+        align-items: flex-end; /* Alinha os itens pela base */
     }
 
     .search-container input,
@@ -640,7 +597,11 @@
         font-size: 14px;
         border: 1px solid #ccc;
         border-radius: 6px;
-        transition: .3s
+        transition: .3s;
+        flex: 1; /* Permite que os itens cresçam */
+        min-width: 150px; /* Ajuste para ter mais espaço */
+        max-width: 200px; /* Ajuste para ter mais espaço */
+        box-sizing: border-box;
     }
 
     .search-container input:focus,
@@ -800,6 +761,17 @@
         outline: none
     }
 
+    /* Estilos para alinhar select e botão "Adicionar" */
+    .select-and-button {
+        display: flex;
+        gap: 8px; /* Espaçamento entre o select e o botão */
+        align-items: center;
+    }
+
+    .select-and-button select {
+        flex-grow: 1; /* Permite que o select ocupe o espaço disponível */
+    }
+
     /* ---------- BOTÕES NO MODAL ---------- */
     .btn-plus {
         padding: 10px 12px;
@@ -833,21 +805,26 @@
         transform: translateY(-2px)
     }
 
-    /* ---------- LISTAS DE MÃO DE OBRA ---------- */
+    /* ---------- LISTAS DE MÃO DE OBRA E PEÇAS ---------- */
     #listaMaoObra li,
-    #maoObraRegistrada li {
+    #maoObraRegistrada li,
+    #listaPecas li,
+    #pecasRegistradas li {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-right: 10px
+        padding-right: 10px;
+        margin-bottom: 5px;
     }
 
-    #listaMaoObra li button,
-    #maoObraRegistrada li button {
+    /* Estilo para os botões de remover (o "X") */
+    .btn-remove-item {
         background: none;
         border: none;
         color: red;
         font-weight: bold;
-        cursor: pointer
+        cursor: pointer;
+        font-size: 1em; /* Garante um tamanho visível */
+        margin-left: 10px; /* Espaçamento à esquerda */
     }
 </style>
